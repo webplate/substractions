@@ -1,0 +1,20 @@
+->  comparer chiffre à chiffre (aligner à droite, ignorer les zéros à gauche? )
+
+au niveau d'une colonne:
+les réponses bonnes malgré retenue (surement issues de procédure) doivent-elles être considérées comme des erreurs ?
+
+
+562 - 3 = 259 -> on devrait voir le blank bug seulement !! (utiliser une règle sur l'écart (faisable de tête
+
+
+ot bugs:
+addition au lieu de soustraction
+N-M=N
+
+
+aller jusqu'aux simulations !!
+
+
+comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
+((id des bugs par couples de colonnes))
+illustrer clairement comparaison (R sujets | result simul) sur la sheet entière
