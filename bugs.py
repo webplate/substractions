@@ -4,6 +4,7 @@
 
 from read_data import *
 from transform_data import *
+from precomputed import poss_sheet
 
 def count_correct(data, ref):
     for subject in data :
@@ -16,7 +17,8 @@ def count_correct(data, ref):
 def bugId_perDigit(d1, d2, result):
     '''Returns the bug identifiers corresponding to the subtraction:
     (d1 - d2 = result)
-    d1 and d2 must be integers, result can be integer or string
+    d1 and d2 must be integers, result can be integer or string,
+    d1,d2 and result should be of length 1
     '''
     try :
         r = int(result)
@@ -72,27 +74,25 @@ def bugId(n1, n2, result):
             if i < len(n1):            #if result is not longer than operands
                 d1 = int(n1[pos])
                 if i < min_col :            #focus on completed columns
-                    d2 = int(n2[pos])
                     #check for incomplete subs : look only for erroneous
                     #columns if they're not from incomplete mental subtraction
                     #for this consider also digit from next column
-                    correct2 = correct[pos-1:len(correct)+pos+1]
                     n1_2 = n1[pos-1:len(n1)+pos+1]
                     n2_2 = n2[pos-1:len(n2)+pos+1]
                     result2 = cresult[pos-1:len(cresult)+pos+1]
-                    try :
-                        r2 = int(result2)
-                    except ValueError :
-                        check_incomplete = False
+                    #first operand must be on two columns
+                    if (len(n1_2) == 2 and canBeInteger(result2)
+                        #check for incomplete sub
+                        and int(result2) == int(n1_2) - int(n2_2)
+                        and int(result2) - int(n1_2) <= mental_limit):
+                            bugs.append(['incomplete'])
+                            #and skip next column
+                            bugs.append(['incomplete'])
+                            i += 1
                     else :
-                        check_incomplete = (r2 == int(n1_2) - int(n2_2)
-                            and r2 - int(n1_2) <= mental_limit)
-                    if check_incomplete :
-                        bugs.append(['incomplete'])
-                        #and skip next column
-                        bugs.append(['incomplete'])
-                        i += 1
-                    else :
+                        #check for unicolumn bug
+                        d2 = int(n2[pos])
+                        #look for bug in single column "pos"
                         bugs.append(bugId_perDigit(d1, d2, result[pos]))
                 else :        #then search for 'blank' bugs
                     d2 = int(n2[-min_col])
@@ -175,16 +175,18 @@ def dominancy(found, possible):
 
 #~ print bugId_perDigit(9,2,7)
 #~ 
-print bugId('1813','215','1598'), 'correct'
-print bugId('1813','215','1600'), 'pt-gd=0'
-print bugId('1813','215','1700'), 'unexplained'
-print bugId('1813','215','170X')
-print bugId('1813','215','070X'), 'test not full col'
-print bugId('647', '45', '706')
-print bugId('1813','215','11598'), 'over'
-print bugId('1813','215','001598'), 'zero on left'
-print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
-print bugId('562','24','542'), 'incomplete sub (56-2=54)'
+#~ print bugId('1813','215','1598'), 'correct'
+#~ print bugId('1813','215','1600'), 'pt-gd=0'
+#~ print bugId('1813','215','1700'), 'unexplained'
+#~ print bugId('1813','215','170X')
+#~ print bugId('1813','215','070X'), 'test not full col'
+#~ print bugId('647', '45', '706')
+#~ print bugId('1813','215','11598'), 'over'
+#~ print bugId('1813','215','001598'), 'zero on left'
+#~ print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
+#~ print bugId('562','24','542'), 'incomplete sub (56-2=54)'
+#~ print bugId('885','205','600'), 'should not show incomplete, should be length 3'
+#~ print bugId('8888','11','8700'), 'incomplete and blank'
 
 
 #~ for subject in data:
@@ -195,8 +197,7 @@ print bugId('562','24','542'), 'incomplete sub (56-2=54)'
     #~ print operations[i][0], operations[i][1], result
     #~ print bugId(operations[i][0], operations[i][1], result)
 
-#~ print possible_bugs('83','44')
-#~ out= possible_sheet([('647','45'),('885','205')])
+
 
 #~ out = possible_sheet(operations)
 

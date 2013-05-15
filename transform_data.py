@@ -31,3 +31,10 @@ def flatten(l):
         else:
             yield el
 
+def canBeInteger(string):
+    try:
+        integer = int(string)
+    except ValueError :
+        return False
+    else :
+        return True

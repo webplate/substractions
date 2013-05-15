@@ -14,6 +14,9 @@ détecter dominant
 aller jusqu'aux simulations !!
 tolérance +-1
 
+TOFIX
+incomplete AND blank bugs...-> nouvelle représentation des bugs ?
+
 VALIDATION
 comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
 & comparer avec les stratégies de réparation de VanLehn
@@ -21,4 +24,4 @@ comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
 
 
 PRÉSENTATION
-illustrer clairement comparaison (R sujets | result simul) sur la sheet entière
+illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
