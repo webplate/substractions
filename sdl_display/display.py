@@ -39,7 +39,7 @@ if full_screen:
 else:
     display = pygame.display.set_mode(window_size)
 
-pygame.event.clear()        #clear event list to ignore previous pressures
+#~ pygame.event.clear()        #clear event list to ignore previous pressures
 
 font = pygame.font.Font(txt_font, txt_size) #name, size
 
@@ -47,14 +47,15 @@ font = pygame.font.Font(txt_font, txt_size) #name, size
 frame = 0
 t0 = pygame.time.get_ticks()
 last_flip = t0
-while True:
+running = True
+while running:
     display.fill(bg_color)
     draw_sub((100,300),"12345","5673"," 0045X")
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate
             print float(pygame.time.get_ticks() - t0)/frame, "msec/frame"
-            pygame.quit()
+            running = False
         elif event.type == KEYDOWN and event.key == switch_key :
             print 'down'
         elif event.type == pygame.MOUSEMOTION:
@@ -65,3 +66,4 @@ while True:
         last_flip = pygame.time.get_ticks()
         pygame.display.flip()
         frame += 1
+pygame.quit()
