@@ -1,5 +1,6 @@
-#!/usr/bin/env pythoné
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from pygame.locals import *
 
 #screen settings
