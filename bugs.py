@@ -62,6 +62,7 @@ def bugId(n1, n2, result):
     result must be string
     '''
     bugs = []
+    bugs_desc = [{'type':'subtraction', 'o1':n1, 'o2':n2, 'result':result}]
     correct = str(int(n1) - int(n2))
     cresult = clean_rslt(result)
     if cresult != correct :     #look for bugs only if erroneous result
@@ -89,26 +90,37 @@ def bugId(n1, n2, result):
                             #and skip next column
                             bugs.append(['incomplete'])
                             i += 1
+                            bugs_desc.append({'pos':pos, 'type':'incomplete',
+                            'o1':n1_2, 'o2':n2_2, 'result':result2})
                     else :
                         #check for unicolumn bug
                         d2 = int(n2[pos])
                         #look for bug in single column "pos"
-                        bugs.append(bugId_perDigit(d1, d2, result[pos]))
+                        bug_type = bugId_perDigit(d1, d2, result[pos])
+                        bugs.append(bug_type)
+                        bugs_desc.append({'pos':pos, 'type':bug_type,
+                            'o1':d1, 'o2':d2, 'result':result[pos]})
                 else :        #then search for 'blank' bugs
                     d2 = int(n2[-min_col])
                     bug = bugId_perDigit(d1, d2, result[pos])
                     if bug != ['unexplained'] :         #spot 'blank' bug only if interesting
                         bugs.append(['blank', bug])           #/!\blank bug associé avec d'autres bugs /!\
+                        bugs_desc.append({'pos':pos, 'type':['blank', bug],
+                            'o1':d1, 'o2':d2, 'result':result[pos]})
                     else :
                         bugs.append(bug)
+                        bugs_desc.append({'pos':pos, 'type':bug,
+                            'o1':d1, 'o2':d2, 'result':result[pos]})
             else :
                 bugs.append(['over'])           #subject has written too many digits
+                bugs_desc.append({'pos':pos, 'type':'over',
+                    'result':result[pos]})
             #process next column
             i += 1
     else :
         bugs.append(['correct'])        #subject is correct (operation level)
     #~ print n1,n2,result,bugs
-    return bugs
+    return bugs, bugs_desc
 
 def possible_bugs(n1, n2) :
     '''give potential bugs for a subtraction
@@ -121,7 +133,7 @@ def possible_bugs(n1, n2) :
     poss_bugs = [ [] for i in range(max_col) ]
     while len(result) <= max_col :
         #~ print poss_bugs, max_col, result
-        grp_bugs = bugId(n1, n2, result)
+        grp_bugs = bugId(n1, n2, result)[0]
         for i, bugs in enumerate(grp_bugs) :
             #~ print i, bugs
             for bug in bugs :
@@ -147,7 +159,7 @@ def subject_sheet_bugs(subject_data, operations) :
     '''
     bugs = []
     for i, (n1, n2) in enumerate(operations) :
-        bugs.append(bugId(n1, n2, subject_data[i]))
+        bugs.append(bugId(n1, n2, subject_data[i])[0])
     return bugs
 
 def find_dominant(found, possible):
@@ -175,18 +187,18 @@ def dominancy(found, possible):
 
 #~ print bugId_perDigit(9,2,7)
 #~ 
-#~ print bugId('1813','215','1598'), 'correct'
-#~ print bugId('1813','215','1600'), 'pt-gd=0'
-#~ print bugId('1813','215','1700'), 'unexplained'
-#~ print bugId('1813','215','170X')
-#~ print bugId('1813','215','070X'), 'test not full col'
-#~ print bugId('647', '45', '706')
-#~ print bugId('1813','215','11598'), 'over'
-#~ print bugId('1813','215','001598'), 'zero on left'
-#~ print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
-#~ print bugId('562','24','542'), 'incomplete sub (56-2=54)'
-#~ print bugId('885','205','600'), 'should not show incomplete, should be length 3'
-#~ print bugId('8888','11','8700'), 'incomplete and blank'
+print bugId('1813','215','1598'), 'correct'
+print bugId('1813','215','1600'), 'pt-gd=0'
+print bugId('1813','215','1700'), 'unexplained'
+print bugId('1813','215','170X')
+print bugId('1813','215','070X'), 'test not full col'
+print bugId('647', '45', '706')
+print bugId('1813','215','11598'), 'over'
+print bugId('1813','215','001598'), 'zero on left'
+print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
+print bugId('562','24','542'), 'incomplete sub (56-2=54)'
+print bugId('885','205','600'), 'should not show incomplete, should be length 3'
+print bugId('8888','11','8700'), 'incomplete and blank'
 
 
 #~ for subject in data:
