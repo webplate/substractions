@@ -25,3 +25,6 @@ comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
 
 PRÉSENTATION
 illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
+
+SDL
+mettre le background pré-généré dans une surface

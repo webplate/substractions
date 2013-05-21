@@ -23,6 +23,16 @@ def draw_sub(coord, n1, n2, result=''):
     display.blit(bottom_line, (gap - bottom_line.get_width(), y+txt_inter))
     display.blit(sign, (x, y+txt_inter))
 
+def draw_sheet(coord, dimensions, operations, bugs_desc):
+    x, y = coord
+    nb_col, nb_lgn = dimensions
+    for i in range(nb_col):
+        for j in range(nb_lgn):
+            n1 = '1234'
+            n2 = '34'
+            result = 'XXXXX'
+            pos = (x+i*sub_dims[0], y+j*sub_dims[1])
+            draw_sub(pos, n1, n2, result)
 
 #Set graphic driver according to platform
 system = platform.system()
@@ -41,7 +51,9 @@ else:
 
 #~ pygame.event.clear()        #clear event list to ignore previous pressures
 
+#load  fonts
 font = pygame.font.Font(txt_font, txt_size) #name, size
+note_font = pygame.font.Font(note_font, note_size)
 
 #Main loop
 frame = 0
@@ -50,7 +62,7 @@ last_flip = t0
 running = True
 while running:
     display.fill(bg_color)
-    draw_sub((100,300),"12345","5673"," 0045X")
+    draw_sheet(sheet_offset, sheet_dims, '','')
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate
@@ -59,8 +71,11 @@ while running:
         elif event.type == KEYDOWN and event.key == switch_key :
             print 'down'
         elif event.type == pygame.MOUSEMOTION:
-            coord = font.render(str(pygame.mouse.get_pos()), True, txt_color)
-            display.blit(coord, pygame.mouse.get_pos())
+            mouse_pos = pygame.mouse.get_pos()
+
+    #show sidenotes
+    coord = note_font.render(str(pygame.mouse.get_pos()), True, txt_color)
+    display.blit(coord, (10,10))
     #flip every 16ms only (for smooth animation, particularly on linux)
     if pygame.time.get_ticks() > last_flip + 16 :
         last_flip = pygame.time.get_ticks()
