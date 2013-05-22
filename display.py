@@ -2,37 +2,48 @@
 # -*- coding: utf-8 -*-
 import platform, os, pygame
 from display_settings import *
+import bugs
 
-def draw_sub(coord, n1, n2, result=''):
-    x, y = coord
+def draw_sub(n1, n2, result=''):
     #prepare numbers
     l1 = font.render(n1, True, txt_color) #texte, antialiasing, color
     l2 = font.render(n2, True, txt_color)
     l3 = font.render(result, True, txt_color)
     max_width = max(l1.get_width(), l2.get_width(), l3.get_width())
-    max_len = max(len(n1), len(n2), len(result)) -1
+    max_len = max(len(n1), len(n2), len(result))
     #prepare "decorations"
     bottom_line = font.render("_"*max_len, True, txt_color)
     sign = font.render("-", True, txt_color)
+    #a surface to blit the whole sub
+    width = max_width + txt_size/2
+    height = 3*txt_inter
+    #SRCALPHA is for per pixel transparency
+    surf = pygame.Surface((width,height), flags=SRCALPHA)
     #draw numbers
-    gap = x + max_width
-    display.blit(l1, (gap - l1.get_width(), y))
-    display.blit(l2, (gap - l2.get_width(), y+txt_inter))
-    display.blit(l3, (gap - l3.get_width(), y+2*txt_inter))
+    surf.blit(l1, (width - l1.get_width(), 0))
+    surf.blit(l2, (width - l2.get_width(), txt_inter))
+    surf.blit(l3, (width - l3.get_width(), 2*txt_inter))
     #draw 'minus' and 'bottom line'
-    display.blit(bottom_line, (gap - bottom_line.get_width(), y+txt_inter))
-    display.blit(sign, (x, y+txt_inter))
+    surf.blit(bottom_line, (width - bottom_line.get_width(), txt_inter))
+    surf.blit(sign, (0, txt_inter))
+    return surf
 
-def draw_sheet(coord, dimensions, operations, bugs_desc):
-    x, y = coord
+def draw_sheet(dimensions, operations, results):
     nb_col, nb_lgn = dimensions
+    width, height = sub_dims[0]*nb_col, sub_dims[1]*nb_lgn
+    surf = pygame.Surface((width,height), flags=SRCALPHA)
     for i in range(nb_col):
         for j in range(nb_lgn):
-            n1 = '1234'
-            n2 = '34'
-            result = 'XXXXX'
-            pos = (x+i*sub_dims[0], y+j*sub_dims[1])
-            draw_sub(pos, n1, n2, result)
+            k = i+j*nb_col
+            n1 = operations[k][0]
+            n2 = operations[k][1]
+            result = results[k]
+            sub_surf = draw_sub(n1, n2, result)
+            #to verticaly align on right column
+            gap = sub_dims[0] - sub_surf.get_width()
+            pos = (gap + i*sub_dims[0], j*sub_dims[1])
+            surf.blit(sub_surf, pos)
+    return surf
 
 #Set graphic driver according to platform
 system = platform.system()
@@ -62,7 +73,9 @@ last_flip = t0
 running = True
 while running:
     display.fill(bg_color)
-    draw_sheet(sheet_offset, sheet_dims, '','')
+    sheet = draw_sheet(sheet_dims, bugs.operations, bugs.data[0]['results'])
+    display.blit(sheet, sheet_offset)
+    #~ display.blit(draw_sub('12345','38','XX21'), (30,30))
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate

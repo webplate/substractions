@@ -187,18 +187,18 @@ def dominancy(found, possible):
 
 #~ print bugId_perDigit(9,2,7)
 #~ 
-print bugId('1813','215','1598'), 'correct'
-print bugId('1813','215','1600'), 'pt-gd=0'
-print bugId('1813','215','1700'), 'unexplained'
-print bugId('1813','215','170X')
-print bugId('1813','215','070X'), 'test not full col'
-print bugId('647', '45', '706')
-print bugId('1813','215','11598'), 'over'
-print bugId('1813','215','001598'), 'zero on left'
-print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
-print bugId('562','24','542'), 'incomplete sub (56-2=54)'
-print bugId('885','205','600'), 'should not show incomplete, should be length 3'
-print bugId('8888','11','8700'), 'incomplete and blank'
+#~ print bugId('1813','215','1598'), 'correct'
+#~ print bugId('1813','215','1600'), 'pt-gd=0'
+#~ print bugId('1813','215','1700'), 'unexplained'
+#~ print bugId('1813','215','170X')
+#~ print bugId('1813','215','070X'), 'test not full col'
+#~ print bugId('647', '45', '706')
+#~ print bugId('1813','215','11598'), 'over'
+#~ print bugId('1813','215','001598'), 'zero on left'
+#~ print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
+#~ print bugId('562','24','542'), 'incomplete sub (56-2=54)'
+#~ print bugId('885','205','600'), 'should not show incomplete, should be length 3'
+#~ print bugId('8888','11','8700'), 'incomplete and blank'
 
 
 #~ for subject in data:
@@ -213,5 +213,5 @@ print bugId('8888','11','8700'), 'incomplete and blank'
 
 #~ out = possible_sheet(operations)
 
-#~ found = subject_sheet_bugs(data[0]['results'], operations)
+found = subject_sheet_bugs(data[0]['results'], operations)
 #~ dom = find_dominant(found, poss_sheet)

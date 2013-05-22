@@ -27,4 +27,5 @@ PRÉSENTATION
 illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
 
 SDL
-mettre le background pré-généré dans une surface
+réussir à rester idle tant que pas d'events...
+mettre le background pré-généré dans une surface (les fonctions draw devraient retourner une surface au lieu d'écrire)

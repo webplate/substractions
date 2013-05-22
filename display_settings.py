@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 from pygame.locals import *
 
 #screen settings
 full_screen = False
-window_size = (800, 400)
+window_size = (800, 500)
 
 
 #interface style
