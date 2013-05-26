@@ -4,6 +4,12 @@ import platform, os, pygame
 from display_settings import *
 import bugs
 
+def draw_marker(color):
+    width, height = txt_size/2, 3*txt_inter
+    marker = pygame.Surface((width,height), flags=SRCALPHA)
+    marker.fill(bug_color)
+    return marker
+
 def draw_sub(n1, n2, result=''):
     #prepare numbers
     l1 = font.render(n1, True, txt_color) #texte, antialiasing, color
@@ -19,6 +25,17 @@ def draw_sub(n1, n2, result=''):
     height = 3*txt_inter
     #SRCALPHA is for per pixel transparency
     surf = pygame.Surface((width,height), flags=SRCALPHA)
+
+    #identify bugs for drawing appropriate markers
+    bugs_desc = bugs.bugId(n1, n2, result)[1]
+    print bugs_desc
+    #draw markers
+    for desc in bugs_desc:
+        if desc['type'] != 'subtraction' :
+            if desc['type'] != ['unexplained'] :
+                marker = draw_marker(bug_color)
+                gap = width + desc['pos']*txt_size/2
+                surf.blit(marker, (gap, 0))
     #draw numbers
     surf.blit(l1, (width - l1.get_width(), 0))
     surf.blit(l2, (width - l2.get_width(), txt_inter))
@@ -45,6 +62,7 @@ def draw_sheet(dimensions, operations, results):
             surf.blit(sub_surf, pos)
     return surf
 
+
 #Set graphic driver according to platform
 system = platform.system()
 if system == 'Windows':    # tested with Windows 7
@@ -64,18 +82,22 @@ else:
 
 #load  fonts
 font = pygame.font.Font(txt_font, txt_size) #name, size
-note_font = pygame.font.Font(note_font, note_size)
+note_f = pygame.font.Font(note_font, note_size)
 
 #Main loop
+subject_id = bugs.default_sub
+curr_subject = -1
 frame = 0
 t0 = pygame.time.get_ticks()
 last_flip = t0
 running = True
 while running:
     display.fill(bg_color)
-    sheet = draw_sheet(sheet_dims, bugs.operations, bugs.data[0]['results'])
+    #recompute background sheet only if needed
+    if subject_id != curr_subject:
+        sheet = draw_sheet(sheet_dims, bugs.operations, bugs.data[subject_id]['results'])
+        curr_subject = subject_id
     display.blit(sheet, sheet_offset)
-    #~ display.blit(draw_sub('12345','38','XX21'), (30,30))
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate
@@ -85,9 +107,8 @@ while running:
             print 'down'
         elif event.type == pygame.MOUSEMOTION:
             mouse_pos = pygame.mouse.get_pos()
-
     #show sidenotes
-    coord = note_font.render(str(pygame.mouse.get_pos()), True, txt_color)
+    coord = note_f.render(str(pygame.mouse.get_pos()), True, txt_color)
     display.blit(coord, (10,10))
     #flip every 16ms only (for smooth animation, particularly on linux)
     if pygame.time.get_ticks() > last_flip + 16 :

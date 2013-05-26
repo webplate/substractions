@@ -191,6 +191,7 @@ def dominancy(found, possible):
 #~ print bugId('1813','215','1600'), 'pt-gd=0'
 #~ print bugId('1813','215','1700'), 'unexplained'
 #~ print bugId('1813','215','170X')
+#~ print bugId('1813','215',''), 'empty result'
 #~ print bugId('1813','215','070X'), 'test not full col'
 #~ print bugId('647', '45', '706')
 #~ print bugId('1813','215','11598'), 'over'
