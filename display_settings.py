@@ -14,6 +14,7 @@ txt_font = "./fonts/UbuntuMono-R.ttf"
 txt_size = 24
 txt_inter = 24
 bug_color = (200, 200, 255)
+correct_col_color = (200, 255, 200)
 
 note_font = "./fonts/UbuntuMono-R.ttf"
 note_size = 12
