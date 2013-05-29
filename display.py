@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import platform, os, pygame
+import platform, os, pprint, pygame
 from display_settings import *
 import bugs
 
@@ -35,27 +35,28 @@ def draw_sub(pos, n1, n2, result=''):
     #draw markers
     for desc in bugs_desc:
         if desc['type'] != 'subtraction' :
-            if desc['type'] != ['unexplained'] :
-                if desc['type'] != [] :
-                    marker = draw_marker(bug_color)
-                else :
-                    marker = draw_marker(correct_col_color)
-                gap = width + desc['pos']*txt_size/2
-                surf.blit(marker, (gap, 0))
-                #where are we drawing the marker on the display ?
-                #align to sheet
-                left, top = sheet_offset
-                #align to subtraction in sheet
-                gap2 = sub_dims[0] - max_width
-                left, top = left + gap2 + i_s*sub_dims[0], top + j_s*sub_dims[1]
-                #align to bug column
-                left = left + max_width + desc['pos']*txt_size/2
-                #set boundaries to match marker shape
-                bottom = top + marker.get_height()
-                right = left + marker.get_width()
-                #HACK: reference new fly-over
-                #shouldn't use global var
-                fly_overs.append({'box':(top,right,bottom,left), 'desc':desc})
+            if desc['type'] == [] :
+                marker = draw_marker(correct_col_color)
+            elif desc['type'] == ['unexplained'] :
+                marker = draw_marker(unexplained_color)
+            else :
+                marker = draw_marker(bug_color)
+            gap = width + desc['pos']*txt_size/2
+            surf.blit(marker, (gap, 0))
+            #where are we drawing the marker on the display ?
+            #align to sheet
+            left, top = sheet_offset
+            #align to subtraction in sheet
+            gap2 = sub_dims[0] - max_width
+            left, top = left + gap2 + i_s*sub_dims[0], top + j_s*sub_dims[1]
+            #align to bug column
+            left = left + max_width + desc['pos']*txt_size/2
+            #set boundaries to match marker shape
+            bottom = top + marker.get_height()
+            right = left + marker.get_width()
+            #HACK: reference new fly-over
+            #shouldn't use global var
+            fly_overs.append({'box':(top,right,bottom,left), 'desc':desc})
     #draw numbers
     surf.blit(l1, (width - l1.get_width(), 0))
     surf.blit(l2, (width - l2.get_width(), txt_inter))
@@ -136,9 +137,10 @@ while running:
     for section in fly_overs:
         top, right, bottom, left = section['box']
         if m_x<right and m_x>left and m_y>top and m_y<bottom:
-            print section['box'], section['desc']
-            desc = note_f.render(str(section['desc']), True, txt_color)
-            display.blit(desc, (10,30))
+            pp = bugs.format_bug_desc(section['desc'])
+            for i,line in enumerate(pp):
+                desc = note_f.render(line, True, txt_color)
+                display.blit(desc, (10,10*(3+i)))
     #flip every 16ms only (for smooth animation, particularly on linux)
     if pygame.time.get_ticks() > last_flip + 16 :
         last_flip = pygame.time.get_ticks()

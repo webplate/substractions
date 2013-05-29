@@ -38,3 +38,9 @@ def canBeInteger(string):
         return False
     else :
         return True
+
+def format_bug_desc(dic):
+    lst = []
+    lst.append(str(dic['o1'])+'-'+str(dic['o2'])+'='+str(dic['result']))
+    lst.append(str(dic['type']))
+    return lst

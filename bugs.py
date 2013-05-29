@@ -214,5 +214,5 @@ def dominancy(found, possible):
 
 #~ out = possible_sheet(operations)
 
-found = subject_sheet_bugs(data[0]['results'], operations)
+#~ found = subject_sheet_bugs(data[0]['results'], operations)
 #~ dom = find_dominant(found, poss_sheet)
