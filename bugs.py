@@ -61,7 +61,7 @@ def bugId(n1, n2, result):
 
     result must be string
     '''
-    bugs = []
+    #~ bugs = []
     bugs_desc = [{'type':'subtraction', 'o1':n1, 'o2':n2, 'result':result}]
     correct = str(int(n1) - int(n2))
     cresult = clean_rslt(result)
@@ -86,9 +86,9 @@ def bugId(n1, n2, result):
                         #check for incomplete sub
                         and int(result2) == int(n1_2) - int(n2_2)
                         and int(result2) - int(n1_2) <= mental_limit):
-                            bugs.append(['incomplete'])
+                            #~ bugs.append(['incomplete'])
                             #and skip next column
-                            bugs.append(['incomplete'])
+                            #~ bugs.append(['incomplete'])
                             i += 1
                             bugs_desc.append({'pos':pos, 'type':'incomplete',
                             'o1':n1_2, 'o2':n2_2, 'result':result2})
@@ -97,51 +97,62 @@ def bugId(n1, n2, result):
                         d2 = int(n2[pos])
                         #look for bug in single column "pos"
                         bug_type = bugId_perDigit(d1, d2, result[pos])
-                        bugs.append(bug_type)
+                        #~ bugs.append(bug_type)
                         bugs_desc.append({'pos':pos, 'type':bug_type,
                             'o1':d1, 'o2':d2, 'result':result[pos]})
                 else :        #then search for 'blank' bugs
                     d2 = int(n2[-min_col])
                     bug = bugId_perDigit(d1, d2, result[pos])
                     if bug != ['unexplained'] :         #spot 'blank' bug only if interesting
-                        bugs.append(['blank', bug])           #/!\blank bug associé avec d'autres bugs /!\
+                        #~ bugs.append(['blank', bug])           #/!\blank bug associé avec d'autres bugs /!\
                         bugs_desc.append({'pos':pos, 'type':['blank', bug],
                             'o1':d1, 'o2':d2, 'result':result[pos]})
                     else :
-                        bugs.append(bug)
+                        #~ bugs.append(bug)
                         bugs_desc.append({'pos':pos, 'type':bug,
                             'o1':d1, 'o2':d2, 'result':result[pos]})
             else :
-                bugs.append(['over'])           #subject has written too many digits
+                #~ bugs.append(['over'])           #subject has written too many digits
                 bugs_desc.append({'pos':pos, 'type':'over',
                     'result':result[pos]})
             #process next column
             i += 1
     else :
-        bugs.append(['correct'])        #subject is correct (operation level)
+        #~ bugs.append(['correct'])        #subject is correct (operation level)
+        bugs_desc.append({'type':'correct', 'o1':n1, 'o2':n2, 'result':result})
     #~ print n1,n2,result,bugs
-    return bugs, bugs_desc
+    return bugs_desc
 
 def possible_bugs(n1, n2) :
     '''give potential bugs for a subtraction
+    n1 - n2
+    parameters should be of string type
     '''
     max_col = max(len(n1),len(n2))
     #start at -1 (corresponding to 'X' : empty response)
     r = -1
     result = completeX(max_col, '')
     #list of independent empty lists
-    poss_bugs = [ [] for i in range(max_col) ]
+    #~ poss_bugs = [ [] for i in range(max_col)]
+    poss_bugs = []
     while len(result) <= max_col :
         #~ print poss_bugs, max_col, result
-        grp_bugs = bugId(n1, n2, result)[0]
-        for i, bugs in enumerate(grp_bugs) :
-            #~ print i, bugs
-            for bug in bugs :
-                if (bug not in poss_bugs[i]
-                and bug != 'correct'
-                and bug != 'unexplained') :
-                    #~ print result
-                    poss_bugs[i].append(bug)
+        grp_bugs = bugId(n1, n2, result)
+        #~ print grp_bugs
+        for bug in grp_bugs :
+            if 'pos' in bug :
+                add = True
+                #not interested by correct column sub or unexplained production
+                if bug['type'] in ([], ['unexplained']) :
+                    add = False
+                #keep only different bugs on a same position
+                for pbug in poss_bugs :
+                    if (bug['pos'] ==  pbug['pos']
+                    and bug['type'] == pbug['type']):
+                        add = False
+                if add:
+                    poss_bugs.append({'pos':bug['pos'], 'type':bug['type']})
+
         r += 1
         result = completeX(max_col, str(r))
     return poss_bugs
@@ -159,28 +170,23 @@ def subject_sheet_bugs(subject_data, operations) :
     '''
     bugs = []
     for i, (n1, n2) in enumerate(operations) :
-        bugs.append(bugId(n1, n2, subject_data[i])[0])
+        bugs.append(bugId(n1, n2, subject_data[i]))
     return bugs
-
-def find_dominant(found, possible):
-    '''Returns "dominant bugs" in subject results (found) according to
-    possible bugs (possible)
-
-    NOT YET !!
-    '''
-    score = 0
-    for i, op_bugs in enumerate(found) :
-        for col_bug in possible[i] :
-            if col_bug in op_bugs :
-                print op_bugs, col_bug
-                score += 1
-    print score
-    return score
 
 def dominancy(found, possible):
     '''Returns a dominancy score for found bugs
     '''
-    pass
+    print len(found[0]), len(possible[0])
+    print found[0]
+    print possible[0]
+    #keep only list representation of bugs
+    #~ found = [found[i][0] for i in range(len(found))]
+    for op_bugs in possible :
+        for col_bug in op_bugs :
+            if col_bug in possible :
+                #~ print col_bug
+                pass
+
 
 #~ count_correct(data, ref)
 #~ print len(data)
@@ -211,8 +217,9 @@ def dominancy(found, possible):
     #~ print bugId(operations[i][0], operations[i][1], result)
 
 
-
+#~ print possible_bugs('647','45')
 #~ out = possible_sheet(operations)
 
-#~ found = subject_sheet_bugs(data[0]['results'], operations)
-#~ dom = find_dominant(found, poss_sheet)
+found = subject_sheet_bugs(data[0]['results'], operations)
+
+dom = dominancy(found, poss_sheet)

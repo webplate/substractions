@@ -25,7 +25,12 @@ comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
 
 PRÉSENTATION
 illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
+rep des soustractions incomplètes avec autre couleur
 
 SDL
 réussir à rester idle tant que pas d'events...
-mettre le background pré-généré dans une surface (les fonctions draw devraient retourner une surface au lieu d'écrire)
+-> mettre le background pré-généré dans une surface (les fonctions draw devraient retourner une surface au lieu d'écrire)
+passer l'appli dans une classe : http://pygametutorials.wikidot.com/tutorials-basic
+
+GTK
+file chooser gtk3

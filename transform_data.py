@@ -41,6 +41,16 @@ def canBeInteger(string):
 
 def format_bug_desc(dic):
     lst = []
-    lst.append(str(dic['o1'])+'-'+str(dic['o2'])+'='+str(dic['result']))
-    lst.append(str(dic['type']))
+    if 'result' in dic and 'type' in dic :
+        if 'o1' in dic and 'o2' in dic :
+            lst.append(str(dic['o1'])+'-'+str(dic['o2'])+'='+str(dic['result']))
+            lst.append(str(dic['type']))
+        else :
+            lst.append('='+str(dic['result']))
+            lst.append(str(dic['type']))
     return lst
+
+#~ def sortedByPosition(dict):
+    #~ keys = dict.keys()
+    #~ keys.sort()
+    #~ return [dict[key] for key in keys]
