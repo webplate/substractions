@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import pprint
+from copy import deepcopy
 from read_data import *
 from transform_data import *
 from precomputed import poss_sheet
@@ -20,13 +21,14 @@ def bugId_perDigit(d1, d2, result):
     d1 and d2 must be integers, result can be integer or string,
     d1,d2 and result should be of length 1
     '''
+    #~ print d1, d2, result
     try :
         r = int(result)
     except ValueError :
         r = result
-    bugs = []
     if d1 - d2 == r :      #no error at column level
-        return bugs
+        return ['correct_col']
+    bugs = []
     if d1 < d2 :
         if d2 - d1 == r :  #inversion grand - petit
             bugs.append('gd-pt')
@@ -61,7 +63,6 @@ def bugId(n1, n2, result):
 
     result must be string
     '''
-    #~ bugs = []
     bugs_desc = [{'type':'subtraction', 'o1':n1, 'o2':n2, 'result':result}]
     correct = str(int(n1) - int(n2))
     cresult = clean_rslt(result)
@@ -74,51 +75,49 @@ def bugId(n1, n2, result):
             pos = -i-1              #explore numbers from right to left (align to right)
             if i < len(n1):            #if result is not longer than operands
                 d1 = int(n1[pos])
-                if i < min_col :            #focus on completed columns
-                    #check for incomplete subs : look only for erroneous
-                    #columns if they're not from incomplete mental subtraction
-                    #for this consider also digit from next column
-                    n1_2 = n1[pos-1:len(n1)+pos+1]
+                #check for incomplete subs : look only for erroneous
+                #columns if they're not from incomplete mental subtraction
+                #for this consider also digit from next column
+                n1_2 = n1[pos-1:len(n1)+pos+1]
+                if i < min_col :    #focus on completed columns
                     n2_2 = n2[pos-1:len(n2)+pos+1]
-                    result2 = cresult[pos-1:len(cresult)+pos+1]
-                    #first operand must be on two columns
-                    if (len(n1_2) == 2 and canBeInteger(result2)
-                        #check for incomplete sub
-                        and int(result2) == int(n1_2) - int(n2_2)
-                        and int(result2) - int(n1_2) <= mental_limit):
-                            #~ bugs.append(['incomplete'])
-                            #and skip next column
-                            #~ bugs.append(['incomplete'])
-                            i += 1
-                            bugs_desc.append({'pos':pos, 'type':'incomplete',
-                            'o1':n1_2, 'o2':n2_2, 'result':result2})
-                    else :
-                        #check for unicolumn bug
-                        d2 = int(n2[pos])
-                        #look for bug in single column "pos"
-                        bug_type = bugId_perDigit(d1, d2, result[pos])
-                        #~ bugs.append(bug_type)
-                        bugs_desc.append({'pos':pos, 'type':bug_type,
+                else :
+                    n2_2 = n2[-min_col]
+                result2 = cresult[pos-1:len(cresult)+pos+1]
+                #first operand must be on two columns
+                if (len(n1_2) == 2 and canBeInteger(result2)
+                    #check for incomplete sub
+                    and int(result2) == int(n1_2) - int(n2_2)
+                    and int(result2) - int(n1_2) <= mental_limit):
+                        bugs_desc.append({'pos':pos, 'type':'incomplete',
+                        'o1':n1_2, 'o2':n2_2, 'result':result2})
+                if i < min_col :            #focus on completed columns
+                    #check for unicolumn bug
+                    d2 = int(n2[pos])
+                    #look for bug in single column "pos"
+                    bug_types = bugId_perDigit(d1, d2, result[pos])
+                    for bt in bug_types :
+                        bugs_desc.append({'pos':pos, 'type':bt,
                             'o1':d1, 'o2':d2, 'result':result[pos]})
                 else :        #then search for 'blank' bugs
                     d2 = int(n2[-min_col])
-                    bug = bugId_perDigit(d1, d2, result[pos])
-                    if bug != ['unexplained'] :         #spot 'blank' bug only if interesting
-                        #~ bugs.append(['blank', bug])           #/!\blank bug associé avec d'autres bugs /!\
-                        bugs_desc.append({'pos':pos, 'type':['blank', bug],
+                    bug_types = bugId_perDigit(d1, d2, result[pos])
+                    if bug_types != ['unexplained'] :         #spot 'blank' bug only if interesting
+                        #/!\blank bug associé avec d'autres bugs /!\
+                        for bt in bug_types :
+                            bugs_desc.append({'pos':pos, 'type':['blank', bt],
                             'o1':d1, 'o2':d2, 'result':result[pos]})
                     else :
-                        #~ bugs.append(bug)
-                        bugs_desc.append({'pos':pos, 'type':bug,
+                        bugs_desc.append({'pos':pos, 'type':bug_types[0],
                             'o1':d1, 'o2':d2, 'result':result[pos]})
             else :
-                #~ bugs.append(['over'])           #subject has written too many digits
+                #subject has written too many digits
                 bugs_desc.append({'pos':pos, 'type':'over',
                     'result':result[pos]})
             #process next column
             i += 1
     else :
-        #~ bugs.append(['correct'])        #subject is correct (operation level)
+        #subject is correct (operation level)
         bugs_desc.append({'type':'correct', 'o1':n1, 'o2':n2, 'result':result})
     #~ print n1,n2,result,bugs
     return bugs_desc
@@ -132,8 +131,6 @@ def possible_bugs(n1, n2) :
     #start at -1 (corresponding to 'X' : empty response)
     r = -1
     result = completeX(max_col, '')
-    #list of independent empty lists
-    #~ poss_bugs = [ [] for i in range(max_col)]
     poss_bugs = []
     while len(result) <= max_col :
         #~ print poss_bugs, max_col, result
@@ -142,8 +139,8 @@ def possible_bugs(n1, n2) :
         for bug in grp_bugs :
             if 'pos' in bug :
                 add = True
-                #not interested by correct column sub or unexplained production
-                if bug['type'] in ([], ['unexplained']) :
+                #not interested by unexplained production or correct column
+                if bug['type'] in ('unexplained', 'correct_col') :
                     add = False
                 #keep only different bugs on a same position
                 for pbug in poss_bugs :
@@ -176,36 +173,54 @@ def subject_sheet_bugs(subject_data, operations) :
 def dominancy(found, possible):
     '''Returns a dominancy score for found bugs
     '''
-    print len(found[0]), len(possible[0])
-    print found[0]
-    print possible[0]
-    #keep only list representation of bugs
-    #~ found = [found[i][0] for i in range(len(found))]
-    for op_bugs in possible :
+    #~ pprint.pprint(found[2])
+    #~ pprint.pprint(possible[2])
+    scores = {}
+    for i, op_bugs in enumerate(possible) :
+        fnd_bugs = found[i]
         for col_bug in op_bugs :
-            if col_bug in possible :
-                #~ print col_bug
-                pass
+            #found bugs in the same position
+            in_place = [fnd_bugs[j]['type']
+            for j in range(len(fnd_bugs))
+            if 'pos' in fnd_bugs[j]
+            and fnd_bugs[j]['pos'] == col_bug['pos']]
+
+            t = str(col_bug['type'])
+            #there is a congruent bug
+            if col_bug['type'] in in_place :
+                #~ pprint.pprint(col_bug['type'])
+                if t in scores :
+                    nb_sub, nb_poss = scores[t]
+                    new_score = (nb_sub+1, nb_poss+1)
+                    scores.update({t:new_score})
+                else :
+                    scores.update({t:(0, 1)})
+            #the subject didn't produce this possible bug
+            else :
+                if t in scores :
+                    nb_sub, nb_poss = scores[t]
+                    new_score = (nb_sub, nb_poss+1)
+                    scores.update({t:new_score})
+                else :
+                    scores.update({t:(0, 1)})
+    return scores
 
 
-#~ count_correct(data, ref)
-#~ print len(data)
+#~ print bugId_perDigit(2,9,0)
 
-#~ print bugId_perDigit(9,2,7)
-#~ 
-#~ print bugId('1813','215','1598'), 'correct'
-#~ print bugId('1813','215','1600'), 'pt-gd=0'
-#~ print bugId('1813','215','1700'), 'unexplained'
-#~ print bugId('1813','215','170X')
-#~ print bugId('1813','215',''), 'empty result'
-#~ print bugId('1813','215','070X'), 'test not full col'
-#~ print bugId('647', '45', '706')
-#~ print bugId('1813','215','11598'), 'over'
-#~ print bugId('1813','215','001598'), 'zero on left'
-#~ print bugId('562','3','259'), 'incomplete sub : should only see blank bug as 62 - 3 = 59'
-#~ print bugId('562','24','542'), 'incomplete sub (56-2=54)'
-#~ print bugId('885','205','600'), 'should not show incomplete, should be length 3'
-#~ print bugId('8888','11','8700'), 'incomplete and blank'
+#~ pprint.pprint(bugId('1813','215','1598'))#, 'correct'
+#~ pprint.pprint(bugId('1813','215','1600'))#, 'pt-gd=0'
+#~ pprint.pprint(bugId('1813','215','1700'))#, 'unexplained'
+#~ pprint.pprint(bugId('1813','215','170X'))#
+#~ pprint.pprint(bugId('1813','215',''))#, 'empty result'
+#~ pprint.pprint(bugId('1813','215','070X'))#, 'test not full col'
+#~ pprint.pprint(bugId('647', '45', '706'))#
+#~ pprint.pprint(bugId('1813','215','11598'))#, 'over'
+#~ pprint.pprint(bugId('1813','215','001598'))#, 'zero on left'
+#~ pprint.pprint(bugId('562','3','259'))#, 'incomplete sub : should only see blank bug as 62 - 3 = 59'
+#~ pprint.pprint(bugId('562','24','542'))#, 'incomplete sub (56-2=54)'
+#~ pprint.pprint(bugId('885','205','600'))#, 'should not show incomplete, should be length 3'
+#~ pprint.pprint(bugId('8888','11','8700'))#, 'incomplete and blank'
 
 
 #~ for subject in data:
@@ -217,9 +232,10 @@ def dominancy(found, possible):
     #~ print bugId(operations[i][0], operations[i][1], result)
 
 
-#~ print possible_bugs('647','45')
-#~ out = possible_sheet(operations)
+#~ pprint.pprint(possible_bugs('647','45'))
+#~ pprint.pprint(possible_sheet(operations))
 
-found = subject_sheet_bugs(data[0]['results'], operations)
+#~ found = subject_sheet_bugs(data[default_sub]['results'], operations)
 
-dom = dominancy(found, poss_sheet)
+#~ dom = dominancy(found, poss_sheet)
+#~ pprint.pprint(dom)

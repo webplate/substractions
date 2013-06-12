@@ -35,9 +35,9 @@ def draw_sub(pos, n1, n2, result=''):
     #draw markers
     for desc in bugs_desc:
         if desc['type'] != 'subtraction' and desc['type'] != 'correct':
-            if desc['type'] == [] :
+            if desc['type'] == 'correct_col' :
                 color = correct_col_color
-            elif desc['type'] == ['unexplained'] or desc['type'] == 'over':
+            elif desc['type'] == 'unexplained' or desc['type'] == 'over':
                 color = unexplained_color
             else :
                 color = bug_color
@@ -49,7 +49,7 @@ def draw_sub(pos, n1, n2, result=''):
             else :
                 marker = draw_marker(color)
                 gap = width + desc['pos']*txt_size/2
-                surf.blit(marker, (gap, 0))
+                surf.blit(marker, (gap, txt_size/5))
             #where are we drawing the marker on the display ?
             #align to sheet
             left, top = sheet_offset
@@ -129,15 +129,25 @@ while running:
             print float(pygame.time.get_ticks() - t0)/frame, "msec/frame"
             running = False
         elif event.type == KEYDOWN and event.key == switch_key :
-            print 'down'
+            candidate = raw_input('Enter subject id (number) : ')
+            if bugs.canBeInteger(candidate) :
+                candidate =  int(candidate)
+                if candidate < len(bugs.data) :
+                    subject_id = candidate
+                else :
+                    print 'No such subject in '+bugs.dataPath
+            else :
+                print 'Enter a number...'
 
     #EVOLUTION
     if subject_id != curr_subject:
+        #clear fly_overs
+        fly_overs = []
         #recompute background sheet only if needed
         sheet = draw_sheet(sheet_dims, bugs.operations, bugs.data[subject_id]['results'])
         #compute dominancies of subject
         found_bugs = bugs.subject_sheet_bugs(bugs.data[subject_id]['results'], bugs.operations)
-        dom = bugs.dominancy(found_bugs, bugs.poss_sheet)
+        scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
         #~ print found_bugs
         curr_subject = subject_id
 
@@ -148,15 +158,27 @@ while running:
     #show sidenotes
     coord = note_f.render(str((m_x,m_y)), True, txt_color)
     display.blit(coord, (10,10))
+    line_nb = 0
+    #show subject id
+    desc = note_f.render('Subject '+str(subject_id), True, txt_color)
+    display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+    line_nb += 1
     #show info from fly_overs
     for section in fly_overs:
         top, right, bottom, left = section['box']
         if m_x<right and m_x>left and m_y>top and m_y<bottom:
             #~ print section['desc']
             pp = bugs.format_bug_desc(section['desc'])
-            for i,line in enumerate(pp):
+            for line in pp:
                 desc = note_f.render(line, True, txt_color)
-                display.blit(desc, (10,10*(3+i)))
+                display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+                line_nb += 1
+    line_nb += 2
+    for key in iter(scores):
+        desc = key+str(scores[key])
+        desc = note_f.render(desc, True, txt_color)
+        display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+        line_nb += 1
     #flip every 16ms only (for smooth animation, particularly on linux)
     if pygame.time.get_ticks() > last_flip + 16 :
         last_flip = pygame.time.get_ticks()

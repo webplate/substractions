@@ -48,9 +48,5 @@ def format_bug_desc(dic):
         else :
             lst.append('='+str(dic['result']))
             lst.append(str(dic['type']))
+    lst.append('')
     return lst
-
-#~ def sortedByPosition(dict):
-    #~ keys = dict.keys()
-    #~ keys.sort()
-    #~ return [dict[key] for key in keys]
