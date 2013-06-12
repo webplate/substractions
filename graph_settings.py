@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+#bug abbreviations
+short_types = {'gd-pt':'gp',
+'pt-gd=gd':'pg',
+'pt-gd=pt':'pp',
+'pt-gd=?':'p?',
+'pt-gd=0':'p0',
+'N-0=0':'N0',
+'N-N=N':'NN',
+'0-N=0':'00',
+'0-N=N':'0N',
+"['blank', 'pt-gd=?']":'bp?',
+"['blank', 'pt-gd=pt']":'bpp',
+"['blank', 'N-N=N']":'bNN',
+"['blank', '0-N=0']":'b00',
+"['blank', '0-N=N']":'b0N',
+"['blank', 'pt-gd=0']":'bp0',
+"['blank', 'correct_col']":'bcc',
+"['blank', 'pt-gd=gd']":'bpg',
+"['blank', 'gd-pt']":'bgp',
+"['blank', 'N-0=0']":'b0N',
+'incomplete':'ic'}
+
+#bug conventionnal presentation order
+types_order = ['gd-pt',
+'pt-gd=gd',
+'pt-gd=pt',
+'pt-gd=?',
+'pt-gd=0',
+'N-0=0',
+'N-N=N',
+'0-N=0',
+'0-N=N',
+"['blank', 'correct_col']",
+"['blank', 'gd-pt']",
+"['blank', 'pt-gd=gd']",
+"['blank', 'pt-gd=pt']",
+"['blank', 'pt-gd=?']",
+"['blank', 'pt-gd=0']",
+"['blank', 'N-0=0']",
+"['blank', 'N-N=N']",
+"['blank', '0-N=0']",
+"['blank', '0-N=N']",
+'incomplete']
