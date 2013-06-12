@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import platform, os, pygame
 from display_settings import *
-import bugs
+import bugs, graph
 
 def draw_marker(color, size=1):
     width, height = size*txt_size/2, 3*txt_inter
@@ -138,6 +138,8 @@ while running:
                     print 'No such subject in '+bugs.dataPath
             else :
                 print 'Enter a number...'
+        elif event.type == KEYDOWN and event.key == graph_key :
+            graph.plot_scores(scores)
 
     #EVOLUTION
     if subject_id != curr_subject:
@@ -171,12 +173,13 @@ while running:
                 desc = note_f.render(line, True, txt_color)
                 display.blit(desc, (note_inter,note_inter*(3+line_nb)))
                 line_nb += 1
-    line_nb += 2
-    for key in iter(scores):
-        desc = key+str(scores[key])
-        desc = note_f.render(desc, True, txt_color)
-        display.blit(desc, (note_inter,note_inter*(3+line_nb)))
-        line_nb += 1
+    #show dominancy scores
+    #~ line_nb += 2
+    #~ for key in iter(scores):
+        #~ desc = key+str(scores[key])
+        #~ desc = note_f.render(desc, True, txt_color)
+        #~ display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+        #~ line_nb += 1
     #flip every 16ms only (for smooth animation, particularly on linux)
     if pygame.time.get_ticks() > last_flip + 16 :
         last_flip = pygame.time.get_ticks()

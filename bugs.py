@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pprint
+#~ import pprint
 from read_data import *
 from transform_data import *
 from precomputed import poss_sheet
