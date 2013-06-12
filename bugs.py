@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import pprint
-from copy import deepcopy
 from read_data import *
 from transform_data import *
 from precomputed import poss_sheet
@@ -119,7 +118,6 @@ def bugId(n1, n2, result):
     else :
         #subject is correct (operation level)
         bugs_desc.append({'type':'correct', 'o1':n1, 'o2':n2, 'result':result})
-    #~ print n1,n2,result,bugs
     return bugs_desc
 
 def possible_bugs(n1, n2) :
@@ -133,9 +131,7 @@ def possible_bugs(n1, n2) :
     result = completeX(max_col, '')
     poss_bugs = []
     while len(result) <= max_col :
-        #~ print poss_bugs, max_col, result
         grp_bugs = bugId(n1, n2, result)
-        #~ print grp_bugs
         for bug in grp_bugs :
             if 'pos' in bug :
                 add = True
@@ -173,8 +169,6 @@ def subject_sheet_bugs(subject_data, operations) :
 def dominancy(found, possible):
     '''Returns a dominancy score for found bugs
     '''
-    #~ pprint.pprint(found[2])
-    #~ pprint.pprint(possible[2])
     scores = {}
     for i, op_bugs in enumerate(possible) :
         fnd_bugs = found[i]
