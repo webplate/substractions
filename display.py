@@ -148,7 +148,6 @@ while running:
         #compute dominancies of subject
         found_bugs = bugs.subject_sheet_bugs(bugs.data[subject_id]['results'], bugs.operations)
         scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
-        #~ print found_bugs
         curr_subject = subject_id
 
     #RENDER
@@ -167,7 +166,6 @@ while running:
     for section in fly_overs:
         top, right, bottom, left = section['box']
         if m_x<right and m_x>left and m_y>top and m_y<bottom:
-            #~ print section['desc']
             pp = bugs.format_bug_desc(section['desc'])
             for line in pp:
                 desc = note_f.render(line, True, txt_color)
