@@ -166,7 +166,7 @@ def subject_sheet_bugs(subject_data, operations) :
         bugs.append(bugId(n1, n2, subject_data[i]))
     return bugs
 
-def dominancy(found, possible):
+def dominancy(found, possible) :
     '''Returns a dominancy score for found bugs
     '''
     scores = {}

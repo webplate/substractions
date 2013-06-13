@@ -90,6 +90,16 @@ def draw_sheet(dimensions, operations, results):
             surf.blit(sub_surf, pos)
     return surf
 
+#Precompute stats on whole dataset
+all_sc = {} #dominancy scores for all
+for subject in bugs.data :
+    found_bugs = bugs.subject_sheet_bugs(subject['results'], bugs.operations)
+    sc = bugs.dominancy(found_bugs, bugs.poss_sheet)
+    if all_sc == {} :
+        all_sc = sc
+    for key in sc :
+        all_sc[key] = (sc[key][0]+all_sc[key][0], sc[key][1]+all_sc[key][1])
+
 #Set graphic driver according to platform
 system = platform.system()
 if system == 'Windows':    # tested with Windows 7
@@ -107,7 +117,7 @@ else:
 
 #~ pygame.event.clear()        #clear event list to ignore previous pressures
 
-#load  fonts
+#load fonts
 font = pygame.font.Font(txt_font, txt_size) #name, size
 note_f = pygame.font.Font(note_font, note_size)
 
@@ -126,7 +136,7 @@ while running:
     for event in pygame.event.get():
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate
-            print float(pygame.time.get_ticks() - t0)/frame, "msec/frame"
+            #~ print float(pygame.time.get_ticks() - t0)/frame, "msec/frame"
             running = False
         elif event.type == KEYDOWN and event.key == switch_key :
             candidate = raw_input('Enter subject id (number) : ')
@@ -139,10 +149,11 @@ while running:
             else :
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == graph_key :
-            graph.plot_scores(scores)
+            graph.plot_scores(scores, all_sc)
+            graph.plt.show()
 
     #EVOLUTION
-    if subject_id != curr_subject:
+    if subject_id != curr_subject :
         #clear fly_overs
         fly_overs = []
         #recompute background sheet only if needed
