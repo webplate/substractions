@@ -25,11 +25,10 @@ def plot_scores(scores, all_scores):
     '''
     freqs, types, ind = freq_by_type(scores)
     all_freqs = freq_by_type(all_scores)[0]
-    #~ scores = [ (float(scores[k][0]) / scores[k][1]) for k in scores ]
-    #grey barplot: frequencies of subject
-    plt.bar(ind, freqs, facecolor='#777777')
     #mean frequencies for all
-    plt.bar(ind, all_freqs, facecolor='#333333', align='center')
+    plt.bar(ind, all_freqs, facecolor='#333333')
+    #grey barplot: frequencies of subject
+    plt.bar(ind, freqs, facecolor='#777777', align='center')
     
     plt.xlabel('Bug types')
     plt.ylabel('Frequency of bugs')
