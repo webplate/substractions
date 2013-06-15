@@ -150,7 +150,7 @@ while running:
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == graph_key :
             graph.plot_scores(scores, all_sc)
-            graph.plt.show()
+            graph.plt.show(block=True)
 
     #EVOLUTION
     if subject_id != curr_subject :
