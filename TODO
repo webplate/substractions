@@ -8,8 +8,8 @@
 ot bugs:
 addition au lieu de soustraction
 N-M=N
-Comment gérer le recopiage de la première ligne ?
-
+Comment gérer le recopiage de la première ligne ?...détecter les 'espaces' les traiter dans bugId per digit et considérer le recopiage en priorité sur le 'blank bug'
+remplacer les import * par r_data et t_data...
 détecter dominant
 aller jusqu'aux simulations !!
 tolérance +-1
@@ -34,3 +34,10 @@ passer l'appli dans une classe : http://pygametutorials.wikidot.com/tutorials-ba
 
 GTK
 file chooser gtk3
+
+
+///
+
+
+-affichage du profilde dominance moyen en comparaison avec le profil du sujet
+

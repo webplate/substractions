@@ -35,7 +35,7 @@ def draw_sub(pos, n1, n2, result=''):
     #draw markers
     for desc in bugs_desc:
         if desc['type'] != 'subtraction' and desc['type'] != 'correct':
-            if desc['type'] == 'correct_col' :
+            if desc['type'] in ('correct_col', 'copy')  :
                 color = correct_col_color
             elif desc['type'] == 'unexplained' or desc['type'] == 'over':
                 color = unexplained_color
