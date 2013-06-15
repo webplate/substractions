@@ -114,18 +114,18 @@ def bugId(n1, n2, result):
                 #check for unicolumn bug
                 d1 = n1[pos]
                 d2 = n2[pos]
+                #look for bug in single column "pos"
+                bug_types = bugId_perDigit(d1, d2, result[pos])
                 #there could be a blank bug
                 if d2 == 'X' and bug_types != ['copy'] :
                     d2_shifted = n2[-min_col]
-                    bug_types = bugId_perDigit(d1, d2_shifted, result[pos])
+                    bug_types_s = bugId_perDigit(d1, d2_shifted, result[pos])
                     #~ print explained_pos, pos
-                    if bug_types != ['unexplained'] :         #spot 'blank' bug only if interesting
-                        for bt in bug_types :
+                    if bug_types_s != ['unexplained'] :         #spot 'blank' bug only if interesting
+                        for bt in bug_types_s :
                             bugs_desc.append({'pos':pos, 'type':['blank', bt],
                             'o1':d1, 'o2':d2_shifted, 'result':result[pos]})
                             explained_pos.append(pos)
-                #look for bug in single column "pos"
-                bug_types = bugId_perDigit(d1, d2, result[pos])
                 #add unicolumn bugs
                 for bt in bug_types :
                     #ignore unexplained bugs if they're explained otherwise
