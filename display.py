@@ -172,12 +172,13 @@ while running:
         #create profile of subject (most dominant bugs)
         dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
         #compute simulation according to profile
-        simul_sheet = bugs.simul(dom_bugs, operations)
+        simul_sheet = bugs.simul(dom_bugs, bugs.poss_sheet)
         curr_subject = subject_id
 
     #RENDER
     display.fill(bg_color)
     display.blit(sheet, sheet_offset)
+    display.blit(sheet, simul_sheet_offset)
     m_x, m_y= pygame.mouse.get_pos()
     #show sidenotes
     coord = note_f.render(str((m_x,m_y)), True, txt_color)
