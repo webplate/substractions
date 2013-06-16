@@ -172,7 +172,7 @@ while running:
         #create profile of subject (most dominant bugs)
         dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
         #compute simulation according to profile
-        simul_sheet = bugs.simul(dom_bugs, operations)
+        simul_sheet = bugs.simul(dom_bugs, bugs.poss_sheet)
         curr_subject = subject_id
 
     #RENDER
