@@ -45,3 +45,5 @@ file chooser gtk3
 
 -réorganisation du code pour une meilleure organisation des namespaces
 
+-réorganisation préliminaire pour mieux contrôler le chargement des données expérimentales (pas automatiquement à l'import)
+

@@ -90,10 +90,15 @@ def draw_sheet(dimensions, operations, results):
             surf.blit(sub_surf, pos)
     return surf
 
+#Load experimental data of subjects and protocol
+data, ref, operations = bugs.r_d.load_data(bugs.parameters.dataPath,
+bugs.parameters.subject_pattern, bugs.parameters.reference,
+bugs.parameters.subtractions)
+
 #Precompute stats on whole dataset
 all_sc = {} #dominancy scores for all
-for subject in bugs.r_d.data :
-    found_bugs = bugs.subject_sheet_bugs(subject['results'], bugs.r_d.operations)
+for subject in data :
+    found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
     sc = bugs.dominancy(found_bugs, bugs.poss_sheet)
     if all_sc == {} :
         all_sc = sc
@@ -122,7 +127,7 @@ font = pygame.font.Font(txt_font, txt_size) #name, size
 note_f = pygame.font.Font(note_font, note_size)
 
 #Preset for startup sheet
-subject_id = bugs.r_d.parameters.default_sub
+subject_id = bugs.parameters.default_sub
 curr_subject = -1
 #list to specify 'mouse fly-overs'
 fly_overs = [] 
@@ -142,7 +147,7 @@ while running:
             candidate = raw_input('Enter subject id (number) : ')
             if bugs.t_d.canBeInteger(candidate) :
                 candidate =  int(candidate)
-                if candidate < len(bugs.r_d.data) :
+                if candidate < len(data) :
                     subject_id = candidate
                 else :
                     print 'No such subject in '+bugs.r_d.parameters.dataPath
@@ -157,9 +162,9 @@ while running:
         #clear fly_overs
         fly_overs = []
         #recompute background sheet only if needed
-        sheet = draw_sheet(sheet_dims, bugs.r_d.operations, bugs.r_d.data[subject_id]['results'])
+        sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'])
         #compute dominancies of subject
-        found_bugs = bugs.subject_sheet_bugs(bugs.r_d.data[subject_id]['results'], bugs.r_d.operations)
+        found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
         scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
         curr_subject = subject_id
 

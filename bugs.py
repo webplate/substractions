@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pprint
 import read_data as r_d
 import transform_data as t_d
+import parameters
 from precomputed import poss_sheet
 
 def count_correct(data, ref):
@@ -76,7 +76,7 @@ def bugId_perDouble(n1, n2, result, pos):
         and t_d.canBeInteger(n2_2) and t_d.canBeInteger(n1_2)
         #check for incomplete sub
         and int(result2) == int(n1_2) - int(n2_2)
-        and int(result2) - int(n1_2) <= r_d.parameters.mental_limit):
+        and int(result2) - int(n1_2) <= parameters.mental_limit):
             bugs_desc.append({'pos':pos, 'type':'incomplete',
             'o1':n1_2, 'o2':n2_2, 'result':result2})
             explained_pos.append(pos)
@@ -227,6 +227,7 @@ def dominancy(found, possible) :
 #~ print bugId_perDigit(2,9,0)
 
 #TEST SUITE :
+#~ import pprint
 #~ pprint.pprint(bugId('1813','215','1598'))#, 'correct'
 #~ pprint.pprint(bugId('1813','215','1600'))#, 'pt-gd=0'
 #~ pprint.pprint(bugId('1813','215','1700'))#, 'unexplained'

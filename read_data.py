@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import csv, sys, os, re
-import parameters
+#~ import parameters
 
 def read_datafile(filename):
     '''Return content from datafile of subject'''
@@ -29,7 +29,7 @@ def list_files(path, pattern):
     for dirPath,dirNames,filName in os.walk(path):
         for theFile in filName:
             #list only subject datafiles
-            if re.match(parameters.subject_pattern, theFile) :
+            if re.match(pattern, theFile) :
                 files.append(os.path.join(dirPath,theFile))
     return files
 
@@ -37,7 +37,7 @@ def data_set(path, pattern):
     '''Returns a list of dictionnaries, one for each subject
     '''
     data = []
-    files_p = list_files(parameters.dataPath, pattern)
+    files_p = list_files(path, pattern)
     for p in files_p :
         results = read_datafile(p)
         #keep only non empty datafiles
@@ -62,13 +62,19 @@ def read_subfile(filename):
             sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
     return out
 
-#HACK to inform of wrong datafiles
-try:
-    data = data_set(parameters.dataPath, parameters.subject_pattern)
-    ref = read_datafile(parameters.dataPath+parameters.reference)
-    operations = read_subfile(parameters.dataPath+parameters.subtractions)
-except:
-    print "Wrong datapaths :"
-    print parameters.dataPath+parameters.reference
-    print parameters.dataPath+parameters.subtractions
-    print "set these in parameters.py"
+def load_data(dataPath, subject_pattern, reference, subtractions) :
+    #HACK to inform of wrong datafiles
+    #~ try:
+        #~ data = data_set(dataPath, subject_pattern)
+        #~ ref = read_datafile(dataPath+reference)
+        #~ operations = read_subfile(dataPath+subtractions)
+        #~ return data, ref, operations
+    #~ except:
+        #~ print "Wrong datapaths :"
+        #~ print dataPath+reference
+        #~ print dataPath+subtractions
+        #~ print "set these in parameters.py"
+    data = data_set(dataPath, subject_pattern)
+    ref = read_datafile(dataPath+reference)
+    operations = read_subfile(dataPath+subtractions)
+    return data, ref, operations
