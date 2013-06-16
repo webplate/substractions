@@ -255,6 +255,7 @@ def dominancy(found, possible) :
 
 
 #~ pprint.pprint(possible_bugs('647','45'))
+#~ data, ref, operations = r_d.load_data(parameters.dataPath,parameters.subject_pattern,parameters.reference,parameters.subtractions)
 #~ pprint.pprint(possible_sheet(operations))
 
 #~ found = subject_sheet_bugs(data[default_sub]['results'], operations)

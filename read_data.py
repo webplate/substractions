@@ -64,17 +64,13 @@ def read_subfile(filename):
 
 def load_data(dataPath, subject_pattern, reference, subtractions) :
     #HACK to inform of wrong datafiles
-    #~ try:
-        #~ data = data_set(dataPath, subject_pattern)
-        #~ ref = read_datafile(dataPath+reference)
-        #~ operations = read_subfile(dataPath+subtractions)
-        #~ return data, ref, operations
-    #~ except:
-        #~ print "Wrong datapaths :"
-        #~ print dataPath+reference
-        #~ print dataPath+subtractions
-        #~ print "set these in parameters.py"
-    data = data_set(dataPath, subject_pattern)
-    ref = read_datafile(dataPath+reference)
-    operations = read_subfile(dataPath+subtractions)
-    return data, ref, operations
+    try:
+        data = data_set(dataPath, subject_pattern)
+        ref = read_datafile(dataPath+reference)
+        operations = read_subfile(dataPath+subtractions)
+        return data, ref, operations
+    except:
+        print "Wrong datapaths :"
+        print dataPath+reference
+        print dataPath+subtractions
+        print "set these in parameters.py"

@@ -4,8 +4,11 @@ import platform, os, pygame
 from display_settings import *
 import bugs, graph
 
-def draw_marker(color, size=1):
-    width, height = size*txt_size/2, 3*txt_inter
+def draw_marker(color, size=1, truncate=False):
+    if truncate :
+        width, height = size*txt_size/2, txt_size/5
+    else :
+        width, height = size*txt_size/2, 3*txt_inter
     marker = pygame.Surface((width,height), flags=SRCALPHA)
     marker.fill(color)
     return marker
@@ -43,7 +46,7 @@ def draw_sub(pos, n1, n2, result=''):
                 color = bug_color
             if desc['type'] == 'incomplete' :
                 #put markers on both columns of incomplete sub
-                marker = draw_marker(incomplete_color, size=2)
+                marker = draw_marker(incomplete_color, size=2, truncate=True)
                 gap = width + (desc['pos']-1)*txt_size/2
                 surf.blit(marker, (gap, 0))
             else :
