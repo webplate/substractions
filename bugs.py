@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import pprint
-from read_data import *
-from transform_data import *
+import read_data as r_d
+import transform_data as t_d
 from precomputed import poss_sheet
 
 def count_correct(data, ref):
@@ -22,7 +22,7 @@ def bugId_perDigit(d1, d2, r):
     '''
     #~ print d1, d2, result
     bugs = []
-    if canBeInteger(r) and canBeInteger(d1) and canBeInteger(d2) :
+    if t_d.canBeInteger(r) and t_d.canBeInteger(d1) and t_d.canBeInteger(d2) :
         r = int(r)
         d1 = int(d1)
         d2 = int(d2)
@@ -72,11 +72,11 @@ def bugId_perDouble(n1, n2, result, pos):
     if len(n2_2) > 1 and n2_2[0] == 'X' :
         n2_2 = n2_2[1]
     #first operand must be on two columns
-    if (len(n1_2) > 1 and canBeInteger(result2)
-        and canBeInteger(n2_2) and canBeInteger(n1_2)
+    if (len(n1_2) > 1 and t_d.canBeInteger(result2)
+        and t_d.canBeInteger(n2_2) and t_d.canBeInteger(n1_2)
         #check for incomplete sub
         and int(result2) == int(n1_2) - int(n2_2)
-        and int(result2) - int(n1_2) <= mental_limit):
+        and int(result2) - int(n1_2) <= r_d.parameters.mental_limit):
             bugs_desc.append({'pos':pos, 'type':'incomplete',
             'o1':n1_2, 'o2':n2_2, 'result':result2})
             explained_pos.append(pos)
@@ -94,14 +94,14 @@ def bugId(n1, n2, result):
     '''
     bugs_desc = [{'type':'subtraction', 'o1':n1, 'o2':n2, 'result':result}]
     correct = str(int(n1) - int(n2))
-    cresult = clean_rslt(result)
+    cresult = t_d.clean_rslt(result)
     if cresult != correct :     #look for bugs only if erroneous result
         max_col = max(len(n1),len(n2),len(result))  #how many colons in the subtraction ?
         max_oper = max(len(n1),len(n2))
         min_col = min(len(n1),len(n2),len(result))
-        result = completeX(max_col, result)
-        n1 = completeX(max_col, n1)
-        n2 = completeX(max_col, n2)
+        result = t_d.completeX(max_col, result)
+        n1 = t_d.completeX(max_col, n1)
+        n2 = t_d.completeX(max_col, n2)
         explained_pos = []
         i = 0
         while i < max_col :
@@ -152,7 +152,7 @@ def possible_bugs(n1, n2) :
     max_col = max(len(n1),len(n2))
     #start at -1 (corresponding to 'X' : empty response)
     r = -1
-    result = completeX(max_col, '')
+    result = t_d.completeX(max_col, '')
     poss_bugs = []
     while len(result) <= max_col :
         grp_bugs = bugId(n1, n2, result)
@@ -171,7 +171,7 @@ def possible_bugs(n1, n2) :
                     poss_bugs.append({'pos':bug['pos'], 'type':bug['type']})
 
         r += 1
-        result = completeX(max_col, str(r))
+        result = t_d.completeX(max_col, str(r))
     return poss_bugs
 
 def possible_sheet(sheet) :

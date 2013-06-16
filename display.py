@@ -92,8 +92,8 @@ def draw_sheet(dimensions, operations, results):
 
 #Precompute stats on whole dataset
 all_sc = {} #dominancy scores for all
-for subject in bugs.data :
-    found_bugs = bugs.subject_sheet_bugs(subject['results'], bugs.operations)
+for subject in bugs.r_d.data :
+    found_bugs = bugs.subject_sheet_bugs(subject['results'], bugs.r_d.operations)
     sc = bugs.dominancy(found_bugs, bugs.poss_sheet)
     if all_sc == {} :
         all_sc = sc
@@ -122,7 +122,7 @@ font = pygame.font.Font(txt_font, txt_size) #name, size
 note_f = pygame.font.Font(note_font, note_size)
 
 #Preset for startup sheet
-subject_id = bugs.default_sub
+subject_id = bugs.r_d.parameters.default_sub
 curr_subject = -1
 #list to specify 'mouse fly-overs'
 fly_overs = [] 
@@ -140,12 +140,12 @@ while running:
             running = False
         elif event.type == KEYDOWN and event.key == switch_key :
             candidate = raw_input('Enter subject id (number) : ')
-            if bugs.canBeInteger(candidate) :
+            if bugs.t_d.canBeInteger(candidate) :
                 candidate =  int(candidate)
-                if candidate < len(bugs.data) :
+                if candidate < len(bugs.r_d.data) :
                     subject_id = candidate
                 else :
-                    print 'No such subject in '+bugs.dataPath
+                    print 'No such subject in '+bugs.r_d.parameters.dataPath
             else :
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == graph_key :
@@ -157,9 +157,9 @@ while running:
         #clear fly_overs
         fly_overs = []
         #recompute background sheet only if needed
-        sheet = draw_sheet(sheet_dims, bugs.operations, bugs.data[subject_id]['results'])
+        sheet = draw_sheet(sheet_dims, bugs.r_d.operations, bugs.r_d.data[subject_id]['results'])
         #compute dominancies of subject
-        found_bugs = bugs.subject_sheet_bugs(bugs.data[subject_id]['results'], bugs.operations)
+        found_bugs = bugs.subject_sheet_bugs(bugs.r_d.data[subject_id]['results'], bugs.r_d.operations)
         scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
         curr_subject = subject_id
 
@@ -179,7 +179,7 @@ while running:
     for section in fly_overs:
         top, right, bottom, left = section['box']
         if m_x<right and m_x>left and m_y>top and m_y<bottom:
-            pp = bugs.format_bug_desc(section['desc'])
+            pp = bugs.t_d.format_bug_desc(section['desc'])
             for line in pp:
                 desc = note_f.render(line, True, txt_color)
                 display.blit(desc, (note_inter,note_inter*(3+line_nb)))
