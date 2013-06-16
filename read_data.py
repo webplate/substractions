@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import csv, sys, os, re
-#~ import parameters
 
 def read_datafile(filename):
     '''Return content from datafile of subject'''

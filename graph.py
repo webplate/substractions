@@ -9,8 +9,8 @@ def freq_by_type(scores) :
     N = len(scores)
     ind = range(N)
     #reorder scores for homogenous presentation
-    freqs = [ [] for i in ind ]
-    types = [ [] for i in ind ]
+    freqs = [ 0 for i in ind ]
+    types = [ '' for i in ind ]
     i = 0
     for key in types_order :
         if key in scores :

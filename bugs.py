@@ -6,6 +6,8 @@ import transform_data as t_d
 import parameters
 from precomputed import poss_sheet
 
+import pprint
+
 def count_correct(data, ref):
     for subject in data :
         nb_correct = 0
@@ -123,7 +125,7 @@ def bugId(n1, n2, result):
                     #~ print explained_pos, pos
                     if bug_types_s != ['unexplained'] :         #spot 'blank' bug only if interesting
                         for bt in bug_types_s :
-                            bugs_desc.append({'pos':pos, 'type':['blank', bt],
+                            bugs_desc.append({'pos':pos, 'type':'blank_'+bt,
                             'o1':d1, 'o2':d2_shifted, 'result':result[pos]})
                             explained_pos.append(pos)
                 #add unicolumn bugs
@@ -168,7 +170,8 @@ def possible_bugs(n1, n2) :
                     and bug['type'] == pbug['type']):
                         add = False
                 if add:
-                    poss_bugs.append({'pos':bug['pos'], 'type':bug['type']})
+                    poss_bugs.append({'pos':bug['pos'],
+                    'type':bug['type'], 'result':bug['result']})
 
         r += 1
         result = t_d.completeX(max_col, str(r))
@@ -223,11 +226,30 @@ def dominancy(found, possible) :
                     scores.update({t:(0, 1)})
     return scores
 
+def profile(scores, threshold) :
+    '''create bug profile of subject
+    keeps only bugs dominant enough
+    '''
+    bugs = []
+    for bug in scores :
+        nb_sub, nb_poss = scores[bug]
+        if float(nb_sub)/nb_poss > threshold :
+            bugs.append(bug)
+    return bugs
 
-#~ print bugId_perDigit(2,9,0)
+def simul(dom_bugs, poss_sheet) :
+    '''gives a result sheet congruent with the dominant_bugs
+    '''
+    simul = []
+    for subtraction in poss_sheet :
+        for bug in subtraction :
+            if bug['type'] in dom_bugs :
+                simul.append(bug)
+    return simul
+
 
 #TEST SUITE :
-#~ import pprint
+#~ print bugId_perDigit(2,9,0)
 #~ pprint.pprint(bugId('1813','215','1598'))#, 'correct'
 #~ pprint.pprint(bugId('1813','215','1600'))#, 'pt-gd=0'
 #~ pprint.pprint(bugId('1813','215','1700'))#, 'unexplained'
@@ -258,7 +280,10 @@ def dominancy(found, possible) :
 #~ data, ref, operations = r_d.load_data(parameters.dataPath,parameters.subject_pattern,parameters.reference,parameters.subtractions)
 #~ pprint.pprint(possible_sheet(operations))
 
-#~ found = subject_sheet_bugs(data[default_sub]['results'], operations)
-
-#~ dom = dominancy(found, poss_sheet)
-#~ pprint.pprint(dom)
+#~ found = subject_sheet_bugs(data[parameters.default_sub]['results'], operations)
+#~ #compute dominancies of subject
+#~ scores = dominancy(found, poss_sheet)
+#~ #create profile of subject (most dominant bugs)
+#~ dom_bugs = profile(scores, parameters.dominancy_thre)
+#~ #compute simulation according to profile
+#~ simul_sheet = simul(dom_bugs, poss_sheet)

@@ -153,7 +153,7 @@ while running:
                 if candidate < len(data) :
                     subject_id = candidate
                 else :
-                    print 'No such subject in '+bugs.r_d.parameters.dataPath
+                    print 'No such subject in '+bugs.parameters.dataPath
             else :
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == graph_key :
@@ -169,6 +169,10 @@ while running:
         #compute dominancies of subject
         found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
         scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
+        #create profile of subject (most dominant bugs)
+        dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
+        #compute simulation according to profile
+        simul_sheet = bugs.simul(dom_bugs, operations)
         curr_subject = subject_id
 
     #RENDER
