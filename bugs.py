@@ -161,8 +161,8 @@ def possible_bugs(n1, n2) :
         for bug in grp_bugs :
             if 'pos' in bug :
                 add = True
-                #not interested by unexplained production or correct column
-                if bug['type'] in ('unexplained', 'correct_col', 'copy') :
+                #not interested by unexplained production
+                if bug['type'] == 'unexplained' :
                     add = False
                 #keep only different bugs on a same position
                 for pbug in poss_bugs :
@@ -206,9 +206,10 @@ def dominancy(found, possible) :
             if 'pos' in fnd_bugs[j]
             and fnd_bugs[j]['pos'] == col_bug['pos']]
 
-            t = str(col_bug['type'])
+            t = col_bug['type']
             #there is a congruent bug
-            if col_bug['type'] in in_place :
+            if (col_bug['type'] not in ('correct_col', 'copy')
+            and col_bug['type'] in in_place) :
                 #~ pprint.pprint(col_bug['type'])
                 if t in scores :
                     nb_sub, nb_poss = scores[t]
@@ -240,11 +241,12 @@ def profile(scores, threshold) :
 def simul(dom_bugs, poss_sheet) :
     '''gives a result sheet congruent with the dominant_bugs
     '''
-    simul = []
-    for subtraction in poss_sheet :
+    simul = [ [] for i in range(len(poss_sheet)) ]
+    for i, subtraction in enumerate(poss_sheet) :
         for bug in subtraction :
-            if bug['type'] in dom_bugs :
-                simul.append(bug)
+            if (bug['type'] in dom_bugs
+            or bug['type'] in ('correct_col', 'copy')) :
+                simul[i].append(bug)
     return simul
 
 
@@ -277,13 +279,14 @@ def simul(dom_bugs, poss_sheet) :
 
 
 #~ pprint.pprint(possible_bugs('647','45'))
-#~ data, ref, operations = r_d.load_data(parameters.dataPath,parameters.subject_pattern,parameters.reference,parameters.subtractions)
+data, ref, operations = r_d.load_data(parameters.dataPath,parameters.subject_pattern,parameters.reference,parameters.subtractions)
 #~ pprint.pprint(possible_sheet(operations))
 
-#~ found = subject_sheet_bugs(data[parameters.default_sub]['results'], operations)
-#~ #compute dominancies of subject
-#~ scores = dominancy(found, poss_sheet)
-#~ #create profile of subject (most dominant bugs)
-#~ dom_bugs = profile(scores, parameters.dominancy_thre)
-#~ #compute simulation according to profile
-#~ simul_sheet = simul(dom_bugs, poss_sheet)
+found = subject_sheet_bugs(data[parameters.default_sub]['results'], operations)
+#compute dominancies of subject
+scores = dominancy(found, poss_sheet)
+#create profile of subject (most dominant bugs)
+dom_bugs = profile(scores, parameters.dominancy_thre)
+#compute simulation according to profile
+simul_sheet = simul(dom_bugs, poss_sheet)
+pprint.pprint(simul_sheet)
