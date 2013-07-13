@@ -36,20 +36,8 @@ GTK
 file chooser gtk3
 
 
-///
+///pas envoyés
 
 
--affichage du profil de dominance moyen en comparaison avec le profil du sujet
 
--recodage des fonctions d'identification des bugs pour considérer le recopiage de la première ligne en priorité sur les blanks bugs
-
--réorganisation du code pour une meilleure organisation des namespaces
-
--réorganisation préliminaire pour mieux contrôler le chargement des données expérimentales (pas automatiquement à l'import)
-
--modification de fonction de génération des bugs possibles pour permettre la simulation précalculée
-
--fonction renvoyant un profil du sujet (ses bugs dominants selon un certain seuil)
-
--investigation pour lancer des sous fenêtre en parallèle (sans blocage de la boucle principale)
 -méthode pour recalculer facilement la poss_sheet (et la stocker dans un fichier)
