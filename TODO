@@ -37,7 +37,14 @@ file chooser gtk3
 
 
 ///pas envoyés
+-affichage des plots dans un thread séparé pour ne pas bloquer l'interface principale
+
+-codage d'une fonction de génération de simulation en fonction du profil
+
+-affichage du résultat de la simulation en dessous du résultat produit par le sujet
+
+-recodage de la fonction d'affichage des infos pour améliorer la clarté et l'extensibilité
+
 
 -afficher liste cliquable des sujets disponibles ou champ de recherche
--affichage des plots dans un thread séparé pour ne pas bloquer l'interface principale
 -méthode pour recalculer facilement la poss_sheet (et la stocker dans un fichier)

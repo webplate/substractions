@@ -190,28 +190,43 @@ while running:
     #RENDER
     display.fill(bg_color)
     display.blit(sheet, sheet_offset)
+    #prepare sidenotes with coord and subject name...
+    notes_lst = []
     m_x, m_y= pygame.mouse.get_pos()
-    #show sidenotes
-    coord = note_f.render(str((m_x,m_y)), True, txt_color)
-    display.blit(coord, (10,10))
-    line_nb = 0
-    #show subject id
-    desc = note_f.render('Subject '+str(subject_id), True, txt_color)
-    display.blit(desc, (note_inter,note_inter*(3+line_nb)))
-    line_nb += 2
-    #show dominancy profile
-    desc = note_f.render('Dominancy '+str(dom_bugs), True, txt_color)
-    display.blit(desc, (note_inter,note_inter*(3+line_nb)))
-    line_nb += 2
-    #show info from fly_overs
-    for section in fly_overs:
+    notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(subject_id),
+    '', 'Dominancy'])
+    notes_lst.extend(dom_bugs)
+    notes_lst.extend(['', '']) 
+    for section in fly_overs :
         top, right, bottom, left = section['box']
         if m_x<right and m_x>left and m_y>top and m_y<bottom:
             pp = bugs.t_d.format_bug_desc(section['desc'])
-            for line in pp:
-                desc = note_f.render(line, True, txt_color)
-                display.blit(desc, (note_inter,note_inter*(3+line_nb)))
-                line_nb += 1
+            notes_lst.extend(pp)
+    #now draw the notes
+    for line_nb, line in enumerate(notes_lst) :
+        desc = note_f.render(line, True, txt_color)
+        display.blit(desc, (note_inter,note_inter*(line_nb)))
+    
+    #~ coord = note_f.render(str((m_x,m_y)), True, txt_color)
+    #~ display.blit(coord, (10,10))
+    #~ line_nb = 0
+    #~ #show subject id
+    #~ desc = note_f.render('Subject '+str(subject_id), True, txt_color)
+    #~ display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+    #~ line_nb += 2
+    #~ #show dominancy profile
+    #~ desc = note_f.render('Dominancy '+str(dom_bugs), True, txt_color)
+    #~ display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+    #~ line_nb += 2
+    #~ #show info from fly_overs
+    #~ for section in fly_overs:
+        #~ top, right, bottom, left = section['box']
+        #~ if m_x<right and m_x>left and m_y>top and m_y<bottom:
+            #~ pp = bugs.t_d.format_bug_desc(section['desc'])
+            #~ for line in pp:
+                #~ desc = note_f.render(line, True, txt_color)
+                #~ display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+                #~ line_nb += 1
     #show dominancy scores
     #~ line_nb += 2
     #~ for key in iter(scores):
