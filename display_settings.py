@@ -17,7 +17,11 @@ bug_color = (200, 200, 255)
 correct_col_color = (200, 255, 200)
 unexplained_color = (255, 200, 200)
 incomplete_color = (0, 0, 255)
-simul_txt_color = (200, 200, 200)
+
+simul_txt_color = (55, 55, 55)
+simul_good_color = (213, 255, 96)
+simul_almost_color = (255, 195, 96)
+simul_bad_color = (255, 103, 96)
 
 note_font = "./fonts/UbuntuMono-R.ttf"
 note_size = 12

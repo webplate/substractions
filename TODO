@@ -49,6 +49,7 @@ file chooser gtk3
 
 - méthode pour recalculer facilement la poss_sheet (et la stocker sérialisée dans un fichier)
 
+- affichage de marqueurs d'évaluation de la simulation (bonne, inexacte de +-1, ou fausse)
 
 
 -afficher liste cliquable des sujets disponibles ou champ de recherche

@@ -13,11 +13,11 @@ class async_plot(threading.Thread):
         graph.plot_scores(self.scores, self.all_sc)
         graph.plt.show()
 
-def draw_marker(color, size=1, truncate=False):
+def draw_marker(color, size=1, truncate=False, nb_line=3):
     if truncate :
         width, height = size*txt_size/2, txt_size/5
     else :
-        width, height = size*txt_size/2, 3*txt_inter
+        width, height = size*txt_size/2, nb_line*txt_inter - txt_size/5
     marker = pygame.Surface((width,height), flags=SRCALPHA)
     marker.fill(color)
     return marker
@@ -45,7 +45,7 @@ def draw_sub(pos, n1, n2, result='', simul_result=''):
     i_s, j_s = pos
     #identify bugs for drawing appropriate markers
     bugs_desc = bugs.bugId(n1, n2, result)
-    #draw markers
+    #draw bugs markers
     for desc in bugs_desc:
         if desc['type'] != 'subtraction' and desc['type'] != 'correct':
             if desc['type'] in ('correct_col', 'copy')  :
@@ -77,6 +77,23 @@ def draw_sub(pos, n1, n2, result='', simul_result=''):
             #HACK: reference new fly-over
             #shouldn't use global var
             fly_overs.append({'box':(top,right,bottom,left), 'desc':desc})
+    #draw simulation markers
+    for i in range(len(simul_result)) :
+        pos = -i-1
+        sim_color = simul_bad_color
+        if pos >= -len(result) :
+            if bugs.t_d.canBeInteger(result[pos]) and bugs.t_d.canBeInteger(simul_result[pos]) :
+                col = int(simul_result[pos])
+                res = int(result[pos])
+                if col == res :
+                    sim_color = simul_good_color
+                elif col == res-1 or col == res+1 :
+                    sim_color = simul_almost_color
+        #put marker on simulation column
+        marker = draw_marker(sim_color, nb_line=1)
+        gap = width + (pos)*txt_size/2
+        surf.blit(marker, (gap, txt_inter*3 + txt_size/5))
+            
     #draw numbers
     surf.blit(l1, (width - l1.get_width(), 0))
     surf.blit(l2, (width - l2.get_width(), txt_inter))
@@ -209,7 +226,7 @@ while running:
     #now draw the notes
     for line_nb, line in enumerate(notes_lst) :
         desc = note_f.render(line, True, txt_color)
-        display.blit(desc, (note_inter,note_inter*(line_nb)))
+        display.blit(desc, (note_inter,note_inter*line_nb))
     #flip every 16ms only (for smooth animation, particularly on linux)
     if pygame.time.get_ticks() > last_flip + 16 :
         last_flip = pygame.time.get_ticks()
