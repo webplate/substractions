@@ -113,7 +113,8 @@ bugs.parameters.subtractions)
 all_sc = {} #dominancy scores for all
 for subject in data :
     found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
-    sc = bugs.dominancy(found_bugs, bugs.poss_sheet)
+    poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
+    sc = bugs.dominancy(found_bugs, poss_sheet)
     if all_sc == {} :
         all_sc = sc
     for key in sc :
@@ -181,11 +182,12 @@ while running:
         fly_overs = []
         #compute dominancies of subject
         found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
-        scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
+        poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
+        scores = bugs.dominancy(found_bugs, poss_sheet)
         #create profile of subject (most dominant bugs)
         dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
         #compute simulation according to profile
-        simul_sheet = bugs.simulate(dom_bugs, bugs.poss_sheet)
+        simul_sheet = bugs.simulate(dom_bugs, poss_sheet)
         #recompute background sheet only if needed
         sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'], simul_sheet)
         curr_subject = subject_id

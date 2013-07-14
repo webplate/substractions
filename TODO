@@ -24,8 +24,8 @@ comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
 
 
 PRÉSENTATION
-illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
-rep des soustractions incomplètes avec autre couleur
+-> illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
+-> rep des soustractions incomplètes avec autre couleur
 
 SDL
 réussir à rester idle tant que pas d'events...
@@ -47,6 +47,8 @@ file chooser gtk3
 
 - ajout de touches "sujet suivant", "sujet précédent"
 
+- méthode pour recalculer facilement la poss_sheet (et la stocker sérialisée dans un fichier)
+
+
 
 -afficher liste cliquable des sujets disponibles ou champ de recherche
--méthode pour recalculer facilement la poss_sheet (et la stocker dans un fichier)
