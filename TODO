@@ -10,8 +10,8 @@ addition au lieu de soustraction
 N-M=N
 -> Comment gérer le recopiage de la première ligne ?...détecter les 'espaces' les traiter dans bugId per digit et considérer le recopiage en priorité sur le 'blank bug'
 -> remplacer les import * par r_data et t_data...
-détecter dominant
-aller jusqu'aux simulations !!
+-> détecter dominant
+aller jusqu'aux simulations !! bug:que générer quand 0 bug dans une colonne (et sans correct_col ou copy) ???
 tolérance +-1
 
 TOFIX
@@ -38,6 +38,6 @@ file chooser gtk3
 
 ///pas envoyés
 
-
-
+-afficher liste cliquable des sujets disponibles ou champ de recherche
+-affichage des plots dans un thread séparé pour ne pas bloquer l'interface principale
 -méthode pour recalculer facilement la poss_sheet (et la stocker dans un fichier)

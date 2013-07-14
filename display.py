@@ -13,7 +13,7 @@ def draw_marker(color, size=1, truncate=False):
     marker.fill(color)
     return marker
 
-def draw_sub(pos, n1, n2, result=''):
+def draw_sub(pos, n1, n2, result='', simul_result=''):
     '''Paint the subtraction with operands n1 & n2 and result
     pos is coordinates on sheet : (0,0) is the top left sub
     '''
@@ -21,6 +21,7 @@ def draw_sub(pos, n1, n2, result=''):
     l1 = font.render(n1, True, txt_color) #texte, antialiasing, color
     l2 = font.render(n2, True, txt_color)
     l3 = font.render(result, True, txt_color)
+    l4 = font.render(simul_result, True, simul_txt_color)
     max_width = max(l1.get_width(), l2.get_width(), l3.get_width())
     max_len = max(len(n1), len(n2), len(result))
     #prepare "decorations"
@@ -28,7 +29,7 @@ def draw_sub(pos, n1, n2, result=''):
     sign = font.render("-", True, txt_color)
     #a surface to blit the whole sub
     width = max_width + txt_size/2
-    height = 3*txt_inter
+    height = 4*txt_inter
     #SRCALPHA is for per pixel transparency
     surf = pygame.Surface((width,height), flags=SRCALPHA)
 
@@ -71,12 +72,13 @@ def draw_sub(pos, n1, n2, result=''):
     surf.blit(l1, (width - l1.get_width(), 0))
     surf.blit(l2, (width - l2.get_width(), txt_inter))
     surf.blit(l3, (width - l3.get_width(), 2*txt_inter))
+    surf.blit(l4, (width - l4.get_width(), 3*txt_inter))
     #draw 'minus' and 'bottom line'
     surf.blit(bottom_line, (width - bottom_line.get_width(), txt_inter))
     surf.blit(sign, (0, txt_inter))
     return surf
 
-def draw_sheet(dimensions, operations, results):
+def draw_sheet(dimensions, operations, results, simul_sheet):
     nb_col, nb_lgn = dimensions
     width, height = sub_dims[0]*nb_col, sub_dims[1]*nb_lgn
     surf = pygame.Surface((width,height), flags=SRCALPHA)
@@ -86,7 +88,8 @@ def draw_sheet(dimensions, operations, results):
             n1 = operations[k][0]
             n2 = operations[k][1]
             result = results[k]
-            sub_surf = draw_sub((i,j), n1, n2, result)
+            #~ print simul_sheet[1][k]
+            sub_surf = draw_sub((i,j), n1, n2, result, simul_sheet[1][k])
             #to verticaly align on right column
             gap = sub_dims[0] - sub_surf.get_width()
             pos = (gap + i*sub_dims[0], j*sub_dims[1])
@@ -164,15 +167,15 @@ while running:
     if subject_id != curr_subject :
         #clear fly_overs
         fly_overs = []
-        #recompute background sheet only if needed
-        sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'])
         #compute dominancies of subject
         found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
         scores = bugs.dominancy(found_bugs, bugs.poss_sheet)
         #create profile of subject (most dominant bugs)
         dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
         #compute simulation according to profile
-        simul_sheet = bugs.simul(dom_bugs, bugs.poss_sheet)
+        simul_sheet = bugs.simulate(dom_bugs, bugs.poss_sheet)
+        #recompute background sheet only if needed
+        sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'], simul_sheet)
         curr_subject = subject_id
 
     #RENDER
@@ -186,7 +189,11 @@ while running:
     #show subject id
     desc = note_f.render('Subject '+str(subject_id), True, txt_color)
     display.blit(desc, (note_inter,note_inter*(3+line_nb)))
-    line_nb += 1
+    line_nb += 2
+    #show dominancy profile
+    desc = note_f.render('Dominancy '+str(dom_bugs), True, txt_color)
+    display.blit(desc, (note_inter,note_inter*(3+line_nb)))
+    line_nb += 2
     #show info from fly_overs
     for section in fly_overs:
         top, right, bottom, left = section['box']
