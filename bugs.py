@@ -262,7 +262,11 @@ def simulate(dom_bugs, poss_sheet) :
         positions = [ bug['pos'] for bug in simul[index] ]
         result_lst = [ '?' for i in range(-min(positions)) ]
         for bug in simul[index] :
-            result_lst[bug['pos']] = bug['result']
+            if len(bug['result']) == 1 :
+                result_lst[bug['pos']] = bug['result']
+            elif len(bug['result']) == 2 :
+                result_lst[bug['pos']] = bug['result'][1]
+                result_lst[bug['pos']-1] = bug['result'][0]
         result = ''
         for c in result_lst :
             result = result + c

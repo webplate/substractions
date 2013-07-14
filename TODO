@@ -12,10 +12,13 @@ N-M=N
 -> remplacer les import * par r_data et t_data...
 -> détecter dominant
 aller jusqu'aux simulations !! bug:que générer quand 0 bug dans une colonne (et sans correct_col ou copy) ???
-tolérance +-1
+-> tolérance +-1 dans la simulation !
+tolérance +-1 dans la detection des bugs
 
 TOFIX
 -> incomplete AND blank bugs...-> nouvelle représentation des bugs ?
+mauvaise simulations si incomplete ds bugs dominants !!
+pas d'avertissement si compétition entre bugs pour la simulation d'un digit
 
 VALIDATION
 comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)

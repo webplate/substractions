@@ -91,9 +91,8 @@ def draw_sub(pos, n1, n2, result='', simul_result=''):
                     sim_color = simul_almost_color
         #put marker on simulation column
         marker = draw_marker(sim_color, nb_line=1)
-        gap = width + (pos)*txt_size/2
+        gap = width + pos*txt_size/2
         surf.blit(marker, (gap, txt_inter*3 + txt_size/5))
-            
     #draw numbers
     surf.blit(l1, (width - l1.get_width(), 0))
     surf.blit(l2, (width - l2.get_width(), txt_inter))
