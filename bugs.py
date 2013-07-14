@@ -4,8 +4,8 @@
 import read_data as r_d
 import transform_data as t_d
 import parameters
-from precomputed import poss_sheet
 
+import pickle
 import pprint
 
 def count_correct(data, ref):
@@ -182,6 +182,16 @@ def possible_sheet(sheet) :
         p_s.append(possible_bugs(n1, n2))
     return p_s
 
+def write_precomputations(sheet, file_name) :
+    f = open(file_name, 'w')
+    p_s = possible_sheet(sheet)
+    pickle.dump(p_s, f)
+
+def read_precomputations(file_name) :
+    f = open(file_name, 'r')
+    sheet = pickle.load(f)
+    return sheet
+
 def subject_sheet_bugs(subject_data, operations) :
     '''Gives detected bugs of subjects in sheet constituted by operations
     '''
@@ -289,11 +299,16 @@ def simulate(dom_bugs, poss_sheet) :
 
 
 #~ pprint.pprint(possible_bugs('647','45'))
+
 #~ data, ref, operations = r_d.load_data(parameters.dataPath,parameters.subject_pattern,parameters.reference,parameters.subtractions)
-#~ 
+
+#~ #recompute the possible bugs of the sheet
+#~ write_precomputations(operations, parameters.precomputation_file)
+
 #~ found = subject_sheet_bugs(data[parameters.default_sub]['results'], operations)
 #~ pprint.pprint(operations)
 #compute dominancies of subject
+#~ poss_sheet = read_precomputations(parameters.precomputation_file)
 #~ scores = dominancy(found, poss_sheet)
 #create profile of subject (most dominant bugs)
 #~ dom_bugs = profile(scores, parameters.dominancy_thre)
