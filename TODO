@@ -45,6 +45,8 @@ file chooser gtk3
 
 -recodage de la fonction d'affichage des infos pour améliorer la clarté et l'extensibilité
 
+- ajout de touches "sujet suivant", "sujet précédent"
+
 
 -afficher liste cliquable des sujets disponibles ou champ de recherche
 -méthode pour recalculer facilement la poss_sheet (et la stocker dans un fichier)
