@@ -22,7 +22,6 @@ def bugId_perDigit(d1, d2, r):
     parameters must be strings,
     d1,d2 and r should be of length 1
     '''
-    #~ print d1, d2, result
     bugs = []
     if t_d.canBeInteger(r) and t_d.canBeInteger(d1) and t_d.canBeInteger(d2) :
         r = int(r)
@@ -69,7 +68,6 @@ def bugId_perDouble(n1, n2, result, pos):
     n1_2 = n1[pos-1:len(n1)+pos+1]
     n2_2 = n2[pos-1:len(n2)+pos+1]
     result2 = result[pos-1:len(result)+pos+1]
-    #~ print n1_2, n2_2, result2
     #n2_2 can be of length one for incomplete sub
     if len(n2_2) > 1 and n2_2[0] == 'X' :
         n2_2 = n2_2[1]
@@ -122,7 +120,6 @@ def bugId(n1, n2, result):
                 if d2 == 'X' and bug_types != ['copy'] :
                     d2_shifted = n2[-min_col]
                     bug_types_s = bugId_perDigit(d1, d2_shifted, result[pos])
-                    #~ print explained_pos, pos
                     if bug_types_s != ['unexplained'] :         #spot 'blank' bug only if interesting
                         for bt in bug_types_s :
                             bugs_desc.append({'pos':pos, 'type':'blank_'+bt,
@@ -210,7 +207,6 @@ def dominancy(found, possible) :
             #there is a congruent bug
             if (col_bug['type'] not in ('correct_col', 'copy')
             and col_bug['type'] in in_place) :
-                #~ pprint.pprint(col_bug['type'])
                 if t in scores :
                     nb_sub, nb_poss = scores[t]
                     new_score = (nb_sub+1, nb_poss+1)
@@ -246,7 +242,6 @@ def simulate(dom_bugs, poss_sheet) :
     for index, subtraction in enumerate(poss_sheet) :
         #select possible productions for a sub
         for bug in subtraction :
-            #~ positions = [ bug['pos'] for bug in simul[index] ]
             gen_pos = [ bugg['pos'] for bugg in simul[index] ]
             if (bug['type'] in dom_bugs
             or (bug['type'] in ('correct_col', 'copy')

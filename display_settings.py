@@ -33,4 +33,5 @@ sheet_offset = (300,10)
 #control settings
 switch_key = K_s
 graph_key = K_g
-
+next_key = K_d
+prev_key = K_q

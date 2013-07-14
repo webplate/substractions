@@ -97,7 +97,6 @@ def draw_sheet(dimensions, operations, results, simul_sheet):
             n1 = operations[k][0]
             n2 = operations[k][1]
             result = results[k]
-            #~ print simul_sheet[1][k]
             sub_surf = draw_sub((i,j), n1, n2, result, simul_sheet[1][k])
             #to verticaly align on right column
             gap = sub_dims[0] - sub_surf.get_width()
@@ -135,8 +134,6 @@ if full_screen:
 else:
     display = pygame.display.set_mode(window_size)
 
-#~ pygame.event.clear()        #clear event list to ignore previous pressures
-
 #load fonts
 font = pygame.font.Font(txt_font, txt_size) #name, size
 note_f = pygame.font.Font(note_font, note_size)
@@ -168,6 +165,12 @@ while running:
                     print 'No such subject in '+bugs.parameters.dataPath
             else :
                 print 'Enter a number...'
+        elif event.type == KEYDOWN and event.key == next_key :
+            if curr_subject+1 < len(data) :
+                subject_id = curr_subject+1
+        elif event.type == KEYDOWN and event.key == prev_key :
+            if curr_subject-1 > -1 :
+                subject_id = curr_subject-1
         elif event.type == KEYDOWN and event.key == graph_key :
             plot_win = async_plot(scores, all_sc)
             plot_win.start()
