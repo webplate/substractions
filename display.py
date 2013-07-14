@@ -1,8 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import platform, os, pygame
+import platform, os, threading, pygame
 from display_settings import *
 import bugs, graph
+
+class async_plot(threading.Thread):
+    def __init__(self, scores, all_sc):
+        threading.Thread.__init__(self)
+        self.scores = scores
+        self.all_sc = all_sc
+    def run(self):
+        graph.plot_scores(self.scores, self.all_sc)
+        graph.plt.show()
 
 def draw_marker(color, size=1, truncate=False):
     if truncate :
@@ -157,8 +166,8 @@ while running:
             else :
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == graph_key :
-            graph.plot_scores(scores, all_sc)
-            graph.plt.show(block=True)
+            plot_win = async_plot(scores, all_sc)
+            plot_win.start()
 
     #EVOLUTION
     if subject_id != curr_subject :
