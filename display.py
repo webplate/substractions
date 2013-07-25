@@ -5,6 +5,8 @@ from display_settings import *
 import bugs, graph
 
 class async_plot(threading.Thread):
+    '''an thread object to launch a pyplot window in parallel
+    '''
     def __init__(self, scores, all_sc):
         threading.Thread.__init__(self)
         self.scores = scores
@@ -13,9 +15,18 @@ class async_plot(threading.Thread):
         graph.plot_scores(self.scores, self.all_sc)
         graph.plt.show()
 
-def pix_coord(pos, h_gap, v_gap, max_width, marker) :
+def pix_coord(pos, gap, max_width, surface) :
+    '''returns (top,right,bottom,left) boundaries(à la CSS) of a surface
+    placed on the subtraction sheet.
+    -The subtraction is placed at pos (i,j), (0,0) means top left
+    -within the subtraction the surface is blitted with a gap
+    (horizontal,vertical) in pixels
+    -max_width is the width of the longest nb in the subtraction
+    (in pixels)
+    '''
     i_s, j_s = pos
-    #where are we drawing the marker on the display ?
+    h_gap, v_gap = gap
+    #where are we drawing the surface on the display ?
     #align to sheet
     left, top = sheet_offset
     #align to subtraction in sheet
@@ -25,16 +36,19 @@ def pix_coord(pos, h_gap, v_gap, max_width, marker) :
     left = left + h_gap - txt_size/2
     #align to line
     top = top + v_gap
-    #set boundaries to match marker shape
-    bottom = top + marker.get_height()
-    right = left + marker.get_width()
+    #set boundaries to match surface shape
+    bottom = top + surface.get_height()
+    right = left + surface.get_width()
     return (top,right,bottom,left)
-    
-def draw_marker(color, size=1, truncate=False, nb_line=3):
+
+def draw_marker(color, nb_col=1, truncate=False, nb_line=3):
+    '''returns a surface filled with rgb color
+    truncate = True is for a marker of less than one line
+    '''
     if truncate :
-        width, height = size*txt_size/2, txt_size/5
+        width, height = nb_col*txt_size/2, txt_size/5
     else :
-        width, height = size*txt_size/2, nb_line*txt_inter - txt_size/5
+        width, height = nb_col*txt_size/2, nb_line*txt_inter - txt_size/5
     marker = pygame.Surface((width,height), flags=SRCALPHA)
     marker.fill(color)
     return marker
@@ -73,13 +87,13 @@ def draw_sub(pos, n1, n2, result='', simul_result='', simul_desc=[]):
             if desc['type'] == 'incomplete' :
                 #put markers on both columns of incomplete sub
                 marker = draw_marker(incomplete_color, size=2, truncate=True)
-                h_gap = width + (desc['pos']-1)*txt_size/2
-                surf.blit(marker, (h_gap, 0))
+                gap = (width + (desc['pos']-1)*txt_size/2, 0)
+                surf.blit(marker, gap)
             else :
                 marker = draw_marker(color)
-                h_gap = width + desc['pos']*txt_size/2
-                surf.blit(marker, (h_gap, txt_size/5))
-            boundaries = pix_coord(pos, h_gap, 0, max_width, marker)
+                gap = (width + desc['pos']*txt_size/2, txt_size/5)
+                surf.blit(marker, gap)
+            boundaries = pix_coord(pos, gap, max_width, marker)#buggy?
             #HACK: reference new fly-over
             #shouldn't use global var
             fly_overs.append({'type':'detection', 'box':boundaries, 'desc':desc})
@@ -97,11 +111,10 @@ def draw_sub(pos, n1, n2, result='', simul_result='', simul_desc=[]):
                     sim_color = simul_almost_color
         #put marker on simulation column and line
         marker = draw_marker(sim_color, nb_line=1)
-        h_gap = width + col_pos*txt_size/2
-        v_gap = txt_inter*3 + txt_size/5
-        surf.blit(marker, (h_gap, v_gap))        
+        gap = (width + col_pos*txt_size/2, txt_inter*3 + txt_size/5)
+        surf.blit(marker, gap)        
         #reference fly-over
-        boundaries = pix_coord(pos, h_gap, v_gap, max_width, marker)
+        boundaries = pix_coord(pos, gap, max_width, marker)
         desc = [ bug['type'] for bug in simul_desc if bug['pos'] == col_pos ]
         #~ print desc, boundaries
         #HACK: reference new fly-over
@@ -221,8 +234,6 @@ while running:
         simul_sheet = bugs.simulate(dom_bugs, poss_sheet)
         #recompute background sheet only if needed
         sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'], simul_sheet)
-        import pprint
-        pprint.pprint(fly_overs)
         curr_subject = subject_id
 
     #RENDER

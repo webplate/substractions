@@ -54,6 +54,8 @@ file chooser gtk3
 
 - affichage de marqueurs d'évaluation de la simulation (bonne, inexacte de +-1, ou fausse)
 
+-affichage des bugs responsables du résultat de la simulation au survol à la souris
 
--afficher survols sur simulations
+
+
 -afficher liste cliquable des sujets disponibles ou champ de recherche
