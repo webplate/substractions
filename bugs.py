@@ -6,7 +6,7 @@ import transform_data as t_d
 import parameters
 
 import pickle
-import pprint
+#~ import pprint
 
 def count_correct(data, ref):
     for subject in data :

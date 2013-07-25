@@ -53,7 +53,8 @@ def draw_marker(color, nb_col=1, truncate=False, nb_line=3):
     marker.fill(color)
     return marker
 
-def draw_sub(pos, n1, n2, result='', simul_result='', simul_desc=[]):
+def draw_sub(pos, n1, n2, font, result='', simul_result='',
+    simul_desc=[], fly_overs=[]):
     '''Paint the subtraction with operands n1 & n2 and result
     pos is coordinates on sheet : (0,0) is the top left sub
     '''
@@ -128,9 +129,10 @@ def draw_sub(pos, n1, n2, result='', simul_result='', simul_desc=[]):
     #draw 'minus' and 'bottom line'
     surf.blit(bottom_line, (width - bottom_line.get_width(), txt_inter))
     surf.blit(sign, (0, txt_inter))
-    return surf
+    return surf, fly_overs
 
-def draw_sheet(dimensions, operations, results, simul_sheet):
+def draw_sheet(dimensions, operations, results, simul_sheet, font,
+    fly_overs=[]):
     nb_col, nb_lgn = dimensions
     width, height = sub_dims[0]*nb_col, sub_dims[1]*nb_lgn
     surf = pygame.Surface((width,height), flags=SRCALPHA)
@@ -140,130 +142,163 @@ def draw_sheet(dimensions, operations, results, simul_sheet):
             n1 = operations[k][0]
             n2 = operations[k][1]
             result = results[k]
-            sub_surf = draw_sub((i,j), n1, n2, result, simul_sheet[1][k],
-            simul_sheet[0][k] )
+            sub_surf, new_f_os = draw_sub((i,j), n1, n2, font, result,
+            simul_sheet[1][k], simul_sheet[0][k], fly_overs)
+            fly_overs.extend(new_f_os)
             #to verticaly align on right column
             gap = sub_dims[0] - sub_surf.get_width()
             pos = (gap + i*sub_dims[0], j*sub_dims[1])
             surf.blit(sub_surf, pos)
-    return surf
+    return surf, fly_overs
 
-#Load experimental data of subjects and protocol
-data, ref, operations = bugs.r_d.load_data(bugs.parameters.dataPath,
-bugs.parameters.subject_pattern, bugs.parameters.reference,
-bugs.parameters.subtractions)
 
-#Precompute stats on whole dataset
-all_sc = {} #dominancy scores for all
-for subject in data :
-    found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
-    poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
-    sc = bugs.dominancy(found_bugs, poss_sheet)
-    if all_sc == {} :
-        all_sc = sc
-    for key in sc :
-        all_sc[key] = (sc[key][0]+all_sc[key][0], sc[key][1]+all_sc[key][1])
+class subtraction_explorer():
+    '''a pygame (and pyplot) app for exploring subtractions data of subjects
+    '''
+    def __init__(self):
+        self.running = True
+        self.window_size = window_size
+ 
+    def on_init(self):
+        print 'init'
+        #Load experimental data of subjects and protocol
+        self.data, ref, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
+        bugs.parameters.subject_pattern, bugs.parameters.reference,
+        bugs.parameters.subtractions)
 
-#Set graphic driver according to platform
-system = platform.system()
-if system == 'Windows':    # tested with Windows 7
-   os.environ['SDL_VIDEODRIVER'] = 'directx'
-elif system == 'Darwin':   # tested with MacOS 10.5 and 10.6
-   os.environ['SDL_VIDEODRIVER'] = 'Quartz'
+        #Precompute stats on whole dataset
+        all_sc = {} #dominancy scores for all
+        for subject in self.data :
+            found_bugs = bugs.subject_sheet_bugs(subject['results'], self.operations)
+            poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
+            sc = bugs.dominancy(found_bugs, poss_sheet)
+            if all_sc == {} :
+                all_sc = sc
+            for key in sc :
+                all_sc[key] = (sc[key][0]+all_sc[key][0], sc[key][1]+all_sc[key][1])
 
-#Initialize pygame
-pygame.init()
-if full_screen:
-    display = pygame.display.set_mode(window_size, HWSURFACE | FULLSCREEN | DOUBLEBUF)
-    pygame.mouse.set_visible(False)     #hide cursor
-else:
-    display = pygame.display.set_mode(window_size)
+        #Set graphic driver according to platform
+        system = platform.system()
+        if system == 'Windows':    # tested with Windows 7
+           os.environ['SDL_VIDEODRIVER'] = 'directx'
+        elif system == 'Darwin':   # tested with MacOS 10.5 and 10.6
+           os.environ['SDL_VIDEODRIVER'] = 'Quartz'
 
-#load fonts
-font = pygame.font.Font(txt_font, txt_size) #name, size
-note_f = pygame.font.Font(note_font, note_size)
+        #Initialize pygame
+        pygame.init()
+        if full_screen:
+            self.display = pygame.display.set_mode(self.window_size, HWSURFACE | FULLSCREEN | DOUBLEBUF)
+            pygame.mouse.set_visible(False)     #hide cursor
+        else:
+            self.display = pygame.display.set_mode(window_size)
 
-#Preset for startup sheet
-subject_id = bugs.parameters.default_sub
-curr_subject = -1
-#list to specify 'mouse fly-overs'
-fly_overs = [] 
-#Main loop
-frame = 0
-t0 = pygame.time.get_ticks()
-last_flip = t0
-running = True
-while running:
-    #EVENTS
-    # process as many events as possible before updating
-    evt = pygame.event.wait()
-    evts = pygame.event.get()
-    evts.insert(0, evt)
-    for event in evts:
+        #load fonts
+        self.font = pygame.font.Font(txt_font, txt_size) #name, size
+        self.note_f = pygame.font.Font(note_font, note_size)
+
+        #Preset for startup sheet
+        self.subject_id = bugs.parameters.default_sub
+        self.curr_subject = -1
+        #list to specify 'mouse fly-overs'
+        self.fly_overs = []
+ 
+    def on_event(self, event):
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate
-            #~ print float(pygame.time.get_ticks() - t0)/frame, "msec/frame"
-            running = False
+            #~ print float(pygame.time.get_ticks() - self.t0)/frame, "msec/frame"
+            self.running = False
         elif event.type == KEYDOWN and event.key == switch_key :
             candidate = raw_input('Enter subject id (number) : ')
             if bugs.t_d.canBeInteger(candidate) :
                 candidate =  int(candidate)
                 if candidate < len(data) :
-                    subject_id = candidate
+                    self.subject_id = candidate
                 else :
                     print 'No such subject in '+bugs.parameters.dataPath
             else :
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == next_key :
-            if curr_subject+1 < len(data) :
-                subject_id = curr_subject+1
+            if self.curr_subject+1 < len(data) :
+                self.subject_id = self.curr_subject+1
         elif event.type == KEYDOWN and event.key == prev_key :
-            if curr_subject-1 > -1 :
-                subject_id = curr_subject-1
+            if self.curr_subject-1 > -1 :
+                self.subject_id = self.curr_subject-1
         elif event.type == KEYDOWN and event.key == graph_key :
             plot_win = async_plot(scores, all_sc)
             plot_win.start()
 
-    #EVOLUTION
-    if subject_id != curr_subject :
-        #clear fly_overs
-        fly_overs = []
-        #compute dominancies of subject
-        found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
-        poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
-        scores = bugs.dominancy(found_bugs, poss_sheet)
-        #create profile of subject (most dominant bugs)
-        dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
-        #compute simulation according to profile
-        simul_sheet = bugs.simulate(dom_bugs, poss_sheet)
-        #recompute background sheet only if needed
-        sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'], simul_sheet)
-        curr_subject = subject_id
+    def on_loop(self):
+        if self.subject_id != self.curr_subject :
+            print 'load subject'
+            #clear fly_overs
+            self.fly_overs = []
+            #compute dominancies of subject
+            found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
+            poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
+            scores = bugs.dominancy(found_bugs, poss_sheet)
+            #create profile of subject (most dominant bugs)
+            self.dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
+            #compute simulation according to profile
+            simul_sheet = bugs.simulate(self.dom_bugs, poss_sheet)
+            #recompute background sheet only if needed
+            self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
+            self.data[self.subject_id]['results'], simul_sheet, self.font)
+            self.curr_subject = self.subject_id
 
-    #RENDER
-    display.fill(bg_color)
-    display.blit(sheet, sheet_offset)
-    #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
-    notes_lst = []
-    m_x, m_y= pygame.mouse.get_pos()
-    notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(subject_id),
-    '', 'Dominancy'])
-    notes_lst.extend(dom_bugs)
-    notes_lst.extend(['_______',''])
-    for section in fly_overs :
-        top, right, bottom, left = section['box']
-        if m_x<right and m_x>left and m_y>top and m_y<bottom :
-            if section['type'] == 'detection' :
-                notes_lst.extend(bugs.t_d.format_bug_desc(section['desc']))
-            elif section['type'] == 'simul_col' :
-                notes_lst.extend(section['desc'])
-    #now draw the notes
-    for line_nb, line in enumerate(notes_lst) :
-        desc = note_f.render(line, True, txt_color)
-        display.blit(desc, (note_inter,note_inter*line_nb))
-    #flip every 16ms only (for smooth animation, particularly on linux)
-    if pygame.time.get_ticks() > last_flip + 16 :
-        last_flip = pygame.time.get_ticks()
-        pygame.display.flip()
-        frame += 1
-pygame.quit()
+    def on_render(self):
+        print 'render'
+        self.display.fill(bg_color)
+        self.display.blit(self.sheet, sheet_offset)
+        #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
+        notes_lst = []
+        m_x, m_y= pygame.mouse.get_pos()
+        notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(self.subject_id),
+        '', 'Dominancy'])
+        notes_lst.extend(self.dom_bugs)
+        notes_lst.extend(['_______',''])
+        for section in self.fly_overs :
+            top, right, bottom, left = section['box']
+            if m_x<right and m_x>left and m_y>top and m_y<bottom :
+                if section['type'] == 'detection' :
+                    notes_lst.extend(bugs.t_d.format_bug_desc(section['desc']))
+                elif section['type'] == 'simul_col' :
+                    notes_lst.extend(section['desc'])
+        #now draw the notes
+        for line_nb, line in enumerate(notes_lst) :
+            desc = self.note_f.render(line, True, txt_color)
+            self.display.blit(desc, (note_inter,note_inter*line_nb))
+        #flip every 16ms only (for smooth animation, particularly on linux)
+        if pygame.time.get_ticks() > self.last_flip + 16 :
+            self.last_flip = pygame.time.get_ticks()
+            pygame.display.flip()
+            self.frame += 1
+
+    def on_cleanup(self):
+        pygame.quit()
+ 
+    def on_execute(self):
+        if self.on_init() == False:
+            self.running = False
+        
+        #Main loop
+        self.frame = 0
+        self.t0 = pygame.time.get_ticks()
+        self.last_flip = self.t0
+        while self.running:
+            #EVENTS
+            # process as many events as possible before updating
+            evt = pygame.event.wait()
+            evts = pygame.event.get()
+            evts.insert(0, evt)
+            for event in evts:
+                self.on_event(event)
+            #EVOLUTION
+            self.on_loop()
+            #RENDER
+            self.on_render()
+        self.on_cleanup()
+
+ 
+if __name__ == "__main__" :
+    theApp = subtraction_explorer()
+    theApp.on_execute()
