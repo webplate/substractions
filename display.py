@@ -86,7 +86,7 @@ def draw_sub(pos, n1, n2, result='', simul_result='', simul_desc=[]):
                 color = bug_color
             if desc['type'] == 'incomplete' :
                 #put markers on both columns of incomplete sub
-                marker = draw_marker(incomplete_color, size=2, truncate=True)
+                marker = draw_marker(incomplete_color, nb_col=2, truncate=True)
                 gap = (width + (desc['pos']-1)*txt_size/2, 0)
                 surf.blit(marker, gap)
             else :
@@ -195,7 +195,11 @@ last_flip = t0
 running = True
 while running:
     #EVENTS
-    for event in pygame.event.get():
+    # process as many events as possible before updating
+    evt = pygame.event.wait()
+    evts = pygame.event.get()
+    evts.insert(0, evt)
+    for event in evts:
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             #to check the refresh rate
             #~ print float(pygame.time.get_ticks() - t0)/frame, "msec/frame"
