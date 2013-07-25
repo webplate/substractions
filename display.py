@@ -13,6 +13,23 @@ class async_plot(threading.Thread):
         graph.plot_scores(self.scores, self.all_sc)
         graph.plt.show()
 
+def pix_coord(pos, h_gap, v_gap, max_width, marker) :
+    i_s, j_s = pos
+    #where are we drawing the marker on the display ?
+    #align to sheet
+    left, top = sheet_offset
+    #align to subtraction in sheet
+    gap2 = sub_dims[0] - max_width
+    left, top = left + gap2 + i_s*sub_dims[0], top + j_s*sub_dims[1]
+    #align to bug column
+    left = left + h_gap - txt_size/2
+    #align to line
+    top = top + v_gap
+    #set boundaries to match marker shape
+    bottom = top + marker.get_height()
+    right = left + marker.get_width()
+    return (top,right,bottom,left)
+    
 def draw_marker(color, size=1, truncate=False, nb_line=3):
     if truncate :
         width, height = size*txt_size/2, txt_size/5
@@ -22,7 +39,7 @@ def draw_marker(color, size=1, truncate=False, nb_line=3):
     marker.fill(color)
     return marker
 
-def draw_sub(pos, n1, n2, result='', simul_result=''):
+def draw_sub(pos, n1, n2, result='', simul_result='', simul_desc=[]):
     '''Paint the subtraction with operands n1 & n2 and result
     pos is coordinates on sheet : (0,0) is the top left sub
     '''
@@ -42,7 +59,6 @@ def draw_sub(pos, n1, n2, result='', simul_result=''):
     #SRCALPHA is for per pixel transparency
     surf = pygame.Surface((width,height), flags=SRCALPHA)
 
-    i_s, j_s = pos
     #identify bugs for drawing appropriate markers
     bugs_desc = bugs.bugId(n1, n2, result)
     #draw bugs markers
@@ -57,42 +73,40 @@ def draw_sub(pos, n1, n2, result='', simul_result=''):
             if desc['type'] == 'incomplete' :
                 #put markers on both columns of incomplete sub
                 marker = draw_marker(incomplete_color, size=2, truncate=True)
-                gap = width + (desc['pos']-1)*txt_size/2
-                surf.blit(marker, (gap, 0))
+                h_gap = width + (desc['pos']-1)*txt_size/2
+                surf.blit(marker, (h_gap, 0))
             else :
                 marker = draw_marker(color)
-                gap = width + desc['pos']*txt_size/2
-                surf.blit(marker, (gap, txt_size/5))
-            #where are we drawing the marker on the display ?
-            #align to sheet
-            left, top = sheet_offset
-            #align to subtraction in sheet
-            gap2 = sub_dims[0] - max_width
-            left, top = left + gap2 + i_s*sub_dims[0], top + j_s*sub_dims[1]
-            #align to bug column
-            left = left + gap - txt_size/2
-            #set boundaries to match marker shape
-            bottom = top + marker.get_height()
-            right = left + marker.get_width()
+                h_gap = width + desc['pos']*txt_size/2
+                surf.blit(marker, (h_gap, txt_size/5))
+            boundaries = pix_coord(pos, h_gap, 0, max_width, marker)
             #HACK: reference new fly-over
             #shouldn't use global var
-            fly_overs.append({'box':(top,right,bottom,left), 'desc':desc})
+            fly_overs.append({'type':'detection', 'box':boundaries, 'desc':desc})
     #draw simulation markers
     for i in range(len(simul_result)) :
-        pos = -i-1
+        col_pos = -i-1
         sim_color = simul_bad_color
-        if pos >= -len(result) :
-            if bugs.t_d.canBeInteger(result[pos]) and bugs.t_d.canBeInteger(simul_result[pos]) :
-                col = int(simul_result[pos])
-                res = int(result[pos])
+        if col_pos >= -len(result) :
+            if bugs.t_d.canBeInteger(result[col_pos]) and bugs.t_d.canBeInteger(simul_result[col_pos]) :
+                col = int(simul_result[col_pos])
+                res = int(result[col_pos])
                 if col == res :
                     sim_color = simul_good_color
                 elif col == res-1 or col == res+1 :
                     sim_color = simul_almost_color
-        #put marker on simulation column
+        #put marker on simulation column and line
         marker = draw_marker(sim_color, nb_line=1)
-        gap = width + pos*txt_size/2
-        surf.blit(marker, (gap, txt_inter*3 + txt_size/5))
+        h_gap = width + col_pos*txt_size/2
+        v_gap = txt_inter*3 + txt_size/5
+        surf.blit(marker, (h_gap, v_gap))        
+        #reference fly-over
+        boundaries = pix_coord(pos, h_gap, v_gap, max_width, marker)
+        desc = [ bug['type'] for bug in simul_desc if bug['pos'] == col_pos ]
+        #~ print desc, boundaries
+        #HACK: reference new fly-over
+        #shouldn't use global var
+        fly_overs.append({'type':'simul_col', 'box':boundaries, 'desc':desc})
     #draw numbers
     surf.blit(l1, (width - l1.get_width(), 0))
     surf.blit(l2, (width - l2.get_width(), txt_inter))
@@ -113,7 +127,8 @@ def draw_sheet(dimensions, operations, results, simul_sheet):
             n1 = operations[k][0]
             n2 = operations[k][1]
             result = results[k]
-            sub_surf = draw_sub((i,j), n1, n2, result, simul_sheet[1][k])
+            sub_surf = draw_sub((i,j), n1, n2, result, simul_sheet[1][k],
+            simul_sheet[0][k] )
             #to verticaly align on right column
             gap = sub_dims[0] - sub_surf.get_width()
             pos = (gap + i*sub_dims[0], j*sub_dims[1])
@@ -206,6 +221,8 @@ while running:
         simul_sheet = bugs.simulate(dom_bugs, poss_sheet)
         #recompute background sheet only if needed
         sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'], simul_sheet)
+        import pprint
+        pprint.pprint(fly_overs)
         curr_subject = subject_id
 
     #RENDER
@@ -217,11 +234,14 @@ while running:
     notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(subject_id),
     '', 'Dominancy'])
     notes_lst.extend(dom_bugs)
-    notes_lst.extend(['_______','']) 
+    notes_lst.extend(['_______',''])
     for section in fly_overs :
         top, right, bottom, left = section['box']
-        if m_x<right and m_x>left and m_y>top and m_y<bottom:
-            notes_lst.extend(bugs.t_d.format_bug_desc(section['desc']))
+        if m_x<right and m_x>left and m_y>top and m_y<bottom :
+            if section['type'] == 'detection' :
+                notes_lst.extend(bugs.t_d.format_bug_desc(section['desc']))
+            elif section['type'] == 'simul_col' :
+                notes_lst.extend(section['desc'])
     #now draw the notes
     for line_nb, line in enumerate(notes_lst) :
         desc = note_f.render(line, True, txt_color)
