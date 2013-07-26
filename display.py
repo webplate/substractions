@@ -54,10 +54,11 @@ def draw_marker(color, nb_col=1, truncate=False, nb_line=3):
     return marker
 
 def draw_sub(pos, n1, n2, font, result='', simul_result='',
-    simul_desc=[], fly_overs=[]):
+    simul_desc=[]):
     '''Paint the subtraction with operands n1 & n2 and result
     pos is coordinates on sheet : (0,0) is the top left sub
     '''
+    fly_overs=[]
     #prepare numbers
     l1 = font.render(n1, True, txt_color) #texte, antialiasing, color
     l2 = font.render(n2, True, txt_color)
@@ -117,7 +118,6 @@ def draw_sub(pos, n1, n2, font, result='', simul_result='',
         #reference fly-over
         boundaries = pix_coord(pos, gap, max_width, marker)
         desc = [ bug['type'] for bug in simul_desc if bug['pos'] == col_pos ]
-        #~ print desc, boundaries
         #HACK: reference new fly-over
         #shouldn't use global var
         fly_overs.append({'type':'simul_col', 'box':boundaries, 'desc':desc})
@@ -131,8 +131,9 @@ def draw_sub(pos, n1, n2, font, result='', simul_result='',
     surf.blit(sign, (0, txt_inter))
     return surf, fly_overs
 
-def draw_sheet(dimensions, operations, results, simul_sheet, font,
-    fly_overs=[]):
+def draw_sheet(dimensions, operations, results, simul_sheet, font):
+    #clear fly_overs
+    fly_overs=[]
     nb_col, nb_lgn = dimensions
     width, height = sub_dims[0]*nb_col, sub_dims[1]*nb_lgn
     surf = pygame.Surface((width,height), flags=SRCALPHA)
@@ -142,9 +143,9 @@ def draw_sheet(dimensions, operations, results, simul_sheet, font,
             n1 = operations[k][0]
             n2 = operations[k][1]
             result = results[k]
-            sub_surf, new_f_os = draw_sub((i,j), n1, n2, font, result,
-            simul_sheet[1][k], simul_sheet[0][k], fly_overs)
-            fly_overs.extend(new_f_os)
+            sub_surf, new_fos = draw_sub((i,j), n1, n2, font, result,
+            simul_sheet[1][k], simul_sheet[0][k])
+            fly_overs.extend(new_fos)
             #to verticaly align on right column
             gap = sub_dims[0] - sub_surf.get_width()
             pos = (gap + i*sub_dims[0], j*sub_dims[1])
@@ -160,22 +161,22 @@ class subtraction_explorer():
         self.window_size = window_size
  
     def on_init(self):
-        print 'init'
         #Load experimental data of subjects and protocol
         self.data, ref, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern, bugs.parameters.reference,
         bugs.parameters.subtractions)
 
         #Precompute stats on whole dataset
-        all_sc = {} #dominancy scores for all
+        self.all_sc = {} #dominancy scores for all
         for subject in self.data :
             found_bugs = bugs.subject_sheet_bugs(subject['results'], self.operations)
             poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
             sc = bugs.dominancy(found_bugs, poss_sheet)
-            if all_sc == {} :
-                all_sc = sc
+            if self.all_sc == {} :
+                self.all_sc = sc
             for key in sc :
-                all_sc[key] = (sc[key][0]+all_sc[key][0], sc[key][1]+all_sc[key][1])
+                self.all_sc[key] = (sc[key][0]+self.all_sc[key][0],
+                sc[key][1]+self.all_sc[key][1])
 
         #Set graphic driver according to platform
         system = platform.system()
@@ -204,8 +205,6 @@ class subtraction_explorer():
  
     def on_event(self, event):
         if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-            #to check the refresh rate
-            #~ print float(pygame.time.get_ticks() - self.t0)/frame, "msec/frame"
             self.running = False
         elif event.type == KEYDOWN and event.key == switch_key :
             candidate = raw_input('Enter subject id (number) : ')
@@ -218,26 +217,23 @@ class subtraction_explorer():
             else :
                 print 'Enter a number...'
         elif event.type == KEYDOWN and event.key == next_key :
-            if self.curr_subject+1 < len(data) :
+            if self.curr_subject+1 < len(self.data) :
                 self.subject_id = self.curr_subject+1
         elif event.type == KEYDOWN and event.key == prev_key :
             if self.curr_subject-1 > -1 :
                 self.subject_id = self.curr_subject-1
         elif event.type == KEYDOWN and event.key == graph_key :
-            plot_win = async_plot(scores, all_sc)
+            plot_win = async_plot(self.scores, self.all_sc)
             plot_win.start()
 
     def on_loop(self):
         if self.subject_id != self.curr_subject :
-            print 'load subject'
-            #clear fly_overs
-            self.fly_overs = []
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
             poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
-            scores = bugs.dominancy(found_bugs, poss_sheet)
+            self.scores = bugs.dominancy(found_bugs, poss_sheet)
             #create profile of subject (most dominant bugs)
-            self.dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
+            self.dom_bugs = bugs.profile(self.scores, bugs.parameters.dominancy_thre)
             #compute simulation according to profile
             simul_sheet = bugs.simulate(self.dom_bugs, poss_sheet)
             #recompute background sheet only if needed
@@ -246,7 +242,6 @@ class subtraction_explorer():
             self.curr_subject = self.subject_id
 
     def on_render(self):
-        print 'render'
         self.display.fill(bg_color)
         self.display.blit(self.sheet, sheet_offset)
         #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
@@ -282,8 +277,7 @@ class subtraction_explorer():
         
         #Main loop
         self.frame = 0
-        self.t0 = pygame.time.get_ticks()
-        self.last_flip = self.t0
+        self.last_flip = pygame.time.get_ticks()
         while self.running:
             #EVENTS
             # process as many events as possible before updating
