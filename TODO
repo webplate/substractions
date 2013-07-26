@@ -40,7 +40,7 @@ file chooser gtk3
 
 
 ///pas envoyés
-
+- restructuration de toute l'application graphique (pygame) pour permettre le lancement de différentes instances de celle-ci
 
 
 -afficher liste cliquable des sujets disponibles ou champ de recherche

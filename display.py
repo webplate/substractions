@@ -41,7 +41,7 @@ def pix_coord(pos, gap, max_width, surface) :
     right = left + surface.get_width()
     return (top,right,bottom,left)
 
-def draw_marker(color, nb_col=1, truncate=False, nb_line=3):
+def draw_marker(color, nb_col=1, nb_line=3, truncate=False):
     '''returns a surface filled with rgb color
     truncate = True is for a marker of less than one line
     '''
@@ -158,8 +158,7 @@ class subtraction_explorer():
     '''
     def __init__(self):
         self.running = True
-        self.window_size = window_size
- 
+
     def on_init(self):
         #Load experimental data of subjects and protocol
         self.data, ref, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
@@ -188,7 +187,7 @@ class subtraction_explorer():
         #Initialize pygame
         pygame.init()
         if full_screen:
-            self.display = pygame.display.set_mode(self.window_size, HWSURFACE | FULLSCREEN | DOUBLEBUF)
+            self.display = pygame.display.set_mode(window_size, HWSURFACE | FULLSCREEN | DOUBLEBUF)
             pygame.mouse.set_visible(False)     #hide cursor
         else:
             self.display = pygame.display.set_mode(window_size)
@@ -290,7 +289,7 @@ class subtraction_explorer():
             self.on_render()
         self.on_cleanup()
 
- 
+
 if __name__ == "__main__" :
     the_app = subtraction_explorer()
     the_app.on_execute()
