@@ -209,8 +209,8 @@ class subtraction_explorer():
         elif event.type == KEYDOWN and event.key == switch_key :
             candidate = raw_input('Enter subject id (number) : ')
             if bugs.t_d.canBeInteger(candidate) :
-                candidate =  int(candidate)
-                if candidate < len(data) :
+                candidate = int(candidate)
+                if candidate < len(self.data) :
                     self.subject_id = candidate
                 else :
                     print 'No such subject in '+bugs.parameters.dataPath
@@ -240,26 +240,26 @@ class subtraction_explorer():
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
             self.data[self.subject_id]['results'], simul_sheet, self.font)
             self.curr_subject = self.subject_id
-
-    def on_render(self):
-        self.display.fill(bg_color)
-        self.display.blit(self.sheet, sheet_offset)
         #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
-        notes_lst = []
+        self.notes_lst = []
         m_x, m_y= pygame.mouse.get_pos()
-        notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(self.subject_id),
+        self.notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(self.subject_id),
         '', 'Dominancy'])
-        notes_lst.extend(self.dom_bugs)
-        notes_lst.extend(['_______',''])
+        self.notes_lst.extend(self.dom_bugs)
+        self.notes_lst.extend(['_______',''])
         for section in self.fly_overs :
             top, right, bottom, left = section['box']
             if m_x<right and m_x>left and m_y>top and m_y<bottom :
                 if section['type'] == 'detection' :
-                    notes_lst.extend(bugs.t_d.format_bug_desc(section['desc']))
+                    self.notes_lst.extend(bugs.t_d.format_bug_desc(section['desc']))
                 elif section['type'] == 'simul_col' :
-                    notes_lst.extend(section['desc'])
-        #now draw the notes
-        for line_nb, line in enumerate(notes_lst) :
+                    self.notes_lst.extend(section['desc'])
+
+    def on_render(self):
+        self.display.fill(bg_color)
+        self.display.blit(self.sheet, sheet_offset)
+        #draw the notes
+        for line_nb, line in enumerate(self.notes_lst) :
             desc = self.note_f.render(line, True, txt_color)
             self.display.blit(desc, (note_inter,note_inter*line_nb))
         #flip every 16ms only (for smooth animation, particularly on linux)
@@ -274,13 +274,11 @@ class subtraction_explorer():
     def on_execute(self):
         if self.on_init() == False:
             self.running = False
-        
         #Main loop
         self.frame = 0
         self.last_flip = pygame.time.get_ticks()
         while self.running:
             #EVENTS
-            # process as many events as possible before updating
             evt = pygame.event.wait()
             evts = pygame.event.get()
             evts.insert(0, evt)
@@ -294,5 +292,5 @@ class subtraction_explorer():
 
  
 if __name__ == "__main__" :
-    theApp = subtraction_explorer()
-    theApp.on_execute()
+    the_app = subtraction_explorer()
+    the_app.on_execute()
