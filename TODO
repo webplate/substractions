@@ -25,6 +25,11 @@ comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
 & comparer avec les stratégies de réparation de VanLehn
 ((id des bugs par couples de colonnes))
 
+profil de dominance à partir du seuil, on prend 
+noter la simulation (nb_col et nb_sub correctement simulés)
+stats globales: -nb opé non répondues sur l'ensemble
+données : -ajouter un jugement des facilités de l'élève(on arrive pas à simuler et les profs non plus!)
+-un deuxième protocole pour tester simul indé individuelle
 
 PRÉSENTATION
 -> illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)

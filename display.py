@@ -221,8 +221,6 @@ while running:
         simul_sheet = bugs.simulate(dom_bugs, poss_sheet)
         #recompute background sheet only if needed
         sheet = draw_sheet(sheet_dims, operations, data[subject_id]['results'], simul_sheet)
-        import pprint
-        pprint.pprint(fly_overs)
         curr_subject = subject_id
 
     #RENDER
