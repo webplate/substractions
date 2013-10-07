@@ -7,8 +7,9 @@ def read_datafile(filename):
     '''Return content from datafile of subject'''
     with open(filename, 'rb') as f:
         reader = csv.reader(f)
+        out = []
         try:
-            out = []
+            
             for row in reader:
                 #ignore comments
                 if row[0][0] != '#':

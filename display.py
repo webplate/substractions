@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import platform, os, threading, pygame
 from display_settings import *
-import bugs, graph
+import bugs, graph, stats
 
 class async_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
@@ -104,7 +104,8 @@ def draw_sub(pos, n1, n2, font, result='', simul_result='',
         col_pos = -i-1
         sim_color = simul_bad_color
         if col_pos >= -len(result) :
-            if bugs.t_d.canBeInteger(result[col_pos]) and bugs.t_d.canBeInteger(simul_result[col_pos]) :
+            if (bugs.t_d.canBeInteger(result[col_pos]) 
+            and bugs.t_d.canBeInteger(simul_result[col_pos])) :
                 col = int(simul_result[col_pos])
                 res = int(result[col_pos])
                 if col == res :
@@ -166,16 +167,7 @@ class subtraction_explorer():
         bugs.parameters.subtractions)
 
         #Precompute stats on whole dataset
-        self.all_sc = {} #dominancy scores for all
-        for subject in self.data :
-            found_bugs = bugs.subject_sheet_bugs(subject['results'], self.operations)
-            poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
-            sc = bugs.dominancy(found_bugs, poss_sheet)
-            if self.all_sc == {} :
-                self.all_sc = sc
-            for key in sc :
-                self.all_sc[key] = (sc[key][0]+self.all_sc[key][0],
-                sc[key][1]+self.all_sc[key][1])
+        self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all
 
         #Set graphic driver according to platform
         system = platform.system()
@@ -188,7 +180,7 @@ class subtraction_explorer():
         pygame.init()
         if full_screen:
             self.display = pygame.display.set_mode(window_size, HWSURFACE | FULLSCREEN | DOUBLEBUF)
-            pygame.mouse.set_visible(False)     #hide cursor
+            #~ pygame.mouse.set_visible(False)     #hide cursor
         else:
             self.display = pygame.display.set_mode(window_size)
 
@@ -293,3 +285,4 @@ class subtraction_explorer():
 if __name__ == "__main__" :
     the_app = subtraction_explorer()
     the_app.on_execute()
+
