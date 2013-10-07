@@ -168,7 +168,10 @@ class subtraction_explorer():
 
         #Precompute stats on whole dataset
         self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all
-
+        self.all_congruency = stats.all_congruency(self.data, self.operations)
+        print self.all_congruency
+        self.all_perf = stats.give_percent(self.all_congruency)
+        
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
@@ -227,6 +230,11 @@ class subtraction_explorer():
             self.dom_bugs = bugs.profile(self.scores, bugs.parameters.dominancy_thre)
             #compute simulation according to profile
             simul_sheet = bugs.simulate(self.dom_bugs, poss_sheet)
+            
+            self.perf = stats.give_percent(stats.subject_congruency(
+            self.subject_id, self.data, poss_sheet, simul_sheet[1],
+            self.dom_bugs, bugs.parameters.tolerant))
+            
             #recompute background sheet only if needed
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
             self.data[self.subject_id]['results'], simul_sheet, self.font)
@@ -234,8 +242,10 @@ class subtraction_explorer():
         #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
         self.notes_lst = []
         m_x, m_y= pygame.mouse.get_pos()
-        self.notes_lst.extend([str((m_x,m_y)), '', 'Subject '+str(self.subject_id),
-        '', 'Dominancy'])
+        self.notes_lst.extend([str((m_x,m_y)), 'Global'])
+        self.notes_lst.extend(self.all_perf)
+        self.notes_lst.extend(['Subject '+str(self.subject_id)])
+        self.notes_lst.extend(self.perf)
         self.notes_lst.extend(self.dom_bugs)
         self.notes_lst.extend(['_______',''])
         for section in self.fly_overs :
