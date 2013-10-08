@@ -59,7 +59,7 @@ def all_congruency(data, operations, dom_bugs=None) :
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
 def subject_congruency(subject_id, data, poss_sheet, simul_sheet,
-dom_bugs, tolerant=False) :
+dom_bugs) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
     #+-1 tolerance TODO at operation level
     #check congruency between simul result and subject data
@@ -76,7 +76,7 @@ dom_bugs, tolerant=False) :
         for k in range(len_sub) :
             if -pos <= min_len :
                 #~ print sim_result[pos] , data[subject_id]['results'][j][pos], sim_result, data[subject_id]['results'][j],nb_correct_ope, nb_correct_col
-                if tolerant and bugs.t_d.canBeInteger(sim_result[pos]) :
+                if bugs.parameters.tolerant and bugs.t_d.canBeInteger(sim_result[pos]) :
                     tol_values = (str(int(sim_result[pos])+1), sim_result[pos],
                 str(int(sim_result[pos])-1))
                 else :
@@ -98,6 +98,7 @@ dom_bugs, tolerant=False) :
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
 def give_percent(scores) :
+    print scores
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = scores
     correct_ope = nb_correct_ope / float(nb_ope)
     correct_col = nb_correct_col / float(nb_col)

@@ -34,34 +34,22 @@ stats globales: -nb opé non répondues sur l'ensemble
 -noter la simulation (nb_col et nb_sub correctement simulés (ignorer les opérations non répondues))
 données : - ajouter un jugement des facilités de l'élève(on arrive pas à simuler et les profs non plus!)
 - un deuxième protocole pour tester simul indé individuelle(un analogue: chiffres différents mais bugs potentiels identiques)
+- ne pas considérer pour les perf de simul les resultats correct (niveau ope) de sujets
 
 PRÉSENTATION
 -> illustrer clairement comparaison (R sujets | result simul) sur la sheet entière (SDL, pygame?)
 -> rep des soustractions incomplètes avec autre couleur
 
 SDL
-réussir à rester idle tant que pas d'events...
+-> réussir à rester idle tant que pas d'events...
 -> mettre le background pré-généré dans une surface (les fonctions draw devraient retourner une surface au lieu d'écrire)
-passer l'appli dans une classe : http://pygametutorials.wikidot.com/tutorials-basic
+-> passer l'appli dans une classe : http://pygametutorials.wikidot.com/tutorials-basic
 
 GTK
 file chooser gtk3
 
 
 ///pas envoyés
--affichage des plots dans un thread séparé pour ne pas bloquer l'interface principale
-
--codage d'une fonction de génération de simulation en fonction du profil
-
--affichage du résultat de la simulation en dessous du résultat produit par le sujet
-
--recodage de la fonction d'affichage des infos pour améliorer la clarté et l'extensibilité
-
-- ajout de touches "sujet suivant", "sujet précédent"
-
-- méthode pour recalculer facilement la poss_sheet (et la stocker sérialisée dans un fichier)
-
-- affichage de marqueurs d'évaluation de la simulation (bonne, inexacte de +-1, ou fausse)
 
 
 -afficher survols sur simulations
