@@ -53,7 +53,9 @@ file chooser gtk3
 ///pas envoyés
 -profilage par retenue des stratégies dominantes par ordre de dominance (et pas par seuil de dominance), on peut choisir un nombre de stratégies pour profiler.
 
--correction d'un bug terrible affectant l'exactitude des perf de simul globales...
+-correction d'un bug affectant l'exactitude des perf de simul globales...
+
+-prise en compte des competitions entre bugs pour la simulation : on garde les plus dominants
 
 -identification de productions TROP ? incompréhensibles, trop éloignées de la consigne
 

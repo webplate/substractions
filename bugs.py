@@ -270,22 +270,30 @@ def simulate(dom_bugs, poss_sheet) :
     '''
     simul = [ [] for i in range(len(poss_sheet)) ]
     results = []
-    dom_bugs = [tupl[1] for tupl in dom_bugs]
+    dom_bugs_names = [tupl[1] for tupl in dom_bugs]
     for index, subtraction in enumerate(poss_sheet) :
         #select possible productions for a sub
         for bug in subtraction :
-            gen_pos = [ bugg['pos'] for bugg in simul[index] ]
-            if (bug['type'] in dom_bugs
-            and bug['pos'] not in gen_pos) :
-                simul[index].append(bug)
-            elif (bug['type'] in dom_bugs
-            and bug['pos'] in gen_pos) :
-                #~ simul[index].append(bug)
-                print 'competition', bug
+            #select dominancy relative to the bug type in question
+            for (dom, name) in dom_bugs :   #for candidate
+                if name == bug['type'] :
+                    dominancy = dom
+                    bug.update({'dominancy':dominancy})
+            gen_pos = [ bug2['pos'] for bug2 in simul[index] ]
+            if bug['type'] in dom_bugs_names :
+                if bug['pos'] not in gen_pos : #new bug
+                    simul[index].append(bug)
+                else :   #competition between bugs (keep most dominant)
+                    for bug3 in simul[index] :    #for current
+                        if (bug3['pos'] == bug['pos']
+                        and dominancy > bug3['dominancy']) :
+                            simul[index].append(bug)
+                            simul[index].remove(bug3)
             elif (bug['type'] in ('correct_col', 'copy')
-            and bug['pos'] not in gen_pos) :
+            and bug['pos'] not in gen_pos) :    #basic strategies (if no dominant bug suitable)
+                bug.update({'dominancy':0})
                 simul[index].append(bug)
-            
+
 #check selected bugs to have a complete result...todo
         #build the corresponding result
         positions = [ bug['pos'] for bug in simul[index] ]
