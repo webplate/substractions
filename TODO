@@ -17,8 +17,9 @@ tolérance +-1 dans la detection des bugs
 
 TOFIX
 -> incomplete AND blank bugs...-> nouvelle représentation des bugs ?
-mauvaise simulations si incomplete ds bugs dominants !!
+(mauvaise simulations si incomplete ds bugs dominants !! not true anymore ?)
 pas d'avertissement si compétition entre bugs pour la simulation d'un digit
+
 
 VALIDATION
 comparer avec un bruit (nb aléatoires de 2 à 4 colonnes ??)
@@ -51,6 +52,8 @@ file chooser gtk3
 
 ///pas envoyés
 -profilage par retenue des stratégies dominantes par ordre de dominance (et pas par seuil de dominance), on peut choisir un nombre de stratégies pour profiler.
+
+-correction d'un bug terrible affectant l'exactitude des perf de simul globales...
 
 -identification de productions TROP ? incompréhensibles, trop éloignées de la consigne
 

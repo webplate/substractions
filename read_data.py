@@ -30,7 +30,7 @@ def list_files(path, pattern):
             #list only subject datafiles
             if re.match(pattern, theFile) :
                 files.append(os.path.join(dirPath,theFile))
-                #~ print os.path.join(dirPath,theFile)
+    files = sorted(files)
     return files
 
 def data_set(path, pattern):
@@ -43,6 +43,8 @@ def data_set(path, pattern):
         #keep only non empty datafiles
         if len(results) > 0 :
             data.append({'path' : p, 'results' : results})
+        else :
+            print(p, "is empty !")
     return data
 
 def read_subfile(filename):

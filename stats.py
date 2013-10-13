@@ -37,28 +37,25 @@ def all_scores(data, operations) :
             sc[key][1]+all_sc[key][1])
     return all_sc
 
-def all_congruency(data, operations, dom_bugs=None) :
+def all_congruency(data, operations, poss_sheet) :
     nb_correct_ope = 0
     nb_correct_col = 0
     nb_ope = 0
     nb_col = 0
-    poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
     for subject_id in range(len(data)) :#compute dominancies of subjects
-        if dom_bugs == None :#create profile of subject (most dominant bugs)
-            found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
-            scores = bugs.dominancy(found_bugs, poss_sheet)
-            dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre,
-            bugs.parameters.profile_size)
+        #create profile of subject (most dominant bugs)
+        found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
+        scores = bugs.dominancy(found_bugs, poss_sheet)
+        dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre,
+        bugs.parameters.profile_size)
         #compute simulation according to profile
         b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet)[1]
         scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
         operations, dom_bugs)
-        #~ print give_percent(scores)
         nb_correct_ope += scores[0]
         nb_ope += scores[1]
         nb_correct_col += scores[2]
         nb_col += scores[3]
-    #~ print nb_correct_ope,nb_ope, nb_correct_col, nb_col
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
 def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations,

@@ -243,6 +243,7 @@ def dominancy(found, possible) :
 def profile(scores, threshold=None, size=0) :
     '''create bug profile of subject
     keeps only bugs dominant enough
+    OR keep a certain number of bugs by order of dominancy
     '''
     #profile subjct by keeping most dominant strategies
     if size != 0 and threshold != None :
@@ -274,9 +275,16 @@ def simulate(dom_bugs, poss_sheet) :
         for bug in subtraction :
             gen_pos = [ bugg['pos'] for bugg in simul[index] ]
             if (bug['type'] in dom_bugs
-            or (bug['type'] in ('correct_col', 'copy')
-            and bug['pos'] not in gen_pos)) :
+            and bug['pos'] not in gen_pos) :
                 simul[index].append(bug)
+            elif (bug['type'] in dom_bugs
+            and bug['pos'] in gen_pos) :
+                #~ simul[index].append(bug)
+                print 'competition', bug
+            elif (bug['type'] in ('correct_col', 'copy')
+            and bug['pos'] not in gen_pos) :
+                simul[index].append(bug)
+            
 #check selected bugs to have a complete result...todo
         #build the corresponding result
         positions = [ bug['pos'] for bug in simul[index] ]

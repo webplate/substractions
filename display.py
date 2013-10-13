@@ -167,8 +167,9 @@ class subtraction_explorer():
         bugs.parameters.subtractions)
 
         #Precompute stats on whole dataset
+        self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
         self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all
-        self.all_congruency = stats.all_congruency(self.data, self.operations)
+        self.all_congruency = stats.all_congruency(self.data, self.operations, self.poss_sheet)
         self.all_perf = stats.give_percent(self.all_congruency)
 
         #Set graphic driver according to platform
@@ -223,7 +224,6 @@ class subtraction_explorer():
         if self.subject_id != self.curr_subject :
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
-            self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
             self.scores = bugs.dominancy(found_bugs, self.poss_sheet)
             #create profile of subject (most dominant bugs)
             self.dom_bugs = bugs.profile(self.scores,
@@ -244,7 +244,8 @@ class subtraction_explorer():
         m_x, m_y= pygame.mouse.get_pos()
         self.notes_lst.extend([str((m_x,m_y)), 'Global'])
         self.notes_lst.extend(self.all_perf)
-        self.notes_lst.extend(['Subject '+str(self.subject_id)])
+        self.notes_lst.extend(['Subject '+str(self.subject_id),
+        self.data[self.subject_id]['path']])
         self.notes_lst.extend(self.perf)
         self.notes_lst.extend(self.dom_bugs)
         self.notes_lst.extend(['_______',''])
@@ -256,7 +257,7 @@ class subtraction_explorer():
                 elif section['type'] == 'simul_col' :
                     self.notes_lst.extend(section['desc'])
 
-    def on_render(self):
+    def on_render(self) :
         self.display.fill(bg_color)
         self.display.blit(self.sheet, sheet_offset)
         #draw the notes
