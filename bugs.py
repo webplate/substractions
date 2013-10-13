@@ -16,6 +16,13 @@ def count_correct(data, ref):
                 nb_correct += 1
         print subject['path'], nb_correct
 
+def correct_result(operands, o_type='subtraction') :
+    '''returns the correct result for an operation on two str operands'''
+    if o_type == 'subtraction' :
+        result = int(operands[0]) - int(operands[1])
+        return str(result)
+
+
 def bugId_perDigit(d1, d2, r):
     '''Returns the bug identifiers corresponding to the subtraction:
     (d1 - d2 = r)
@@ -233,16 +240,29 @@ def dominancy(found, possible) :
                     scores.update({t:(0, 1)})
     return scores
 
-def profile(scores, threshold) :
+def profile(scores, threshold=None, size=0) :
     '''create bug profile of subject
     keeps only bugs dominant enough
     '''
-    bugs = []
-    for bug in scores :
-        nb_sub, nb_poss = scores[bug]
-        if float(nb_sub)/nb_poss > threshold :
-            bugs.append(bug)
-    return bugs
+    #profile subjct by keeping most dominant strategies
+    if size != 0 and threshold != None :
+        bugs_tuples = []
+        for bug in scores :
+            nb_sub, nb_poss = scores[bug]
+            proportion = float(nb_sub)/nb_poss
+            bugs_tuples.append((proportion, bug))
+        bugs_tuples = sorted(bugs_tuples, reverse=True,
+        key=lambda strategy: strategy[0])   # sort by proportion
+        return [bug[1] for bug in bugs_tuples[:size]]
+    #or by keeping above threshold strategies
+    elif threshold != None :
+        bugs = []
+        for bug in scores :
+            nb_sub, nb_poss = scores[bug]
+            if float(nb_sub)/nb_poss > threshold :
+                bugs.append(bug)
+        return bugs
+    return []
 
 def simulate(dom_bugs, poss_sheet) :
     '''gives a result sheet congruent with the dominant_bugs

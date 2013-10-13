@@ -47,18 +47,21 @@ def all_congruency(data, operations, dom_bugs=None) :
         if dom_bugs == None :#create profile of subject (most dominant bugs)
             found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
             scores = bugs.dominancy(found_bugs, poss_sheet)
-            dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre)
+            dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre,
+            bugs.parameters.profile_size)
         #compute simulation according to profile
         b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet)[1]
-        scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet, dom_bugs)
-        nb_correct_ope+=scores[0]
-        nb_ope+=scores[1]
-        nb_correct_col+=scores[2]
-        nb_col+=scores[3]
+        scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
+        operations, dom_bugs)
+        #~ print give_percent(scores)
+        nb_correct_ope += scores[0]
+        nb_ope += scores[1]
+        nb_correct_col += scores[2]
+        nb_col += scores[3]
     #~ print nb_correct_ope,nb_ope, nb_correct_col, nb_col
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
-def subject_congruency(subject_id, data, poss_sheet, simul_sheet,
+def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations,
 dom_bugs) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
     #+-1 tolerance TODO at operation level
@@ -66,39 +69,41 @@ dom_bugs) :
     for j, sim_result in enumerate(simul_sheet) :
         if sim_result == data[subject_id]['results'][j] :
             nb_correct_ope += 1
+        c_result = bugs.correct_result(operations[j])
         #exclude empty answers from valid answers
-        if data[subject_id]['results'][j] not in ['X','G'] :
+        #and exclude correctly answered operations
+        if (data[subject_id]['results'][j] not in ['X','G'] and
+        not data[subject_id]['results'][j] == c_result) :
             nb_ope += 1
-        #check at column level (last nb first)
-        pos = -1
-        len_sub = len(data[subject_id]['results'][j])
-        min_len = min(len_sub, len(sim_result))
-        for k in range(len_sub) :
-            if -pos <= min_len :
-                #~ print sim_result[pos] , data[subject_id]['results'][j][pos], sim_result, data[subject_id]['results'][j],nb_correct_ope, nb_correct_col
-                if bugs.parameters.tolerant and bugs.t_d.canBeInteger(sim_result[pos]) :
-                    tol_values = (str(int(sim_result[pos])+1), sim_result[pos],
-                str(int(sim_result[pos])-1))
-                else :
-                    tol_values = [sim_result[pos]]
-                #compare with eventual +-1 tolerance
-                if data[subject_id]['results'][j][pos] in tol_values :
-                    nb_correct_col += 1
+            #check at column level (last nb first)
+            pos = -1
+            len_sub = len(data[subject_id]['results'][j])
+            min_len = min(len_sub, len(sim_result))
+            for k in range(len_sub) :
+                if -pos <= min_len :
                     #~ print sim_result[pos] , data[subject_id]['results'][j][pos], sim_result, data[subject_id]['results'][j],nb_correct_ope, nb_correct_col
+                    if bugs.parameters.tolerant and bugs.t_d.canBeInteger(sim_result[pos]) :
+                        tol_values = (str(int(sim_result[pos])+1), sim_result[pos],
+                    str(int(sim_result[pos])-1))
+                    else :
+                        tol_values = [sim_result[pos]]
+                    #compare with eventual +-1 tolerance
+                    if data[subject_id]['results'][j][pos] in tol_values :
+                        nb_correct_col += 1
+                        #~ print sim_result[pos] , data[subject_id]['results'][j][pos], sim_result, data[subject_id]['results'][j],nb_correct_ope, nb_correct_col
 
-                #exclude empty answers from valid answers
-                if data[subject_id]['results'][j][pos] not in ['X','G'] :
-                    nb_col += 1
-            #for columns where subject answers and no sim is made
-            else :
-                #exclude empty answers from valid answers
-                if data[subject_id]['results'][j][pos] not in ['X','G'] :
-                    nb_col += 1
-            pos -= 1
+                    #exclude empty answers from valid answers
+                    if data[subject_id]['results'][j][pos] not in ['X','G'] :
+                        nb_col += 1
+                #for columns where subject answers and no sim is made
+                else :
+                    #exclude empty answers from valid answers
+                    if data[subject_id]['results'][j][pos] not in ['X','G'] :
+                        nb_col += 1
+                pos -= 1
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
 def give_percent(scores) :
-    print scores
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = scores
     correct_ope = nb_correct_ope / float(nb_ope)
     correct_col = nb_correct_col / float(nb_col)

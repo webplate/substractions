@@ -223,16 +223,17 @@ class subtraction_explorer():
         if self.subject_id != self.curr_subject :
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
-            poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
-            self.scores = bugs.dominancy(found_bugs, poss_sheet)
+            self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
+            self.scores = bugs.dominancy(found_bugs, self.poss_sheet)
             #create profile of subject (most dominant bugs)
-            self.dom_bugs = bugs.profile(self.scores, bugs.parameters.dominancy_thre)
+            self.dom_bugs = bugs.profile(self.scores,
+            bugs.parameters.dominancy_thre, bugs.parameters.profile_size)
             #compute simulation according to profile
-            simul_sheet = bugs.simulate(self.dom_bugs, poss_sheet)
+            simul_sheet = bugs.simulate(self.dom_bugs, self.poss_sheet)
             #congruency between simul and data
             self.perf = stats.give_percent(stats.subject_congruency(
-            self.subject_id, self.data, poss_sheet, simul_sheet[1],
-            self.dom_bugs))
+            self.subject_id, self.data, self.poss_sheet, simul_sheet[1],
+            self.operations, self.dom_bugs))
             
             #recompute background sheet only if needed
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
@@ -270,7 +271,7 @@ class subtraction_explorer():
 
     def on_cleanup(self):
         pygame.quit()
- 
+
     def on_execute(self):
         if self.on_init() == False:
             self.running = False

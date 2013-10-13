@@ -9,7 +9,6 @@ def read_datafile(filename):
         reader = csv.reader(f)
         out = []
         try:
-            
             for row in reader:
                 #ignore comments
                 if row[0][0] != '#':
@@ -31,6 +30,7 @@ def list_files(path, pattern):
             #list only subject datafiles
             if re.match(pattern, theFile) :
                 files.append(os.path.join(dirPath,theFile))
+                #~ print os.path.join(dirPath,theFile)
     return files
 
 def data_set(path, pattern):

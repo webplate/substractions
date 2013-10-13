@@ -50,7 +50,9 @@ file chooser gtk3
 
 
 ///pas envoyés
+-profilage par retenue des stratégies dominantes par ordre de dominance (et pas par seuil de dominance), on peut choisir un nombre de stratégies pour profiler.
 
+-identification de productions TROP ? incompréhensibles, trop éloignées de la consigne
 
 -afficher survols sur simulations
 -afficher liste cliquable des sujets disponibles ou champ de recherche
