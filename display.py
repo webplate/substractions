@@ -233,7 +233,7 @@ class subtraction_explorer():
             #congruency between simul and data
             self.perf = stats.give_percent(stats.subject_congruency(
             self.subject_id, self.data, self.poss_sheet, simul_sheet[1],
-            self.operations, self.dom_bugs))
+            self.operations))
             
             #recompute background sheet only if needed
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
@@ -247,7 +247,8 @@ class subtraction_explorer():
         self.notes_lst.extend(['Subject '+str(self.subject_id),
         self.data[self.subject_id]['path']])
         self.notes_lst.extend(self.perf)
-        self.notes_lst.extend(self.dom_bugs)
+        str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
+        self.notes_lst.extend(str_dom_bugs)
         self.notes_lst.extend(['_______',''])
         for section in self.fly_overs :
             top, right, bottom, left = section['box']

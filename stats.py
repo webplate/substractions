@@ -51,15 +51,14 @@ def all_congruency(data, operations, poss_sheet) :
         #compute simulation according to profile
         b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet)[1]
         scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
-        operations, dom_bugs)
+        operations)
         nb_correct_ope += scores[0]
         nb_ope += scores[1]
         nb_correct_col += scores[2]
         nb_col += scores[3]
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
-def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations,
-dom_bugs) :
+def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
     #+-1 tolerance TODO at operation level
     #check congruency between simul result and subject data

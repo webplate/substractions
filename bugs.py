@@ -254,15 +254,15 @@ def profile(scores, threshold=None, size=0) :
             bugs_tuples.append((proportion, bug))
         bugs_tuples = sorted(bugs_tuples, reverse=True,
         key=lambda strategy: strategy[0])   # sort by proportion
-        return [bug[1] for bug in bugs_tuples[:size]]
+        return bugs_tuples[:size]
     #or by keeping above threshold strategies
     elif threshold != None :
-        bugs = []
+        bugs_tuples = []
         for bug in scores :
             nb_sub, nb_poss = scores[bug]
             if float(nb_sub)/nb_poss > threshold :
-                bugs.append(bug)
-        return bugs
+                bugs_tuples.append((proportion, bug))
+        return bugs_tuples
     return []
 
 def simulate(dom_bugs, poss_sheet) :
@@ -270,6 +270,7 @@ def simulate(dom_bugs, poss_sheet) :
     '''
     simul = [ [] for i in range(len(poss_sheet)) ]
     results = []
+    dom_bugs = [tupl[1] for tupl in dom_bugs]
     for index, subtraction in enumerate(poss_sheet) :
         #select possible productions for a sub
         for bug in subtraction :
