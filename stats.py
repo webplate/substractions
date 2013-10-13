@@ -63,11 +63,12 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
     #+-1 tolerance TODO at operation level
     #check congruency between simul result and subject data
     for j, sim_result in enumerate(simul_sheet) :
-        if sim_result == data[subject_id]['results'][j] :
-            nb_correct_ope += 1
-        c_result = bugs.correct_result(operations[j])
         #exclude empty answers from valid answers
         #and exclude correctly answered operations
+        c_result = bugs.correct_result(operations[j])
+        if (sim_result == data[subject_id]['results'][j] and
+        not data[subject_id]['results'][j] == c_result):
+            nb_correct_ope += 1
         if (data[subject_id]['results'][j] not in ['X','G'] and
         not data[subject_id]['results'][j] == c_result) :
             nb_ope += 1

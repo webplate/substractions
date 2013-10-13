@@ -58,6 +58,12 @@ file chooser gtk3
 -prise en compte des competitions entre bugs pour la simulation : on garde les plus dominants
 
 -identification de productions TROP ? incompréhensibles, trop éloignées de la consigne
+exclusion des opé non répondues dans décompte des opérations à simuler
+exclusion des opé correctement répondues (on se penche sur les productions erronées)
+exclusion des protocoles à moitié (ou moins) répondus
+exclusion des protocoles où les sujets produisent des résultats plus élevés que les opérandes (ne répond pas à la consigne)
+
+- correction bug surévaluant la performance par opération de la simulation
 
 -afficher survols sur simulations
 -afficher liste cliquable des sujets disponibles ou champ de recherche
