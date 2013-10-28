@@ -168,6 +168,7 @@ class subtraction_explorer():
         if bugs.parameters.update_precomputation == True :
             #recompute the possible bugs of the sheet
             bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
+            return False
         #Precompute stats on whole dataset
         self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
         self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all
@@ -277,7 +278,7 @@ class subtraction_explorer():
         pygame.quit()
 
     def on_execute(self):
-        if self.on_init() == False:
+        if self.on_init() == False :
             self.running = False
         #Main loop
         self.frame = 0

@@ -35,7 +35,7 @@ def bugId_perDigit(d1, d2, r) :
         d2 = int(d2)
         if d1 - d2 == r :      #no error at column level
             return ['correct_col']
-        if d1 < d2 :
+        if d1 < d2 and d1 != 0 :
             if d2 - d1 == r :  #inversion grand - petit
                 bugs.append('gd-pt')
             if r == 0 :        #pt - gd = 0
@@ -46,6 +46,17 @@ def bugId_perDigit(d1, d2, r) :
                 bugs.append('pt-gd=pt')
             if r == d2 :
                 bugs.append('pt-gd=gd')
+        elif d1 < d2 and d1 == 0 :
+            if d2 - d1 == r :  #inversion grand - petit
+                bugs.append('gd-ptZ')
+            if r == 0 :        #pt - gd = 0
+                bugs.append('pt-gd=0Z')
+            if r == 'X' :
+                bugs.append('pt-gd=?Z')
+            if r == d1 :
+                bugs.append('pt-gd=ptZ')
+            if r == d2 :
+                bugs.append('pt-gd=gdZ')
         if r == 0 :
             if d1 == 0 :
                 bugs.append('0-N=0')
