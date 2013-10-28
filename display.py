@@ -165,7 +165,9 @@ class subtraction_explorer():
         self.data, ref, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern, bugs.parameters.reference,
         bugs.parameters.subtractions)
-
+        if bugs.parameters.update_precomputation == True :
+            #recompute the possible bugs of the sheet
+            bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
         #Precompute stats on whole dataset
         self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
         self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all

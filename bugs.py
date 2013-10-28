@@ -6,7 +6,7 @@ import transform_data as t_d
 import parameters
 
 import pickle
-#~ import pprint
+import pprint
 
 def count_correct(data, ref):
     for subject in data :
@@ -22,8 +22,7 @@ def correct_result(operands, o_type='subtraction') :
         result = int(operands[0]) - int(operands[1])
         return str(result)
 
-
-def bugId_perDigit(d1, d2, r):
+def bugId_perDigit(d1, d2, r) :
     '''Returns the bug identifiers corresponding to the subtraction:
     (d1 - d2 = r)
     parameters must be strings,
@@ -192,6 +191,7 @@ def possible_sheet(sheet) :
 def write_precomputations(sheet, file_name) :
     f = open(file_name, 'w')
     p_s = possible_sheet(sheet)
+    pprint.pprint(p_s)
     pickle.dump(p_s, f)
 
 def read_precomputations(file_name) :
@@ -256,7 +256,7 @@ def profile(scores, threshold=None, size=0) :
         key=lambda strategy: strategy[0])   # sort by proportion
         return bugs_tuples[:size]
     #or by keeping above threshold strategies
-    elif threshold != None :
+    elif threshold != None and size == None :
         bugs_tuples = []
         for bug in scores :
             nb_sub, nb_poss = scores[bug]
