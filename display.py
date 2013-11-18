@@ -162,9 +162,8 @@ class subtraction_explorer():
 
     def on_init(self):
         #Load experimental data of subjects and protocol
-        self.data, ref, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
-        bugs.parameters.subject_pattern, bugs.parameters.reference,
-        bugs.parameters.subtractions)
+        self.data, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
+        bugs.parameters.subject_pattern, bugs.parameters.subtractions)
         if bugs.parameters.update_precomputation == True :
             #recompute the possible bugs of the sheet
             bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)

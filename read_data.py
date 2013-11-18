@@ -69,17 +69,13 @@ def read_subfile(filename):
             sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
     return out
 
-def load_data(dataPath, subject_pattern, reference, subtractions) :
+def load_data(dataPath, subject_pattern, subtractions) :
     #HACK to inform of wrong datafiles
-    data = data_set(dataPath, subject_pattern)
     try:
-        
-        content_ref = read_datafile(dataPath+reference)
-        ref = content_ref['results']
+        data = data_set(dataPath, subject_pattern)
         operations = read_subfile(dataPath+subtractions)
-        return data, ref, operations
+        return data, operations
     except:
         print "Wrong datapaths :"
-        print dataPath+reference
         print dataPath+subtractions
         print "set these in parameters.py"

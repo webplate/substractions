@@ -4,7 +4,6 @@
 # Parameters to specify data of interest
 dataPath = '../data/'
 subtractions = 'protocoleVanLehn'      #subtractions to resolve
-reference = 'correctVanLehn'        #reference results
 subject_pattern = r's\d+\.\d+\.\d+'      #regex to find subject files
 default_sub = 0    #default subject id in data
 precomputation_file = 'precomputed.pickle'
