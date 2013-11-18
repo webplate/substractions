@@ -4,8 +4,8 @@
 import read_data as r_d
 import transform_data as t_d
 import parameters
-from precomputed import poss_sheet
 
+import pickle
 import pprint
 
 def count_correct(data, ref):
@@ -16,13 +16,18 @@ def count_correct(data, ref):
                 nb_correct += 1
         print subject['path'], nb_correct
 
-def bugId_perDigit(d1, d2, r):
+def correct_result(operands, o_type='subtraction') :
+    '''returns the correct result for an operation on two str operands'''
+    if o_type == 'subtraction' :
+        result = int(operands[0]) - int(operands[1])
+        return str(result)
+
+def bugId_perDigit(d1, d2, r) :
     '''Returns the bug identifiers corresponding to the subtraction:
     (d1 - d2 = r)
     parameters must be strings,
     d1,d2 and r should be of length 1
     '''
-    #~ print d1, d2, result
     bugs = []
     if t_d.canBeInteger(r) and t_d.canBeInteger(d1) and t_d.canBeInteger(d2) :
         r = int(r)
@@ -30,7 +35,7 @@ def bugId_perDigit(d1, d2, r):
         d2 = int(d2)
         if d1 - d2 == r :      #no error at column level
             return ['correct_col']
-        if d1 < d2 :
+        if d1 < d2 and d1 != 0 :
             if d2 - d1 == r :  #inversion grand - petit
                 bugs.append('gd-pt')
             if r == 0 :        #pt - gd = 0
@@ -41,6 +46,17 @@ def bugId_perDigit(d1, d2, r):
                 bugs.append('pt-gd=pt')
             if r == d2 :
                 bugs.append('pt-gd=gd')
+        #~ elif d1 < d2 and d1 == 0 :
+            #~ if d2 - d1 == r :  #inversion grand - petit
+                #~ bugs.append('gd-ptZ')
+            #~ if r == 0 :        #pt - gd = 0
+                #~ bugs.append('pt-gd=0Z')
+            #~ if r == 'X' :
+                #~ bugs.append('pt-gd=?Z')
+            #~ if r == d1 :
+                #~ bugs.append('pt-gd=ptZ')
+            #~ if r == d2 :
+                #~ bugs.append('pt-gd=gdZ')
         if r == 0 :
             if d1 == 0 :
                 bugs.append('0-N=0')
@@ -69,7 +85,6 @@ def bugId_perDouble(n1, n2, result, pos):
     n1_2 = n1[pos-1:len(n1)+pos+1]
     n2_2 = n2[pos-1:len(n2)+pos+1]
     result2 = result[pos-1:len(result)+pos+1]
-    #~ print n1_2, n2_2, result2
     #n2_2 can be of length one for incomplete sub
     if len(n2_2) > 1 and n2_2[0] == 'X' :
         n2_2 = n2_2[1]
@@ -122,7 +137,6 @@ def bugId(n1, n2, result):
                 if d2 == 'X' and bug_types != ['copy'] :
                     d2_shifted = n2[-min_col]
                     bug_types_s = bugId_perDigit(d1, d2_shifted, result[pos])
-                    #~ print explained_pos, pos
                     if bug_types_s != ['unexplained'] :         #spot 'blank' bug only if interesting
                         for bt in bug_types_s :
                             bugs_desc.append({'pos':pos, 'type':'blank_'+bt,
@@ -161,8 +175,8 @@ def possible_bugs(n1, n2) :
         for bug in grp_bugs :
             if 'pos' in bug :
                 add = True
-                #not interested by unexplained production or correct column
-                if bug['type'] in ('unexplained', 'correct_col', 'copy') :
+                #not interested by unexplained production
+                if bug['type'] == 'unexplained' :
                     add = False
                 #keep only different bugs on a same position
                 for pbug in poss_bugs :
@@ -185,6 +199,17 @@ def possible_sheet(sheet) :
         p_s.append(possible_bugs(n1, n2))
     return p_s
 
+def write_precomputations(sheet, file_name) :
+    f = open(file_name, 'w')
+    p_s = possible_sheet(sheet)
+    pprint.pprint(p_s)
+    pickle.dump(p_s, f)
+
+def read_precomputations(file_name) :
+    f = open(file_name, 'r')
+    sheet = pickle.load(f)
+    return sheet
+
 def subject_sheet_bugs(subject_data, operations) :
     '''Gives detected bugs of subjects in sheet constituted by operations
     '''
@@ -206,10 +231,10 @@ def dominancy(found, possible) :
             if 'pos' in fnd_bugs[j]
             and fnd_bugs[j]['pos'] == col_bug['pos']]
 
-            t = str(col_bug['type'])
+            t = col_bug['type']
             #there is a congruent bug
-            if col_bug['type'] in in_place :
-                #~ pprint.pprint(col_bug['type'])
+            if (col_bug['type'] not in ('correct_col', 'copy')
+            and col_bug['type'] in in_place) :
                 if t in scores :
                     nb_sub, nb_poss = scores[t]
                     new_score = (nb_sub+1, nb_poss+1)
@@ -226,26 +251,75 @@ def dominancy(found, possible) :
                     scores.update({t:(0, 1)})
     return scores
 
-def profile(scores, threshold) :
+def profile(scores, threshold=None, size=0) :
     '''create bug profile of subject
     keeps only bugs dominant enough
+    OR keep a certain number of bugs by order of dominancy
     '''
-    bugs = []
-    for bug in scores :
-        nb_sub, nb_poss = scores[bug]
-        if float(nb_sub)/nb_poss > threshold :
-            bugs.append(bug)
-    return bugs
+    #profile subjct by keeping most dominant strategies
+    if size != 0 and threshold != None :
+        bugs_tuples = []
+        for bug in scores :
+            nb_sub, nb_poss = scores[bug]
+            proportion = float(nb_sub)/nb_poss
+            bugs_tuples.append((proportion, bug))
+        bugs_tuples = sorted(bugs_tuples, reverse=True,
+        key=lambda strategy: strategy[0])   # sort by proportion
+        return bugs_tuples[:size]
+    #or by keeping above threshold strategies
+    elif threshold != None and size == None :
+        bugs_tuples = []
+        for bug in scores :
+            nb_sub, nb_poss = scores[bug]
+            if float(nb_sub)/nb_poss > threshold :
+                bugs_tuples.append((proportion, bug))
+        return bugs_tuples
+    return []
 
-def simul(dom_bugs, poss_sheet) :
+def simulate(dom_bugs, poss_sheet) :
     '''gives a result sheet congruent with the dominant_bugs
     '''
-    simul = []
-    for subtraction in poss_sheet :
+    simul = [ [] for i in range(len(poss_sheet)) ]
+    results = []
+    dom_bugs_names = [tupl[1] for tupl in dom_bugs]
+    for index, subtraction in enumerate(poss_sheet) :
+        #select possible productions for a sub
         for bug in subtraction :
-            if bug['type'] in dom_bugs :
-                simul.append(bug)
-    return simul
+            #select dominancy relative to the bug type in question
+            for (dom, name) in dom_bugs :   #for candidate
+                if name == bug['type'] :
+                    dominancy = dom
+                    bug.update({'dominancy':dominancy})
+            gen_pos = [ bug2['pos'] for bug2 in simul[index] ]
+            if bug['type'] in dom_bugs_names :
+                if bug['pos'] not in gen_pos : #new bug
+                    simul[index].append(bug)
+                else :   #competition between bugs (keep most dominant)
+                    for bug3 in simul[index] :    #for current
+                        if (bug3['pos'] == bug['pos']
+                        and dominancy > bug3['dominancy']) :
+                            simul[index].append(bug)
+                            simul[index].remove(bug3)
+            elif (bug['type'] in ('correct_col', 'copy')
+            and bug['pos'] not in gen_pos) :    #basic strategies (if no dominant bug suitable)
+                bug.update({'dominancy':0})
+                simul[index].append(bug)
+
+#check selected bugs to have a complete result...todo
+        #build the corresponding result
+        positions = [ bug['pos'] for bug in simul[index] ]
+        result_lst = [ '?' for i in range(-min(positions)) ]
+        for bug in simul[index] :
+            if len(bug['result']) == 1 :
+                result_lst[bug['pos']] = bug['result']
+            elif len(bug['result']) == 2 :
+                result_lst[bug['pos']] = bug['result'][1]
+                result_lst[bug['pos']-1] = bug['result'][0]
+        result = ''
+        for c in result_lst :
+            result = result + c
+        results.append(result)
+    return simul, results
 
 
 #TEST SUITE :
@@ -277,13 +351,19 @@ def simul(dom_bugs, poss_sheet) :
 
 
 #~ pprint.pprint(possible_bugs('647','45'))
+
 #~ data, ref, operations = r_d.load_data(parameters.dataPath,parameters.subject_pattern,parameters.reference,parameters.subtractions)
-#~ pprint.pprint(possible_sheet(operations))
+
+#~ #recompute the possible bugs of the sheet
+#~ write_precomputations(operations, parameters.precomputation_file)
 
 #~ found = subject_sheet_bugs(data[parameters.default_sub]['results'], operations)
-#~ #compute dominancies of subject
+#~ pprint.pprint(operations)
+#compute dominancies of subject
+#~ poss_sheet = read_precomputations(parameters.precomputation_file)
 #~ scores = dominancy(found, poss_sheet)
-#~ #create profile of subject (most dominant bugs)
+#create profile of subject (most dominant bugs)
 #~ dom_bugs = profile(scores, parameters.dominancy_thre)
-#~ #compute simulation according to profile
-#~ simul_sheet = simul(dom_bugs, poss_sheet)
+#compute simulation according to profile
+#~ simul_sheet = simulate(dom_bugs, poss_sheet)
+#~ pprint.pprint(simul_sheet[1])
