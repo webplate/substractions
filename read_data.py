@@ -6,20 +6,23 @@ import csv, sys, os, re
 def read_datafile(filename):
     '''Return content from datafile of subject'''
     with open(filename, 'rb') as f:
-        reader = csv.reader(f)
-        out = []
+        reader = csv.reader(f, delimiter=' ')
+        content = {'results' : [], 'time' : 0}
         try:
             for row in reader:
                 #ignore comments
                 if row[0][0] != '#':
-                    r = []
-                    for item in row:
-                        r.append(item)
-                    if len(r) > 0 :
-                        out.append(r[0])
+                    if row[0][:7] == 'minutes' :
+                        content['time'] = int(row[1])
+                    else :
+                        r = []
+                        for item in row:
+                            r.append(item)
+                        if len(r) > 0 :
+                            content['results'].append(r[0])                    
         except csv.Error, e:
             sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
-    return out
+    return content
 
 def list_files(path, pattern):
     '''Returns a list of filepaths to access subjects data
@@ -39,10 +42,12 @@ def data_set(path, pattern):
     data = []
     files_p = list_files(path, pattern)
     for p in files_p :
-        results = read_datafile(p)
+        content = read_datafile(p)
         #keep only non empty datafiles
-        if len(results) > 0 :
-            data.append({'path' : p, 'results' : results})
+        if len(content['results']) > 0 :
+            sub_data = {'path' : p}
+            sub_data.update(content)
+            data.append(sub_data)
         else :
             print(p, "is empty !")
     return data
@@ -66,9 +71,11 @@ def read_subfile(filename):
 
 def load_data(dataPath, subject_pattern, reference, subtractions) :
     #HACK to inform of wrong datafiles
+    data = data_set(dataPath, subject_pattern)
     try:
-        data = data_set(dataPath, subject_pattern)
-        ref = read_datafile(dataPath+reference)
+        
+        content_ref = read_datafile(dataPath+reference)
+        ref = content_ref['results']
         operations = read_subfile(dataPath+subtractions)
         return data, ref, operations
     except:

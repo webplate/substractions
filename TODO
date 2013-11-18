@@ -6,6 +6,8 @@ chercher indicateur résumant les 4 dominances du profil
 
 faire protocole analogue du vanLehn
 
+retirer le fichier référence !!!!
+
 ->  comparer chiffre à chiffre (aligner à droite, ignorer les zéros à gauche? )
 
 -> au niveau d'une colonne: les réponses bonnes malgré retenue (surement issues de procédure) doivent-elles être considérées comme des erreurs ?
@@ -59,9 +61,7 @@ file chooser gtk3
 
 
 ///pas envoyés
--nouvelle planche pour faire passer le protocole analogue
-
--ajout d'un paramètre à l'application pour mettre à jour les précomputations plus facilement
+- possibilité d'ajouter des variables aux fichiers de données (temps de passation par exemple)
 
 
 -afficher survols sur simulations
