@@ -166,6 +166,7 @@ class subtraction_explorer():
         bugs.parameters.subject_pattern, bugs.parameters.subtractions)
         if bugs.parameters.update_precomputation == True :
             #recompute the possible bugs of the sheet (no gui)
+            print "Precomputing " + bugs.parameters.precomputation_file
             bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
             return False
         #Precompute stats on whole dataset
@@ -244,10 +245,11 @@ class subtraction_explorer():
         #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
         self.notes_lst = []
         m_x, m_y= pygame.mouse.get_pos()
+        sub_time = str(self.data[self.subject_id]['time']) + " minutes"
         self.notes_lst.extend([str((m_x,m_y)), 'Global'])
         self.notes_lst.extend(self.all_perf)
         self.notes_lst.extend(['Subject '+str(self.subject_id),
-        self.data[self.subject_id]['path']])
+        self.data[self.subject_id]['path'], sub_time])
         self.notes_lst.extend(self.perf)
         str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
         self.notes_lst.extend(str_dom_bugs)
