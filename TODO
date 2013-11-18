@@ -1,12 +1,7 @@
 corréler avec aisance de l'élève,jugée par prof sur échelle à 4 valeurs
 
-raffiner déf des bugs(gd-pt (sauf les zéros)) et une version inclusive
-
 chercher indicateur résumant les 4 dominances du profil
 
-faire protocole analogue du vanLehn
-
-retirer le fichier référence !!!!
 
 ->  comparer chiffre à chiffre (aligner à droite, ignorer les zéros à gauche? )
 
@@ -63,6 +58,7 @@ file chooser gtk3
 ///pas envoyés
 - possibilité d'ajouter des variables aux fichiers de données (temps de passation par exemple)
 
+- le logiciel n'a plus besoin du fichier référence
 
 -afficher survols sur simulations
 -afficher liste cliquable des sujets disponibles ou champ de recherche
