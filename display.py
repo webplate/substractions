@@ -74,7 +74,7 @@ def draw_sub(pos, n1, n2, font, result='', simul_result='',
     height = 4*txt_inter
     #SRCALPHA is for per pixel transparency
     surf = pygame.Surface((width,height), flags=SRCALPHA)
-
+ 
     i_s, j_s = pos
     #identify bugs for drawing appropriate markers
     bugs_desc = bugs.bugId(n1, n2, result)
