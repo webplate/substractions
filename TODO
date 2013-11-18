@@ -58,7 +58,11 @@ file chooser gtk3
 ///pas envoyés
 - possibilité d'ajouter des variables aux fichiers de données (temps de passation par exemple)
 
+- indication du temps de passation dans les fichiers de données
+
 - le logiciel n'a plus besoin du fichier référence
+
+- gestion de différents protocoles avec différentes précomputations associées
 
 -afficher survols sur simulations
 -afficher liste cliquable des sujets disponibles ou champ de recherche

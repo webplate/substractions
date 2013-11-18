@@ -165,7 +165,7 @@ class subtraction_explorer():
         self.data, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern, bugs.parameters.subtractions)
         if bugs.parameters.update_precomputation == True :
-            #recompute the possible bugs of the sheet
+            #recompute the possible bugs of the sheet (no gui)
             bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
             return False
         #Precompute stats on whole dataset
