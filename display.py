@@ -154,11 +154,6 @@ def draw_sheet(dimensions, operations, results, simul_sheet, font):
             surf.blit(sub_surf, pos)
     return surf, fly_overs
 
-#Load experimental data of subjects and protocol
-data, ref, operations = bugs.r_d.load_data(bugs.parameters.dataPath,
-bugs.parameters.subject_pattern, bugs.parameters.reference,
-bugs.parameters.subtractions)
-
 class subtraction_explorer():
     '''a pygame (and pyplot) app for exploring subtractions data of subjects
     '''
@@ -271,6 +266,7 @@ class subtraction_explorer():
     def on_render(self) :
         self.display.fill(bg_color)
         self.display.blit(self.sheet, sheet_offset)
+        self.display.blit(self.sheet, simul_sheet_offset)
         #draw the notes
         for line_nb, line in enumerate(self.notes_lst) :
             desc = self.note_f.render(line, True, txt_color)
@@ -307,4 +303,3 @@ class subtraction_explorer():
 if __name__ == "__main__" :
     the_app = subtraction_explorer()
     the_app.on_execute()
-
