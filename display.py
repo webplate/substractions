@@ -249,7 +249,8 @@ class subtraction_explorer():
         self.notes_lst.extend([str((m_x,m_y)), 'Global'])
         self.notes_lst.extend(self.all_perf)
         self.notes_lst.extend(['Subject '+str(self.subject_id),
-        self.data[self.subject_id]['path'], sub_time])
+        self.data[self.subject_id]['path'], sub_time,
+        self.data[self.subject_id]['sheet']])
         self.notes_lst.extend(self.perf)
         str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
         self.notes_lst.extend(str_dom_bugs)

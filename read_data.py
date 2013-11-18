@@ -7,13 +7,15 @@ def read_datafile(filename):
     '''Return content from datafile of subject'''
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter=' ')
-        content = {'results' : [], 'time' : 0}
+        content = {'results' : [], 'time' : 0, 'sheet' : 'default'}
         try:
             for row in reader:
                 #ignore comments
                 if row[0][0] != '#':
-                    if row[0][:7] == 'minutes' :
-                        content['time'] = int(row[1])
+                    if row[0] == 'time' :
+                        content[row[0]] = int(row[1])
+                    elif row[0] == 'sheet' :
+                        content[row[0]] = row[1]
                     else :
                         r = []
                         for item in row:
