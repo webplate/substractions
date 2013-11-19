@@ -66,6 +66,9 @@ file chooser gtk3
 
 - gestion de différents protocoles avec différentes précomputations associées
 
+- stats affichées en graphiques des variables par sujets (temps, perf...)
+
+-affichage des sujets dans l'ordre de durée de passation
 
 
 -afficher survols sur simulations

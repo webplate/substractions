@@ -1,10 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import platform, os, threading, pygame
+import platform, os, threading, pygame, operator
 from display_settings import *
 import bugs, graph, stats
 
-class async_plot(threading.Thread):
+class strategy_plot(threading.Thread):
+    '''an thread object to launch a pyplot window in parallel
+    '''
+    def __init__(self, scores, all_sc):
+        threading.Thread.__init__(self)
+        self.scores = scores
+        self.all_sc = all_sc
+    def run(self):
+        graph.plot_scores(self.scores, self.all_sc)
+        graph.plt.show()
+
+class sujects_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
     '''
     def __init__(self, scores, all_sc):
@@ -159,7 +170,6 @@ class subtraction_explorer():
     '''
     def __init__(self):
         self.running = True
-
     def on_init(self):
         #Load experimental data of subjects and protocol
         self.data, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
@@ -169,6 +179,9 @@ class subtraction_explorer():
             print "Precomputing " + bugs.parameters.precomputation_file
             bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
             return False
+        #Ordinate subjects along a criteria
+        chronology = operator.itemgetter('time')
+        self.data.sort(key=chronology)
         #Precompute stats on whole dataset
         self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
         self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all
@@ -219,9 +232,12 @@ class subtraction_explorer():
         elif event.type == KEYDOWN and event.key == prev_key :
             if self.curr_subject-1 > -1 :
                 self.subject_id = self.curr_subject-1
-        elif event.type == KEYDOWN and event.key == graph_key :
-            plot_win = async_plot(self.scores, self.all_sc)
+        elif event.type == KEYDOWN and event.key == strat_graph_key :
+            plot_win = strategy_plot(self.scores, self.all_sc)
             plot_win.start()
+        elif event.type == KEYDOWN and event.key == sub_graph_key :
+            sub_plot_win = subjects_plot(self.scores, self.all_sc)
+            sub_plot_win.start()
 
     def on_loop(self):
         if self.subject_id != self.curr_subject :
