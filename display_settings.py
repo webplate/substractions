@@ -40,3 +40,5 @@ strat_graph_key = K_g
 sub_graph_key = K_h
 next_key = K_d
 prev_key = K_q
+next_button = 5
+prev_button = 4

@@ -172,20 +172,20 @@ class subtraction_explorer():
         self.running = True
     def on_init(self):
         #Load experimental data of subjects and protocol
-        self.data, self.operations = bugs.r_d.load_data(bugs.parameters.dataPath,
-        bugs.parameters.subject_pattern, bugs.parameters.subtractions)
-        if bugs.parameters.update_precomputation == True :
-            #recompute the possible bugs of the sheet (no gui)
-            print "Precomputing " + bugs.parameters.precomputation_file
-            bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
-            return False
+        self.data = bugs.r_d.load_data(bugs.parameters.dataPath,
+        bugs.parameters.subject_pattern)
+        #~ if bugs.parameters.update_precomputation == True :
+            #~ #recompute the possible bugs of the sheet (no gui)
+            #~ print "Precomputing " + bugs.parameters.precomputation_file
+            #~ bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
+            #~ return False
         #Ordinate subjects along a criteria
         chronology = operator.itemgetter('time')
         self.data.sort(key=chronology)
         #Precompute stats on whole dataset
-        self.poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
-        self.all_sc = stats.all_scores(self.data, self.operations) #dominancy scores for all
-        self.all_congruency = stats.all_congruency(self.data, self.operations, self.poss_sheet)
+        self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
+        self.all_sc = stats.all_scores(self.data, self.poss_sheets) #dominancy scores for all
+        self.all_congruency = stats.all_congruency(self.data, self.poss_sheets)
         self.all_perf = stats.give_percent(self.all_congruency)
 
         #Set graphic driver according to platform
@@ -226,10 +226,12 @@ class subtraction_explorer():
                     print 'No such subject in '+bugs.parameters.dataPath
             else :
                 print 'Enter a number...'
-        elif event.type == KEYDOWN and event.key == next_key :
+        elif (event.type == KEYDOWN and event.key == next_key
+        or event.type == MOUSEBUTTONDOWN and event.button == next_button) :
             if self.curr_subject+1 < len(self.data) :
                 self.subject_id = self.curr_subject+1
-        elif event.type == KEYDOWN and event.key == prev_key :
+        elif (event.type == KEYDOWN and event.key == prev_key
+        or event.type == MOUSEBUTTONDOWN and event.button == prev_button):
             if self.curr_subject-1 > -1 :
                 self.subject_id = self.curr_subject-1
         elif event.type == KEYDOWN and event.key == strat_graph_key :
@@ -241,6 +243,8 @@ class subtraction_explorer():
 
     def on_loop(self):
         if self.subject_id != self.curr_subject :
+            self.subject = self.data[self.subject_id]
+            self.operations, self.poss_sheet = bugs.serialize(self.subject, self.poss_sheets)
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
             self.scores = bugs.dominancy(found_bugs, self.poss_sheet)
@@ -253,7 +257,6 @@ class subtraction_explorer():
             self.perf = stats.give_percent(stats.subject_congruency(
             self.subject_id, self.data, self.poss_sheet, simul_sheet[1],
             self.operations))
-            
             #recompute background sheet only if needed
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
             self.data[self.subject_id]['results'], simul_sheet, self.font)
@@ -265,8 +268,8 @@ class subtraction_explorer():
         self.notes_lst.extend([str((m_x,m_y)), 'Global'])
         self.notes_lst.extend(self.all_perf)
         self.notes_lst.extend(['Subject '+str(self.subject_id),
-        self.data[self.subject_id]['path'], sub_time,
-        self.data[self.subject_id]['sheet']])
+        self.data[self.subject_id]['path'], sub_time,])
+        self.notes_lst.extend(self.data[self.subject_id]['sheet'])
         self.notes_lst.extend(self.perf)
         str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
         self.notes_lst.extend(str_dom_bugs)

@@ -1,29 +1,38 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import csv, sys, os, re
+import csv, sys, os, re, pickle
 
-def read_datafile(filename):
+def read_datafile(filename, path):
     '''Return content from datafile of subject'''
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter=' ')
-        content = {'results' : [], 'time' : 0, 'sheet' : 'default'}
+        content = {'results' : [], 'time' : 0, 'sheet' : [],
+        'operations' : [] }
+        rows = []
         try:
-            for row in reader:
-                #ignore comments
-                if row[0][0] != '#':
-                    if row[0] == 'time' :
-                        content[row[0]] = int(row[1])
-                    elif row[0] == 'sheet' :
-                        content[row[0]] = row[1]
-                    else :
-                        r = []
-                        for item in row:
-                            r.append(item)
-                        if len(r) > 0 :
-                            content['results'].append(r[0])                    
+            for row in reader :
+                rows.append(row)
         except csv.Error, e:
             sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
+        for row in rows :
+            #ignore comments
+            if row[0][0] != '#':
+                if row[0] == 'time' :
+                    content[row[0]] = int(row[1])
+                elif row[0] == 'sheet' :
+                    for i, item in enumerate(row) :
+                        if i != 0 :
+                            content[row[0]].append(item)
+                            #TODO share memory by linking instead of creating ope
+                            ope = read_subfile(os.path.join(path,item))
+                            content['operations'].append(ope)
+                else :
+                    r = []
+                    for item in row:
+                        r.append(item)
+                    if len(r) > 0 :
+                        content['results'].append(r[0])
     return content
 
 def list_files(path, pattern):
@@ -44,7 +53,7 @@ def data_set(path, pattern):
     data = []
     files_p = list_files(path, pattern)
     for p in files_p :
-        content = read_datafile(p)
+        content = read_datafile(p, path)
         #keep only non empty datafiles
         if len(content['results']) > 0 :
             sub_data = {'path' : p}
@@ -71,13 +80,31 @@ def read_subfile(filename):
             sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
     return out
 
-def load_data(dataPath, subject_pattern, subtractions) :
+def read_precomputations(path) :
+    files = []
+    for dirPath,dirNames,filName in os.walk(path):
+        for theFile in filName:
+            files.append(os.path.join(dirPath,theFile))
+    files = sorted(files)
+    sheets = {}
+    for file_name in files :
+        f = open(file_name, 'r')
+        #keep name only (without .pickle extension and path)
+        name = file_name[len(path):-7]
+        sheets.update({name : pickle.load(f)})
+    return sheets
+
+def write_precomputations(sheet, file_name) :
+    f = open(file_name, 'w')
+    p_s = possible_sheet(sheet)
+    pprint.pprint(p_s)
+    pickle.dump(p_s, f)
+
+def load_data(dataPath, subject_pattern) :
     #HACK to inform of wrong datafiles
-    try:
+    try :
         data = data_set(dataPath, subject_pattern)
-        operations = read_subfile(dataPath+subtractions)
-        return data, operations
-    except:
-        print "Wrong datapaths :"
-        print dataPath+subtractions
-        print "set these in parameters.py"
+        return data
+    except :
+        print "Unexpected error:", sys.exc_info()[0]
+        raise

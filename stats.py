@@ -23,11 +23,11 @@
 #  
 import bugs
 
-def all_scores(data, operations) :
+def all_scores(data, poss_sheets) :
     '''Precompute stats on whole dataset'''
     all_sc = {} #dominancy scores for all
-    poss_sheet = bugs.read_precomputations(bugs.parameters.precomputation_file)
     for subject in data :
+        operations, poss_sheet = bugs.serialize(subject, poss_sheets)
         found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
         sc = bugs.dominancy(found_bugs, poss_sheet)
         if all_sc == {} :
@@ -37,14 +37,16 @@ def all_scores(data, operations) :
             sc[key][1]+all_sc[key][1])
     return all_sc
 
-def all_congruency(data, operations, poss_sheet) :
+def all_congruency(data, poss_sheets) :
     nb_correct_ope = 0
     nb_correct_col = 0
     nb_ope = 0
     nb_col = 0
     for subject_id in range(len(data)) :#compute dominancies of subjects
+        subject = data[subject_id]
+        operations, poss_sheet = bugs.serialize(subject, poss_sheets)
         #create profile of subject (most dominant bugs)
-        found_bugs = bugs.subject_sheet_bugs(data[subject_id]['results'], operations)
+        found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
         scores = bugs.dominancy(found_bugs, poss_sheet)
         dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre,
         bugs.parameters.profile_size)
