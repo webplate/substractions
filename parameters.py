@@ -9,7 +9,7 @@ default_sub = 0    #default subject id in data
 precomputation_path = 'precomputations/'
 
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
-
+#possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'
 # Analysis settings
 mental_limit = 10   #how much a student can substract in his mind (realistic attempt)
 #~ dominancy_thre = 0.6    #threshold for picking dominant bugs

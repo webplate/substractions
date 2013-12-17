@@ -25,7 +25,7 @@ def read_datafile(filename, path):
                         if i != 0 :
                             content[row[0]].append(item)
                             #TODO share memory by linking instead of creating ope
-                            ope = read_subfile(os.path.join(path,item))
+                            ope = read_operations(os.path.join(path,item))
                             content['operations'].append(ope)
                 else :
                     r = []
@@ -63,7 +63,7 @@ def data_set(path, pattern):
             print(p, "is empty !")
     return data
 
-def read_subfile(filename):
+def read_operations(filename):
     '''Return list of subtractions (d1-d2 as [d1, d2])'''
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter='-')
@@ -93,12 +93,6 @@ def read_precomputations(path) :
         name = file_name[len(path):-7]
         sheets.update({name : pickle.load(f)})
     return sheets
-
-def write_precomputations(sheet, file_name) :
-    f = open(file_name, 'w')
-    p_s = possible_sheet(sheet)
-    pprint.pprint(p_s)
-    pickle.dump(p_s, f)
 
 def load_data(dataPath, subject_pattern) :
     #HACK to inform of wrong datafiles

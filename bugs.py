@@ -191,11 +191,13 @@ def possible_bugs(n1, n2) :
         result = t_d.completeX(max_col, str(r))
     return poss_bugs
 
-def possible_sheet(sheet) :
+def possible_sheet(sheet, silent=True) :
     '''Give possible bugs for all subtractions in sheet
     '''
     p_s = []
     for n1, n2 in sheet :
+        if silent == False :
+            print 'Precomputing for ', (n1, n2)
         p_s.append(possible_bugs(n1, n2))
     return p_s
 
@@ -325,6 +327,12 @@ def serialize(subject, poss_sheets) :
     if len(operations) != len(subject['results']) :
         print 'WARNING : incongruency between subject datafile and protocols for ', subject['path']
     return operations, poss_sheet
+
+def write_precomputations(sheet, file_name) :
+    f = open(file_name, 'w')
+    p_s = possible_sheet(sheet, silent=False)
+    pprint.pprint(p_s)
+    pickle.dump(p_s, f)
 
 #TEST SUITE :
 #~ print bugId_perDigit(2,9,0)

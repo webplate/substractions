@@ -174,11 +174,14 @@ class subtraction_explorer():
         #Load experimental data of subjects and protocol
         self.data = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern)
-        #~ if bugs.parameters.update_precomputation == True :
-            #~ #recompute the possible bugs of the sheet (no gui)
-            #~ print "Precomputing " + bugs.parameters.precomputation_file
-            #~ bugs.write_precomputations(self.operations, bugs.parameters.precomputation_file)
-            #~ return False
+        if bugs.parameters.update_precomputation != False :
+            #recompute the possible bugs of the sheet (no gui)
+            path = os.path.join(bugs.parameters.precomputation_path, bugs.parameters.update_precomputation+'.pickle')
+            ope_path = os.path.join(bugs.parameters.dataPath, bugs.parameters.update_precomputation)
+            ope = bugs.r_d.read_operations(ope_path)
+            print "Precomputing " + path
+            bugs.write_precomputations(ope, path)
+            return False
         #Ordinate subjects along a criteria
         chronology = operator.itemgetter('time')
         self.data.sort(key=chronology)
