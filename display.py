@@ -152,16 +152,18 @@ def draw_sheet(dimensions, operations, results, simul_sheet, font):
     for i in range(nb_col):
         for j in range(nb_lgn):
             k = i+j*nb_col
-            n1 = operations[k][0]
-            n2 = operations[k][1]
-            result = results[k]
-            sub_surf, new_fos = draw_sub((i,j), n1, n2, font, result,
-            simul_sheet[1][k], simul_sheet[0][k])
-            fly_overs.extend(new_fos)
-            #to verticaly align on right column
-            gap = sub_dims[0] - sub_surf.get_width()
-            pos = (gap + i*sub_dims[0], j*sub_dims[1])
-            surf.blit(sub_surf, pos)
+            #try to draw only if existent operation
+            if k < len(operations) :
+                n1 = operations[k][0]
+                n2 = operations[k][1]
+                result = results[k]
+                sub_surf, new_fos = draw_sub((i,j), n1, n2, font, result,
+                simul_sheet[1][k], simul_sheet[0][k])
+                fly_overs.extend(new_fos)
+                #to verticaly align on right column
+                gap = sub_dims[0] - sub_surf.get_width()
+                pos = (gap + i*sub_dims[0], j*sub_dims[1])
+                surf.blit(sub_surf, pos)
     return surf, fly_overs
 
 

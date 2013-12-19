@@ -11,8 +11,8 @@ window_size = (800, 500)
 bg_color = (255, 255, 255)
 txt_color = (0, 0, 0)
 txt_font = "./fonts/UbuntuMono-R.ttf"
-txt_size = 20
-txt_inter = 20
+txt_size = 16
+txt_inter = txt_size + 2
 bug_color = (200, 200, 255)
 correct_col_color = (200, 255, 200)
 unexplained_color = (255, 200, 200)
@@ -25,14 +25,14 @@ simul_bad_color = (255, 103, 96)
 
 note_font = "./fonts/UbuntuMono-R.ttf"
 note_size = 12
-note_inter = 12
+note_inter = note_size
 
 #subtractions pixel dimensions
-sub_dims = (5* txt_size, 5* txt_inter)
+sub_dims = (4* txt_size, 5* txt_inter)
 
 #sheet params
-sheet_dims = (4,5)
-sheet_offset = (300,10)
+sheet_dims = (8,5)
+sheet_offset = (250,10)
 
 #control settings
 switch_key = K_s

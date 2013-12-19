@@ -5,7 +5,7 @@
 dataPath = '../data/'
 #~ subtractions = 'protocoleVanLehn'      #subtractions to resolve
 subject_pattern = r's\d+\.\d+\.\d+'      #regex to find subject files
-default_sub = 0    #default subject id in data
+default_sub = 36    #default subject id in data
 precomputation_path = 'precomputations/'
 
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
