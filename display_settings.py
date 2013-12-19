@@ -36,6 +36,9 @@ simul_sheet_offset = (sheet_offset[0] + sub_dims[0]*5, 10)
 
 #control settings
 switch_key = K_s
-graph_key = K_g
+strat_graph_key = K_g
+sub_graph_key = K_h
 next_key = K_d
 prev_key = K_q
+next_button = 5
+prev_button = 4
