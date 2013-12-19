@@ -289,7 +289,7 @@ class subtraction_explorer():
     def on_render(self) :
         self.display.fill(bg_color)
         self.display.blit(self.sheet, sheet_offset)
-        self.display.blit(self.sheet, simul_sheet_offset)
+        self.display.blit(self.sheet, sheet2_offset)
         #draw the notes
         for line_nb, line in enumerate(self.notes_lst) :
             desc = self.note_f.render(line, True, txt_color)

@@ -32,7 +32,7 @@ sub_dims = (3* txt_size, 5* txt_inter)
 #sheet params
 sheet_dims = (4,5)
 sheet_offset = (300,10)
-simul_sheet_offset = (sheet_offset[0] + sub_dims[0]*5, 10)
+sheet2_offset = (sheet_offset[0] + sub_dims[0]*5, 10)
 
 #control settings
 switch_key = K_s
