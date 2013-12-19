@@ -15,7 +15,7 @@ class strategy_plot(threading.Thread):
         graph.plot_scores(self.scores, self.all_sc)
         graph.plt.show()
 
-class sujects_plot(threading.Thread):
+class subjects_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
     '''
     def __init__(self, scores, all_sc):
@@ -23,6 +23,7 @@ class sujects_plot(threading.Thread):
         self.scores = scores
         self.all_sc = all_sc
     def run(self):
+        #TODO code plot_subject
         graph.plot_scores(self.scores, self.all_sc)
         graph.plt.show()
 
