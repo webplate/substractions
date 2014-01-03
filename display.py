@@ -15,15 +15,15 @@ class strategy_plot(threading.Thread):
         graph.plot_scores(self.scores, self.all_sc)
         graph.plt.show()
 
-class sujects_plot(threading.Thread):
+class subjects_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
     '''
-    def __init__(self, scores, all_sc):
+    def __init__(self, times, perf):
         threading.Thread.__init__(self)
-        self.scores = scores
-        self.all_sc = all_sc
+        self.times = times
+        self.perf = perf
     def run(self):
-        graph.plot_scores(self.scores, self.all_sc)
+        graph.plot_perf_duration(self.times, self.perf)
         graph.plt.show()
 
 def pix_coord(pos, gap, max_width, surface) :
@@ -190,8 +190,10 @@ class subtraction_explorer():
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
         self.all_sc = stats.all_scores(self.data, self.poss_sheets) #dominancy scores for all
-        self.all_congruency = stats.all_congruency(self.data, self.poss_sheets)
+        self.all_congruency, self.list_cong, self.list_prof = stats.all_congruency(self.data, self.poss_sheets)
         self.all_perf = stats.give_percent(self.all_congruency)
+        self.list_times = [subject['time'] for subject in self.data]
+        self.list_perf = [float(congruency[2])/congruency[3] for congruency in self.list_cong]
 
         #Set graphic driver according to platform
         system = platform.system()
@@ -243,7 +245,7 @@ class subtraction_explorer():
             plot_win = strategy_plot(self.scores, self.all_sc)
             plot_win.start()
         elif event.type == KEYDOWN and event.key == sub_graph_key :
-            sub_plot_win = subjects_plot(self.scores, self.all_sc)
+            sub_plot_win = subjects_plot(self.list_times, self.list_perf)
             sub_plot_win.start()
 
     def on_loop(self):
@@ -257,7 +259,7 @@ class subtraction_explorer():
             self.dom_bugs = bugs.profile(self.scores,
             bugs.parameters.dominancy_thre, bugs.parameters.profile_size)
             #compute simulation according to profile
-            simul_sheet = bugs.simulate(self.dom_bugs, self.poss_sheet)
+            simul_sheet = bugs.simulate(self.dom_bugs, self.poss_sheet, self.operations, self.subject_id)
             #congruency between simul and data
             self.perf = stats.give_percent(stats.subject_congruency(
             self.subject_id, self.data, self.poss_sheet, simul_sheet[1],

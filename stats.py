@@ -42,6 +42,8 @@ def all_congruency(data, poss_sheets) :
     nb_correct_col = 0
     nb_ope = 0
     nb_col = 0
+    list_cong = []
+    list_profiles = []
     for subject_id in range(len(data)) :#compute dominancies of subjects
         subject = data[subject_id]
         operations, poss_sheet = bugs.serialize(subject, poss_sheets)
@@ -51,14 +53,16 @@ def all_congruency(data, poss_sheets) :
         dom_bugs = bugs.profile(scores, bugs.parameters.dominancy_thre,
         bugs.parameters.profile_size)
         #compute simulation according to profile
-        b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet)[1]
+        b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)[1]
         scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
         operations)
         nb_correct_ope += scores[0]
         nb_ope += scores[1]
         nb_correct_col += scores[2]
         nb_col += scores[3]
-    return nb_correct_ope, nb_ope, nb_correct_col, nb_col
+        list_cong.append(scores)
+        list_profiles.append(dom_bugs)
+    return (nb_correct_ope, nb_ope, nb_correct_col, nb_col), list_cong, list_profiles
 
 def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)

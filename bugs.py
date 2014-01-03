@@ -267,7 +267,7 @@ def profile(scores, threshold=None, size=0) :
         return bugs_tuples
     return []
 
-def simulate(dom_bugs, poss_sheet) :
+def simulate(dom_bugs, poss_sheet, operations, subject_id) :
     '''gives a result sheet congruent with the dominant_bugs
     '''
     simul = [ [] for i in range(len(poss_sheet)) ]
@@ -308,6 +308,8 @@ def simulate(dom_bugs, poss_sheet) :
                 result_lst[bug['pos']-1] = bug['result'][0]
         result = ''
         for c in result_lst :
+            if c == '?' : #WARNING if empty simulation
+                print 'Empty simulation for : ', subject_id, operations[index]
             result = result + c
         results.append(result)
     return simul, results

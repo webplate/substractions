@@ -1,7 +1,8 @@
-corréler avec aisance de l'élève,jugée par prof sur échelle à 4 valeurs
+corréler avec aisance de l'élève,jugée par prof sur échelle à 3 valeurs
 
 chercher indicateur résumant les 4 dominances du profil
 
+idée pour éviter simul vides : profil prends qlq primaries et qlq blank...
 
 ->  comparer chiffre à chiffre (aligner à droite, ignorer les zéros à gauche? )
 
@@ -58,8 +59,11 @@ file chooser gtk3
 ///pas envoyés
 
 - stats affichées en graphiques des variables par sujets (temps, perf...)
+(dans la même fenêtre de plot !)
 
 - support de plusieurs protocoles employés hétérogénement dans les données
+
+-print warning if empty simulation
 
 -afficher survols sur simulations
 -afficher liste cliquable des sujets disponibles ou champ de recherche
