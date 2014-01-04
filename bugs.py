@@ -256,7 +256,7 @@ def profile(scores, threshold=None, size=0) :
             bugs_tuples.append((proportion, bug))
         bugs_tuples = sorted(bugs_tuples, reverse=True,
         key=lambda strategy: strategy[0])   # sort by proportion
-        return bugs_tuples[:size]
+        return bugs_tuples
     #or by keeping above threshold strategies
     elif threshold != None and size == None :
         bugs_tuples = []

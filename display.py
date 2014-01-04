@@ -245,7 +245,8 @@ class subtraction_explorer():
             plot_win = strategy_plot(self.scores, self.all_sc)
             plot_win.start()
         elif event.type == KEYDOWN and event.key == sub_graph_key :
-            sub_plot_win = subjects_plot(self.list_times, self.list_perf)
+            sub_plot_win = subjects_plot(self.list_times, self.list_perf,
+            self.list_prof)
             sub_plot_win.start()
 
     def on_loop(self):
