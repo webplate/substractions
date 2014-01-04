@@ -55,8 +55,7 @@ def all_congruency(data, poss_sheets) :
         bugs.parameters.profile_size)
         #a truncated version for cognitive plausability
         dom_bugs = dom_bugs_l[:bugs.parameters.profile_size]
-        print dom_bugs
-        ordered_prof = dom_bugs
+        ordered_prof = [ dom_bug[1] for dom_bug in dom_bugs]
         #compute simulation according to profile
         b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)[1]
         scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
@@ -67,8 +66,10 @@ def all_congruency(data, poss_sheets) :
         nb_col += scores[3]
         list_cong.append(scores)
         list_profiles.append(dom_bugs_l)
+        if ordered_prof not in list_ord_prof : #keep no duplicates
+            list_ord_prof.append(ordered_prof)
     return ((nb_correct_ope, nb_ope, nb_correct_col, nb_col),
-    list_cong, list_profiles)
+    list_cong, list_profiles, list_ord_prof)
 
 def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
