@@ -245,10 +245,10 @@ class subtraction_explorer():
             if self.curr_subject-1 > -1 :
                 self.subject_id = self.curr_subject-1
         elif event.type == KEYDOWN and event.key == strat_graph_key :
-            plot_win = strategy_plot(self.scores, self.gstats)
+            plot_win = strategy_plot(self.scores, self.gstats['scores'])
             plot_win.start()
         elif event.type == KEYDOWN and event.key == sub_graph_key :
-            sub_plot_win = subjects_plot(self.ls_times, self.ls_perf,
+            sub_plot_win = subjects_plot(self.gstats['times'], self.ls_perf,
             self.all_ord_prof, self.ls_prof)
             sub_plot_win.start()
 

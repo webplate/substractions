@@ -118,6 +118,7 @@ def analysis(data, poss_sheets) :
     chronology = operator.itemgetter('occ')
     ls_ord_prof.sort(key=chronology)
     global_stats = {'ord_profile' : ls_ord_prof,
+    'scores' : all_sc,
     'score_ope' : (all_cong[0], all_cong[1]),
     'score_col' : (all_cong[2], all_cong[3]),
     'perf_ope' : float(all_cong[0])/all_cong[1],
