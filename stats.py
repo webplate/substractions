@@ -24,63 +24,10 @@
 import operator
 import bugs
 
-def all_scores(data, poss_sheets) :
-    '''Precompute stats on whole dataset'''
-    all_sc = {} #dominancy scores for all
-    for subject in data :
-        operations, poss_sheet = bugs.serialize(subject, poss_sheets)
-        found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
-        sc = bugs.dominancy(found_bugs, poss_sheet)
-        if all_sc == {} :
-            all_sc = sc
-        for key in sc :
-            all_sc[key] = (sc[key][0]+all_sc[key][0],
-            sc[key][1]+all_sc[key][1])
-    return all_sc
-
-def all_congruency(data, poss_sheets) :
-    nb_correct_ope = 0
-    nb_correct_col = 0
-    nb_ope = 0
-    nb_col = 0
-    list_cong = []
-    list_profiles = [] #list of per subject profiles
-    list_ord_prof = [] #list of ordered profiles
-    for subject_id in range(len(data)) :#compute dominancies of subjects
-        subject = data[subject_id]
-        operations, poss_sheet = bugs.serialize(subject, poss_sheets)
-        #create profile of subject (most dominant bugs)
-        found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
-        scores = bugs.dominancy(found_bugs, poss_sheet)
-        dom_bugs_l = bugs.profile(scores, bugs.parameters.dominancy_thre,
-        bugs.parameters.profile_size)
-        #a truncated version for cognitive plausability
-        dom_bugs = dom_bugs_l[:bugs.parameters.profile_size]
-        ordered_prof = [ dom_bug[1] for dom_bug in dom_bugs]
-        #compute simulation according to profile
-        b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)[1]
-        scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
-        operations)
-        nb_correct_ope += scores[0]
-        nb_ope += scores[1]
-        nb_correct_col += scores[2]
-        nb_col += scores[3]
-        list_cong.append(scores)
-        list_profiles.append(dom_bugs_l)
-        #find dict to update for a supplementary occurence
-        dico = [prof for prof in list_ord_prof if prof['profile'] == ordered_prof]
-        if len(dico) == 0 : #this profile has never occured yet
-            list_ord_prof.append({'profile' : ordered_prof, 'occ' : 1})
-        else : #no duplicates
-            dico = dico[0]
-            dico.update({'occ' : dico['occ']+1})
-    #Ordinate subjects along a criteria
-    chronology = operator.itemgetter('occ')
-    list_ord_prof.sort(key=chronology)
-    return ((nb_correct_ope, nb_ope, nb_correct_col, nb_col),
-    list_cong, list_profiles, list_ord_prof)
-
 def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
+    '''gives nb of congruencies between subject production and simulation
+    at column and operation level
+    '''
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
     #+-1 tolerance TODO at operation level
     #check congruency between simul result and subject data
@@ -121,6 +68,57 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
                         nb_col += 1
                 pos -= 1
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
+
+def analysis(data, poss_sheets) :
+    '''Precompute stats on whole dataset, returns :
+    all_cong = [0, 0, 0, 0] #congruency at global level
+    all_sc = {} #dominancy scores at global level
+    list_cong = [] #list nb of congruency for each subject
+    list_profiles = [] #list of per subject profiles
+    list_ord_prof = [] #list of ordered profiles
+    '''
+    all_cong = [0, 0, 0, 0] #congruency at global level
+    all_sc = {} #dominancy scores at global level
+    list_cong = [] #list nb of congruency for each subject
+    list_profiles = [] #list of per subject profiles
+    list_ord_prof = [] #list of ordered profiles
+    for subject_id in range(len(data)) :
+        subject = data[subject_id]
+        operations, poss_sheet = bugs.serialize(subject, poss_sheets)
+        #create profile of subject (most dominant bugs)
+        found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
+        scores = bugs.dominancy(found_bugs, poss_sheet)
+        dom_bugs_l = bugs.profile(scores, bugs.parameters.dominancy_thre,
+        bugs.parameters.profile_size)
+        #compute global dominancies
+        if all_sc == {} :
+            all_sc = scores
+        for key in scores :
+            all_sc[key] = (scores[key][0]+all_sc[key][0],
+            scores[key][1]+all_sc[key][1])
+        #a truncated version for cognitive plausability (used for ordered profiles)
+        dom_bugs = dom_bugs_l[:bugs.parameters.profile_size]
+        ordered_prof = [dom_bug[1] for dom_bug in dom_bugs]
+        #compute simulation according to profile
+        b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)[1]
+        scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
+        operations)
+        #compute global congruency
+        for i in range(4) :
+            all_cong[i] += scores[i]
+        list_cong.append(scores)
+        list_profiles.append(dom_bugs_l)
+        #find dict to update for a supplementary occurence of ordered profile
+        dico = [prof for prof in list_ord_prof if prof['profile'] == ordered_prof]
+        if len(dico) == 0 : #this profile has never occured yet
+            list_ord_prof.append({'profile' : ordered_prof, 'occ' : 1})
+        else : #no duplicates
+            dico = dico[0]
+            dico.update({'occ' : dico['occ']+1})
+    #Ordinate subjects along a criteria
+    chronology = operator.itemgetter('occ')
+    list_ord_prof.sort(key=chronology)
+    return (all_sc, all_cong, list_cong, list_profiles, list_ord_prof)
 
 def give_percent(scores) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = scores
