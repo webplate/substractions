@@ -20,9 +20,14 @@ def freq_by_type(scores) :
             i += 1
     return freqs, types, ind
 
-def plot_scores(scores, all_scores):
+def plot_scores(scores, gstats):
     '''a bar plot showing frequency of appearance for each bug in scores
     '''
+    all_scores = (gstats['score_ope'][0],
+    gstats['score_ope'][1],
+    gstats['score_col'][0],
+    gstats['score_col'][1])
+    print all_scores
     freqs, types, ind = freq_by_type(scores)
     all_freqs = freq_by_type(all_scores)[0]
     #mean frequencies for all

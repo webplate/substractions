@@ -7,12 +7,12 @@ import bugs, graph, stats
 class strategy_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
     '''
-    def __init__(self, scores, all_sc):
+    def __init__(self, scores, gstats):
         threading.Thread.__init__(self)
         self.scores = scores
-        self.all_sc = all_sc
+        self.gstats = gstats
     def run(self):
-        graph.plot_scores(self.scores, self.all_sc)
+        graph.plot_scores(self.scores, self.gstats)
         graph.plt.show()
 
 class subjects_plot(threading.Thread):
@@ -167,6 +167,11 @@ def draw_sheet(dimensions, operations, results, simul_sheet, font):
                 surf.blit(sub_surf, pos)
     return surf, fly_overs
 
+def nice_percent(nb) :
+    '''simple formatting function for rounding and getting to string
+    '''
+    text = "{0:.0%}".format(nb)
+    return text
 
 class subtraction_explorer():
     '''a pygame (and pyplot) app for exploring subtractions data of subjects
@@ -190,17 +195,8 @@ class subtraction_explorer():
         self.data.sort(key=chronology)
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
-        (self.all_sc,
-        self.all_congruency,
-        self.all_ord_prof,
-        self.ls_cong,
-        self.ls_prof,
-        self.ls_ord_prof) = stats.analysis(self.data, self.poss_sheets)
-        #make proportion measure ao congruency
-        self.all_perf = stats.give_percent(self.all_congruency)
-        self.ls_perf = [float(congruency[2])/congruency[3] for congruency in self.ls_cong]
-        #duration of experiment for each subjects
-        self.ls_times = [subject['time'] for subject in self.data]
+        #get global statistics and populate data with stats
+        self.gstats = stats.analysis(self.data, self.poss_sheets)
 
         #Set graphic driver according to platform
         system = platform.system()
@@ -249,7 +245,7 @@ class subtraction_explorer():
             if self.curr_subject-1 > -1 :
                 self.subject_id = self.curr_subject-1
         elif event.type == KEYDOWN and event.key == strat_graph_key :
-            plot_win = strategy_plot(self.scores, self.all_sc)
+            plot_win = strategy_plot(self.scores, self.gstats)
             plot_win.start()
         elif event.type == KEYDOWN and event.key == sub_graph_key :
             sub_plot_win = subjects_plot(self.ls_times, self.ls_perf,
@@ -268,10 +264,6 @@ class subtraction_explorer():
             bugs.parameters.dominancy_thre, bugs.parameters.profile_size)
             #compute simulation according to profile
             simul_sheet = bugs.simulate(self.dom_bugs, self.poss_sheet, self.operations, self.subject_id)
-            #congruency between simul and data
-            self.perf = stats.give_percent(stats.subject_congruency(
-            self.subject_id, self.data, self.poss_sheet, simul_sheet[1],
-            self.operations))
             #recompute background sheet only if needed
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
             self.data[self.subject_id]['results'], simul_sheet, self.font)
@@ -281,11 +273,11 @@ class subtraction_explorer():
         m_x, m_y= pygame.mouse.get_pos()
         sub_time = str(self.data[self.subject_id]['time']) + " minutes"
         self.notes_lst.extend([str((m_x,m_y)), 'Global'])
-        self.notes_lst.extend(self.all_perf)
+        self.notes_lst.extend([nice_percent(self.gstats['perf_col'])])
         self.notes_lst.extend(['Subject '+str(self.subject_id),
         self.data[self.subject_id]['path'], sub_time,])
         self.notes_lst.extend(self.data[self.subject_id]['sheet'])
-        self.notes_lst.extend(self.perf)
+        self.notes_lst.extend([nice_percent(self.subject['perf_col'])])
         str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
         self.notes_lst.extend(str_dom_bugs)
         self.notes_lst.extend(['_______',''])

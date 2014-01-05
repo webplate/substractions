@@ -5,7 +5,6 @@ import csv, sys, os, re, pickle
 
 def read_datafile(filename, path):
     '''Return content from datafile of subject'''
-    print filename
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter=' ')
         content = {'results' : [], 'time' : 0, 'sheet' : [],
