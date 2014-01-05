@@ -70,18 +70,14 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations) :
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
 def analysis(data, poss_sheets) :
-    '''Precompute stats on whole dataset, returns :
-    all_cong = [0, 0, 0, 0] #congruency at global level
-    all_sc = {} #dominancy scores at global level
-    list_cong = [] #list nb of congruency for each subject
-    list_profiles = [] #list of per subject profiles
-    list_ord_prof = [] #list of ordered profiles
+    '''Precompute stats on whole dataset,
     '''
     all_cong = [0, 0, 0, 0] #congruency at global level
     all_sc = {} #dominancy scores at global level
-    list_cong = [] #list nb of congruency for each subject
-    list_profiles = [] #list of per subject profiles
-    list_ord_prof = [] #list of ordered profiles
+    all_ord_prof = [] #list of ordered profiles for each subject
+    ls_cong = [] #list nb of congruency for each subject
+    ls_profiles = [] #list of per subject profiles
+    ls_ord_prof = [] #list of ordered profiles globally
     for subject_id in range(len(data)) :
         subject = data[subject_id]
         operations, poss_sheet = bugs.serialize(subject, poss_sheets)
@@ -96,9 +92,11 @@ def analysis(data, poss_sheets) :
         for key in scores :
             all_sc[key] = (scores[key][0]+all_sc[key][0],
             scores[key][1]+all_sc[key][1])
-        #a truncated version for cognitive plausability (used for ordered profiles)
+        #a truncated version for cognitive plausability
+        #(used for ordered profiles and simulation)
         dom_bugs = dom_bugs_l[:bugs.parameters.profile_size]
         ordered_prof = [dom_bug[1] for dom_bug in dom_bugs]
+        all_ord_prof.append(ordered_prof)
         #compute simulation according to profile
         b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)[1]
         scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
@@ -106,19 +104,19 @@ def analysis(data, poss_sheets) :
         #compute global congruency
         for i in range(4) :
             all_cong[i] += scores[i]
-        list_cong.append(scores)
-        list_profiles.append(dom_bugs_l)
+        ls_cong.append(scores)
+        ls_profiles.append(dom_bugs_l)
         #find dict to update for a supplementary occurence of ordered profile
-        dico = [prof for prof in list_ord_prof if prof['profile'] == ordered_prof]
+        dico = [prof for prof in ls_ord_prof if prof['profile'] == ordered_prof]
         if len(dico) == 0 : #this profile has never occured yet
-            list_ord_prof.append({'profile' : ordered_prof, 'occ' : 1})
+            ls_ord_prof.append({'profile' : ordered_prof, 'occ' : 1})
         else : #no duplicates
             dico = dico[0]
             dico.update({'occ' : dico['occ']+1})
     #Ordinate subjects along a criteria
     chronology = operator.itemgetter('occ')
-    list_ord_prof.sort(key=chronology)
-    return (all_sc, all_cong, list_cong, list_profiles, list_ord_prof)
+    ls_ord_prof.sort(key=chronology)
+    return (all_sc, all_cong, all_ord_prof, ls_cong, ls_profiles, ls_ord_prof)
 
 def give_percent(scores) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = scores

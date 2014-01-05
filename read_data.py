@@ -5,6 +5,7 @@ import csv, sys, os, re, pickle
 
 def read_datafile(filename, path):
     '''Return content from datafile of subject'''
+    print filename
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter=' ')
         content = {'results' : [], 'time' : 0, 'sheet' : [],
@@ -16,23 +17,27 @@ def read_datafile(filename, path):
         except csv.Error, e:
             sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
         for row in rows :
-            #ignore comments
-            if row[0][0] != '#':
-                if row[0] == 'time' :
-                    content[row[0]] = int(row[1])
-                elif row[0] == 'sheet' :
-                    for i, item in enumerate(row) :
-                        if i != 0 :
-                            content[row[0]].append(item)
-                            #TODO share memory by linking instead of creating ope
-                            ope = read_operations(os.path.join(path,item))
-                            content['operations'].append(ope)
-                else :
-                    r = []
-                    for item in row:
-                        r.append(item)
-                    if len(r) > 0 :
-                        content['results'].append(r[0])
+            #support empty lines
+            if len(row) != 0 :
+                #ignore comments
+                if row[0][0] != '#':
+                    if row[0] == 'time' :
+                        content[row[0]] = int(row[1])
+                    elif row[0] == 'sheet' :
+                        for i, item in enumerate(row) :
+                            if i != 0 :
+                                content[row[0]].append(item)
+                                #TODO share memory by linking instead of creating ope
+                                ope = read_operations(os.path.join(path,item))
+                                content['operations'].append(ope)
+                    elif row[0] == 'judge' :
+                        content.update({'judge' : row[0]})
+                    else :
+                        r = []
+                        for item in row:
+                            r.append(item)
+                        if len(r) > 0 :
+                            content['results'].append(r[0])
     return content
 
 def list_files(path, pattern):

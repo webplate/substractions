@@ -18,10 +18,11 @@ class strategy_plot(threading.Thread):
 class subjects_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
     '''
-    def __init__(self, times, perf):
+    def __init__(self, times, perf, profiles):
         threading.Thread.__init__(self)
         self.times = times
         self.perf = perf
+        self.prof = profiles
     def run(self):
         graph.plot_perf_duration(self.times, self.perf)
         graph.plt.show()
@@ -189,13 +190,17 @@ class subtraction_explorer():
         self.data.sort(key=chronology)
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
-        (self.all_sc, self.all_congruency, self.list_cong, self.list_prof,
-        self.list_ord_prof) = stats.analysis(self.data, self.poss_sheets)
+        (self.all_sc,
+        self.all_congruency,
+        self.all_ord_prof,
+        self.ls_cong,
+        self.ls_prof,
+        self.ls_ord_prof) = stats.analysis(self.data, self.poss_sheets)
         #make proportion measure ao congruency
         self.all_perf = stats.give_percent(self.all_congruency)
-        self.list_perf = [float(congruency[2])/congruency[3] for congruency in self.list_cong]
+        self.ls_perf = [float(congruency[2])/congruency[3] for congruency in self.ls_cong]
         #duration of experiment for each subjects
-        self.list_times = [subject['time'] for subject in self.data]
+        self.ls_times = [subject['time'] for subject in self.data]
 
         #Set graphic driver according to platform
         system = platform.system()
@@ -247,8 +252,8 @@ class subtraction_explorer():
             plot_win = strategy_plot(self.scores, self.all_sc)
             plot_win.start()
         elif event.type == KEYDOWN and event.key == sub_graph_key :
-            sub_plot_win = subjects_plot(self.list_times, self.list_perf,
-            self.list_prof)
+            sub_plot_win = subjects_plot(self.ls_times, self.ls_perf,
+            self.all_ord_prof, self.ls_prof)
             sub_plot_win.start()
 
     def on_loop(self):

@@ -43,7 +43,7 @@ def plot_scores(scores, all_scores):
 def plot_perf_duration(all_times, all_perf):
     '''a bar plot showing performance by duration
     '''
-    print all_times, all_perf
+    #~ print all_times, all_perf
     plt.plot(all_times, all_perf, 'k+')
     plt.xlabel('Duration of passation')
     plt.ylabel('Performance of simulation')
