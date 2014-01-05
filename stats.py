@@ -20,7 +20,8 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #  
-#  
+#
+import operator
 import bugs
 
 def all_scores(data, poss_sheets) :
@@ -66,8 +67,16 @@ def all_congruency(data, poss_sheets) :
         nb_col += scores[3]
         list_cong.append(scores)
         list_profiles.append(dom_bugs_l)
-        if ordered_prof not in list_ord_prof : #keep no duplicates
-            list_ord_prof.append(ordered_prof)
+        lord_prof = [ prof['profile'] for prof in list_ord_prof ] 
+        if ordered_prof not in lord_prof : #keep no duplicates
+            list_ord_prof.append({'profile' : ordered_prof, 'occ' : 1})
+        else :
+            #find dict to update for a supplementary occurence
+            dico = [prof for prof in list_ord_prof if prof['profile'] == ordered_prof][0]
+            dico.update({'occ' : dico['occ']+1})
+    #Ordinate subjects along a criteria
+    chronology = operator.itemgetter('occ')
+    list_ord_prof.sort(key=chronology)
     return ((nb_correct_ope, nb_ope, nb_correct_col, nb_col),
     list_cong, list_profiles, list_ord_prof)
 

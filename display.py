@@ -190,8 +190,9 @@ class subtraction_explorer():
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
         self.all_sc = stats.all_scores(self.data, self.poss_sheets) #dominancy scores for all
-        (self.all_congruency, self.list_cong, self.list_prof, self.list_prof) = stats.all_congruency(
-        self.data, self.poss_sheets)
+        (self.all_congruency, self.list_cong, self.list_prof,
+        self.list_prof) = stats.all_congruency(self.data, self.poss_sheets)
+        print self.list_prof
         self.all_perf = stats.give_percent(self.all_congruency)
         self.list_times = [subject['time'] for subject in self.data]
         self.list_perf = [float(congruency[2])/congruency[3] for congruency in self.list_cong]
