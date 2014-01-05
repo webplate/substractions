@@ -67,12 +67,12 @@ def all_congruency(data, poss_sheets) :
         nb_col += scores[3]
         list_cong.append(scores)
         list_profiles.append(dom_bugs_l)
-        lord_prof = [ prof['profile'] for prof in list_ord_prof ] 
-        if ordered_prof not in lord_prof : #keep no duplicates
+        #find dict to update for a supplementary occurence
+        dico = [prof for prof in list_ord_prof if prof['profile'] == ordered_prof]
+        if len(dico) == 0 : #this profile has never occured yet
             list_ord_prof.append({'profile' : ordered_prof, 'occ' : 1})
-        else :
-            #find dict to update for a supplementary occurence
-            dico = [prof for prof in list_ord_prof if prof['profile'] == ordered_prof][0]
+        else : #no duplicates
+            dico = dico[0]
             dico.update({'occ' : dico['occ']+1})
     #Ordinate subjects along a criteria
     chronology = operator.itemgetter('occ')
