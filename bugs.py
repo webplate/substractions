@@ -242,30 +242,19 @@ def dominancy(found, possible) :
                     scores.update({t:(0, 1)})
     return scores
 
-def profile(scores, threshold=None, size=0) :
+def profile(scores) :
     '''create bug profile of subject
-    keeps only bugs dominant enough
-    OR keep a certain number of bugs by order of dominancy
+    returns list of (dominancy, bug) couples
     '''
-    #profile subjct by keeping most dominant strategies
-    if size != 0 and threshold != None :
-        bugs_tuples = []
-        for bug in scores :
-            nb_sub, nb_poss = scores[bug]
-            proportion = float(nb_sub)/nb_poss
-            bugs_tuples.append((proportion, bug))
-        bugs_tuples = sorted(bugs_tuples, reverse=True,
-        key=lambda strategy: strategy[0])   # sort by proportion
-        return bugs_tuples
-    #or by keeping above threshold strategies
-    elif threshold != None and size == None :
-        bugs_tuples = []
-        for bug in scores :
-            nb_sub, nb_poss = scores[bug]
-            if float(nb_sub)/nb_poss > threshold :
-                bugs_tuples.append((proportion, bug))
-        return bugs_tuples
-    return []
+    bugs_tuples = []
+    for bug in scores :
+        nb_sub, nb_poss = scores[bug]
+        proportion = float(nb_sub)/nb_poss
+        bugs_tuples.append((proportion, bug))
+    bugs_tuples = sorted(bugs_tuples, reverse=True,
+    key=lambda strategy: strategy[0])   # sort by proportion
+    return bugs_tuples
+
 
 def simulate(dom_bugs, poss_sheet, operations, subject_id) :
     '''gives a result sheet congruent with the dominant_bugs

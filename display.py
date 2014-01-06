@@ -257,8 +257,9 @@ class subtraction_explorer():
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
             self.scores = bugs.dominancy(found_bugs, self.poss_sheet)
             #create profile of subject (most dominant bugs)
-            self.dom_bugs = bugs.profile(self.scores,
-            bugs.parameters.dominancy_thre, bugs.parameters.profile_size)
+            self.dom_bugs = self.subject['profile']
+            #a truncated version for cognitive plausability
+            self.dom_bugs = self.dom_bugs[:bugs.parameters.profile_size]
             #compute simulation according to profile
             simul_sheet = bugs.simulate(self.dom_bugs, self.poss_sheet, self.operations, self.subject_id)
             #recompute background sheet only if needed

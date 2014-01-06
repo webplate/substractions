@@ -79,11 +79,10 @@ def analysis(data, poss_sheets) :
     for subject_id in range(len(data)) :
         subject = data[subject_id]
         operations, poss_sheet = bugs.serialize(subject, poss_sheets)
-        #create profile of subject (most dominant bugs)
+        #create profile of subject (ordered by dominancy list of (dom, bug) )
         found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
         scores = bugs.dominancy(found_bugs, poss_sheet)
-        dom_bugs_l = bugs.profile(scores, bugs.parameters.dominancy_thre,
-        bugs.parameters.profile_size)
+        dom_bugs_l = bugs.profile(scores)
         subject.update({'profile' : dom_bugs_l})
         #compute global dominancies
         if all_sc == {} :
