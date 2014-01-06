@@ -18,13 +18,11 @@ class strategy_plot(threading.Thread):
 class subjects_plot(threading.Thread):
     '''an thread object to launch a pyplot window in parallel
     '''
-    def __init__(self, times, perf, profiles):
+    def __init__(self, data):
         threading.Thread.__init__(self)
-        self.times = times
-        self.perf = perf
-        self.prof = profiles
+        self.data = data
     def run(self):
-        graph.plot_perf_duration(self.times, self.perf)
+        graph.plot_perf_duration(self.data)
         graph.plt.show()
 
 def pix_coord(pos, gap, max_width, surface) :
@@ -248,8 +246,7 @@ class subtraction_explorer():
             plot_win = strategy_plot(self.scores, self.gstats['scores'])
             plot_win.start()
         elif event.type == KEYDOWN and event.key == sub_graph_key :
-            sub_plot_win = subjects_plot(self.gstats['times'], self.ls_perf,
-            self.all_ord_prof, self.ls_prof)
+            sub_plot_win = subjects_plot(self.data)
             sub_plot_win.start()
 
     def on_loop(self):

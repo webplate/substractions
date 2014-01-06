@@ -40,16 +40,21 @@ def plot_scores(scores, all_scores):
     #tuning to avoid cropped labels
     plt.subplots_adjust(bottom=0.35, top=0.95)
 
-def plot_perf_duration(all_times, all_perf):
+def plot_perf_duration(data):
     '''a bar plot showing performance by duration
+    colors for judgement
     '''
     #~ print all_times, all_perf
-    plt.plot(all_times, all_perf, 'k+')
+    all_times = [subject['time'] for subject in data]
+    all_perf = [subject['perf_col'] for subject in data]
+ 
+    plt.plot(all_times, all_perf, all_judge)
     plt.xlabel('Duration of passation')
     plt.ylabel('Performance of simulation')
     #no autoscale
     plt.ylim( (0, 1) )
     plt.title('Performance over duration')
+
     
 #~ sc = {'pt-gd=pt': (1, 26), "['blank', 'pt-gd=?']": (0, 11), 'N-0=0': (0, 4), "['blank', 'N-N=N']": (0, 1), "['blank', '0-N=N']": (0, 4), '0-N=N': (8, 9), "['blank', 'gd-pt']": (2, 11), "['blank', 'correct_col']": (0, 6), "['blank', '0-N=0']": (3, 4), 'gd-pt': (25, 26), "['blank', 'pt-gd=gd']": (0, 11), "['blank', 'pt-gd=0']": (3, 4), 'pt-gd=gd': (9, 26), 'pt-gd=?': (0, 26), 'pt-gd=0': (0, 26), '0-N=0': (0, 9), 'N-N=N': (0, 6), "['blank', 'pt-gd=pt']": (9, 11), 'incomplete': (5, 22)}
 #~ plot_scores(sc, sc)
