@@ -256,9 +256,7 @@ class subtraction_explorer():
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
             self.scores = bugs.dominancy(found_bugs, self.poss_sheet)
-            print len(self.scores)
             self.scores = self.subject['scores']
-            print self.scores
             #create profile of subject (most dominant bugs)
             self.dom_bugs = self.subject['profile']
             #a truncated version for cognitive plausability
@@ -273,12 +271,16 @@ class subtraction_explorer():
         self.notes_lst = []
         m_x, m_y= pygame.mouse.get_pos()
         sub_time = str(self.data[self.subject_id]['time']) + " minutes"
-        self.notes_lst.extend([str((m_x,m_y)), 'Global'])
-        self.notes_lst.extend([nice_percent(self.gstats['perf_col'])])
+        self.notes_lst.extend([str((m_x,m_y))])
+        self.notes_lst.extend(['Global congruence '+nice_percent(self.gstats['perf_col'])])
         self.notes_lst.extend(['Subject '+str(self.subject_id),
         self.data[self.subject_id]['path'], sub_time,])
-        self.notes_lst.extend(self.data[self.subject_id]['sheet'])
-        self.notes_lst.extend([nice_percent(self.subject['perf_col'])])
+        self.notes_lst.extend(['nb_col '+str(self.subject['nb_col']),
+        'nb_ope '+str(self.subject['nb_ope'])])
+        if 'judge' in self.subject :
+            self.notes_lst.extend([self.subject['judge']])
+        self.notes_lst.extend(self.subject['sheet'])
+        self.notes_lst.extend(['Subject congruence '+nice_percent(self.subject['perf_col'])])
         str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
         self.notes_lst.extend(str_dom_bugs)
         self.notes_lst.extend(['_______',''])

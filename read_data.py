@@ -7,6 +7,8 @@ def read_datafile(filename, path):
     '''Return content from datafile of subject'''
     with open(filename, 'rb') as f:
         reader = csv.reader(f, delimiter=' ')
+        nb_ope = 0
+        nb_col = 0
         content = {'results' : [], 'time' : 0, 'sheet' : [],
         'operations' : [] }
         rows = []
@@ -37,6 +39,10 @@ def read_datafile(filename, path):
                             r.append(item)
                         if len(r) > 0 :
                             content['results'].append(r[0])
+                            nb_ope += 1
+                            nb_col += len(r[0])
+        content.update({'nb_ope' : nb_ope})
+        content.update({'nb_col' : nb_col})
     return content
 
 def list_files(path, pattern):
