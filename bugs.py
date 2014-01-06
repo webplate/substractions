@@ -168,7 +168,7 @@ def possible_bugs(n1, n2) :
     max_col = max(len(n1),len(n2))
     #start at -1 (corresponding to 'X' : empty response)
     r = -1
-    result = t_d.completeX(max_col, '')
+    result = t_d.add_zero(max_col, '')
     poss_bugs = []
     while len(result) <= max_col :
         grp_bugs = bugId(n1, n2, result)

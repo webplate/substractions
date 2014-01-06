@@ -82,6 +82,7 @@ def analysis(data, poss_sheets) :
         #create profile of subject (ordered by dominancy list of (dom, bug) )
         found_bugs = bugs.subject_sheet_bugs(subject['results'], operations)
         scores = bugs.dominancy(found_bugs, poss_sheet)
+        subject.update({'scores' : scores})
         dom_bugs_l = bugs.profile(scores)
         subject.update({'profile' : dom_bugs_l})
         #compute global dominancies

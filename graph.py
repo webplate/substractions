@@ -25,6 +25,8 @@ def plot_scores(scores, all_scores):
     '''
     freqs, types, ind = freq_by_type(scores)
     all_freqs = freq_by_type(all_scores)[0]
+    print len(freqs), len(all_freqs), ind, types
+    print all_freqs
     #mean frequencies for all
     plt.bar(ind, all_freqs, facecolor='#333333')
     #grey barplot: frequencies of subject
@@ -44,7 +46,6 @@ def plot_perf_duration(data):
     '''a bar plot showing performance by duration
     colors for judgement
     '''
-    #~ print all_times, all_perf
     all_times = [subject['time'] for subject in data]
     all_perf = [subject['perf_col'] for subject in data]
     all_judge = []

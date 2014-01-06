@@ -22,6 +22,14 @@ def clean_rslt(string):
         else :
             break
     return string[nb_zeros:]
+    
+def add_zero(length, string) :
+    '''complete result with preceeding zeros
+    '''
+    diff = length - len(string)
+    string = '0'*diff + string
+    return string
+
 
 def flatten(l):
     for el in l:

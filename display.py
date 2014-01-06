@@ -256,6 +256,9 @@ class subtraction_explorer():
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
             self.scores = bugs.dominancy(found_bugs, self.poss_sheet)
+            print len(self.scores)
+            self.scores = self.subject['scores']
+            print self.scores
             #create profile of subject (most dominant bugs)
             self.dom_bugs = self.subject['profile']
             #a truncated version for cognitive plausability
