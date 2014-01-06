@@ -30,7 +30,7 @@ def read_datafile(filename, path):
                                 ope = read_operations(os.path.join(path,item))
                                 content['operations'].append(ope)
                     elif row[0] == 'judge' :
-                        content.update({'judge' : row[0]})
+                        content.update({'judge' : row[1]})
                     else :
                         r = []
                         for item in row:
