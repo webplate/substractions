@@ -8,6 +8,11 @@ subject_pattern = r's\d+\.\d+\.\d+'      #regex to find subject files
 default_sub = 36    #default subject id in data
 precomputation_path = 'precomputations/'
 
+#Select subset of subject with condition prop_test is val_test if suset == True
+subset = True
+prop_test = 'nb_ope'
+val_test = 40
+
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
 #possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'
 # Analysis settings

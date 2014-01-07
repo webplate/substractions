@@ -180,6 +180,10 @@ class subtraction_explorer():
         #Load experimental data of subjects and protocol
         self.data = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern)
+        if bugs.parameters.subset == True :
+            #Restrict to a subset of subjects
+            self.data = [subject for subject in self.data
+            if subject[bugs.parameters.prop_test] == bugs.parameters.val_test]
         if bugs.parameters.update_precomputation != False :
             #recompute the possible bugs of the sheet (no gui)
             path = os.path.join(bugs.parameters.precomputation_path,
@@ -250,7 +254,11 @@ class subtraction_explorer():
 
     def on_loop(self):
         if self.subject_id != self.curr_subject :
-            self.subject = self.data[self.subject_id]
+            if self.subject_id < len(self.data) :
+                self.subject = self.data[self.subject_id]
+            else :
+                self.subject_id = 0
+                self.subject = self.data[self.subject_id]
             self.operations, self.poss_sheet = bugs.serialize(self.subject, self.poss_sheets)
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
