@@ -262,7 +262,7 @@ class subtraction_explorer():
             #a truncated version for cognitive plausability
             self.dom_bugs = self.dom_bugs[:bugs.parameters.profile_size]
             #compute simulation according to profile
-            simul_sheet = bugs.simulate(self.dom_bugs, self.poss_sheet, self.operations, self.subject_id)
+            simul_sheet = self.subject['sim_dtl'], self.subject['sim_rslt']
             #recompute background sheet only if needed
             self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
             self.data[self.subject_id]['results'], simul_sheet, self.font)

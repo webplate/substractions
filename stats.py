@@ -97,7 +97,10 @@ def analysis(data, poss_sheets) :
         ordered_prof = [dom_bug[1] for dom_bug in dom_bugs]
         subject.update({'ord_profile' : ordered_prof})
         #compute simulation according to profile
-        b_simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)[1]
+        simul_sheet = bugs.simulate(dom_bugs, poss_sheet, operations, subject_id)
+        b_simul_sheet = simul_sheet[1]
+        subject.update({'sim_rslt' : simul_sheet[1]})
+        subject.update({'sim_dtl' : simul_sheet[0]})
         scores = subject_congruency(subject_id, data, poss_sheet, b_simul_sheet,
         operations)
         subject.update({'score_ope' : (scores[0], scores[1])})
