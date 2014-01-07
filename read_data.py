@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import csv, sys, os, re, pickle, operator
+import csv, sys, os, re, pickle
 
 def read_datafile(filename, path):
     '''Return content from datafile of subject'''
@@ -111,7 +111,4 @@ def load_data(dataPath, subject_pattern) :
     except :
         print "Unexpected error:", sys.exc_info()[0]
         raise
-    #Ordinate subjects along a criteria
-    chronology = operator.itemgetter('time')
-    data.sort(key=chronology)
     return data

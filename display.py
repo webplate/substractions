@@ -70,6 +70,7 @@ def draw_sub(pos, n1, n2, font, result='', simul_result='',
     '''
     fly_overs=[]
     #prepare numbers
+    #~ print n1, n2, result, simul_result
     l1 = font.render(n1, True, txt_color) #texte, antialiasing, color
     l2 = font.render(n2, True, txt_color)
     l3 = font.render(result, True, txt_color)
@@ -142,7 +143,7 @@ def draw_sub(pos, n1, n2, font, result='', simul_result='',
     surf.blit(sign, (0, txt_inter))
     return surf, fly_overs
 
-def draw_sheet(dimensions, operations, results, simul_sheet, font):
+def draw_sheet(dimensions, subject, font):
     #clear fly_overs
     fly_overs=[]
     nb_col, nb_lgn = dimensions
@@ -152,12 +153,24 @@ def draw_sheet(dimensions, operations, results, simul_sheet, font):
         for j in range(nb_lgn):
             k = i+j*nb_col
             #try to draw only if existent operation
-            if k < len(operations) :
-                n1 = operations[k][0]
-                n2 = operations[k][1]
-                result = results[k]
+            if k < len(subject['operations_seri']) :
+                n1 = subject['operations_seri'][k][0]
+                n2 = subject['operations_seri'][k][1]
+                result = subject['results'][k]
+                #is there any simulation for this sub ?
+                if subject['sim_sheet'] == 0 and k > 19 :
+                    #offset to draw sim rslts
+                    sim_rslt = subject['sim_rslt'][k-20]
+                    sim_dtl = subject['sim_dtl'][k-20]
+                elif subject['sim_sheet'] == 1 and k <= 19 :
+                    sim_rslt = subject['sim_rslt'][k]
+                    sim_dtl = subject['sim_dtl'][k]
+                else :
+                    sim_rslt = ''
+                    sim_dtl = ''
+                #~ print k, len(subject['sim_rslt']), len(subject['operations_seri']), subject['sim_sheet']
                 sub_surf, new_fos = draw_sub((i,j), n1, n2, font, result,
-                simul_sheet[1][k], simul_sheet[0][k])
+                sim_rslt, sim_dtl)
                 fly_overs.extend(new_fos)
                 #to verticaly align on right column
                 gap = sub_dims[0] - sub_surf.get_width()
@@ -180,12 +193,10 @@ class subtraction_explorer():
         #Load experimental data of subjects and protocol
         self.data = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern)
-        if bugs.parameters.subset == True :
-            #Restrict to a subset of subjects
-            self.data = [subject for subject in self.data
-            if subject[bugs.parameters.prop_test] == bugs.parameters.val_test]
+        #ordinate and take subset
+        self.data = bugs.format_data(self.data)
+        #recompute the possible bugs of the sheet (no gui)
         if bugs.parameters.update_precomputation != False :
-            #recompute the possible bugs of the sheet (no gui)
             path = os.path.join(bugs.parameters.precomputation_path,
             bugs.parameters.update_precomputation+'.pickle')
             ope_path = os.path.join(bugs.parameters.dataPath,
@@ -256,9 +267,12 @@ class subtraction_explorer():
         if self.subject_id != self.curr_subject :
             if self.subject_id < len(self.data) :
                 self.subject = self.data[self.subject_id]
-            else :
+            elif len(self.data) > 0 :
                 self.subject_id = 0
                 self.subject = self.data[self.subject_id]
+            else :
+                print 'No subject loaded'
+                self.running = False
             self.operations, self.poss_sheet = bugs.serialize(self.subject, self.poss_sheets)
             #compute dominancies of subject
             found_bugs = bugs.subject_sheet_bugs(self.data[self.subject_id]['results'], self.operations)
@@ -271,8 +285,7 @@ class subtraction_explorer():
             #compute simulation according to profile
             simul_sheet = self.subject['sim_dtl'], self.subject['sim_rslt']
             #recompute background sheet only if needed
-            self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.operations,
-            self.data[self.subject_id]['results'], simul_sheet, self.font)
+            self.sheet, self.fly_overs = draw_sheet(sheet_dims, self.subject, self.font)
             self.curr_subject = self.subject_id
         #prepare sidenotes with coord,subject name, dominant bugs, info from fly-overs...
         self.notes_lst = []

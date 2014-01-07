@@ -8,7 +8,8 @@ subject_pattern = r's\d+\.\d+\.\d+'      #regex to find subject files
 default_sub = 36    #default subject id in data
 precomputation_path = 'precomputations/'
 
-#Select subset of subject with condition prop_test is val_test if suset == True
+#Select subset of subject with condition
+#subject[prop_test] == val_test AND subset == True
 subset = True
 prop_test = 'nb_ope'
 val_test = 40

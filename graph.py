@@ -25,6 +25,9 @@ def plot_scores(scores, all_scores):
     '''
     freqs, types, ind = freq_by_type(scores)
     all_freqs = freq_by_type(all_scores)[0]
+    #~ print freqs
+    #~ print ind
+    #~ print all_scores, all_freqs
     #mean frequencies for all
     plt.bar(ind, all_freqs, facecolor='#333333')
     #grey barplot: frequencies of subject

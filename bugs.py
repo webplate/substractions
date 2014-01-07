@@ -5,7 +5,7 @@ import read_data as r_d
 import transform_data as t_d
 import parameters
 
-import pickle
+import pickle, operator
 import pprint
 
 def count_correct(data, ref):
@@ -324,6 +324,24 @@ def write_precomputations(sheet, file_name) :
     p_s = possible_sheet(sheet, silent=False)
     pprint.pprint(p_s)
     pickle.dump(p_s, f)
+
+def format_data(data) :
+    '''ordinate and cut subset
+    '''
+    if parameters.subset == True :
+        #Restrict to a subset of subjects
+        data = [subject for subject in data
+        if subject[parameters.prop_test] == parameters.val_test]
+    #Ordinate subjects along a criteria
+    chronology = operator.itemgetter('time')
+    data.sort(key=chronology)
+    #Add this order to data
+    for i, subject in enumerate(data) :
+        subject.update({'id' : i})
+        #add a serialized version of operation list
+        poss_sheets = r_d.read_precomputations(parameters.precomputation_path)
+        subject.update({'operations_seri' : serialize(subject, poss_sheets)[0]})
+    return data
 
 #TEST SUITE :
 #~ print bugId_perDigit(2,9,0)
