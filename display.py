@@ -182,15 +182,14 @@ class subtraction_explorer():
         bugs.parameters.subject_pattern)
         if bugs.parameters.update_precomputation != False :
             #recompute the possible bugs of the sheet (no gui)
-            path = os.path.join(bugs.parameters.precomputation_path, bugs.parameters.update_precomputation+'.pickle')
-            ope_path = os.path.join(bugs.parameters.dataPath, bugs.parameters.update_precomputation)
+            path = os.path.join(bugs.parameters.precomputation_path,
+            bugs.parameters.update_precomputation+'.pickle')
+            ope_path = os.path.join(bugs.parameters.dataPath,
+            bugs.parameters.update_precomputation)
             ope = bugs.r_d.read_operations(ope_path)
             print "Precomputing " + path
             bugs.write_precomputations(ope, path)
             return False
-        #Ordinate subjects along a criteria
-        chronology = operator.itemgetter('time')
-        self.data.sort(key=chronology)
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
         #get global statistics and populate data with stats
