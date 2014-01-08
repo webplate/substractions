@@ -154,8 +154,6 @@ def analysis(data, poss_sheets) :
         sim_poss = [poss_sheet[i] for i in sim_i]
         #compute simulation according to profile
         simulate(subject, sim_poss, sim_ope)
-        #subset of subjects for evaluation
-        #eval_res = [subject['results'][i] for i in sim_i]
         #evaluate
         evaluate(subject, data, operations, sim_poss,
         all_cong, all_sc, ls_ord_prof)

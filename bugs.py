@@ -42,10 +42,10 @@ def bugId_perDigit(d1, d2, r) :
                 bugs.append('pt-gd=0')
             if r == 'X' :
                 bugs.append('pt-gd=?')
-            if r == d1 :
-                bugs.append('pt-gd=pt')
-            if r == d2 :
-                bugs.append('pt-gd=gd')
+            #~ if r == d1 :
+                #~ bugs.append('pt-gd=pt')
+            #~ if r == d2 :
+                #~ bugs.append('pt-gd=gd')
         #~ elif d1 < d2 and d1 == 0 :
             #~ if d2 - d1 == r :  #inversion grand - petit
                 #~ bugs.append('gd-ptZ')
@@ -65,8 +65,8 @@ def bugId_perDigit(d1, d2, r) :
         if r == d2 :
             if d1 == 0 :
                 bugs.append('0-N=N')
-            if d2 == d1 :
-                bugs.append('N-N=N')
+            #~ if d2 == d1 :
+                #~ bugs.append('N-N=N')
     if r == d1 and d2 == 'X' :           #recopiage de ligne sup vers résultat
         return ['copy']
     if len(bugs) == 0 :       #si l'erreur n'est pas prévue

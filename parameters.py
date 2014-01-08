@@ -22,4 +22,4 @@ mental_limit = 10   #how much a student can substract in his mind (realistic att
 #~ profile_size = None
 dominancy_thre = 0
 profile_size = 4        #length of profile (nb of strategies)
-tolerant = True     #be tolerant to +-1 errors from subjects
+tolerant = False     #be tolerant to +-1 errors from subjects
