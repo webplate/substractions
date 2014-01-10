@@ -14,14 +14,8 @@ def read_datafile(filename, path):
         rows = []
         try:
             for row in reader :
-                rows.append(row)
-        except csv.Error, e:
-            sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
-        for row in rows :
-            #support empty lines
-            if len(row) != 0 :
-                #ignore comments
-                if row[0][0] != '#':
+                #support empty lines, ignore comments
+                if len(row) != 0 and row[0][0] != '#':
                     if row[0] == 'time' :
                         content[row[0]] = int(row[1])
                     elif row[0] == 'sheet' :
@@ -41,6 +35,10 @@ def read_datafile(filename, path):
                             content['results'].append(r[0])
                             nb_ope += 1
                             nb_col += len(r[0])
+        except csv.Error, e:
+            sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
+        except :
+            print 'Error in file ', filename
         content.update({'nb_ope' : nb_ope})
         content.update({'nb_col' : nb_col})
     return content

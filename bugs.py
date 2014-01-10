@@ -42,21 +42,22 @@ def bugId_perDigit(d1, d2, r) :
                 bugs.append('pt-gd=0')
             if r == 'X' :
                 bugs.append('pt-gd=?')
-            #~ if r == d1 :
-                #~ bugs.append('pt-gd=pt')
-            #~ if r == d2 :
-                #~ bugs.append('pt-gd=gd')
-        #~ elif d1 < d2 and d1 == 0 :
-            #~ if d2 - d1 == r :  #inversion grand - petit
-                #~ bugs.append('gd-ptZ')
-            #~ if r == 0 :        #pt - gd = 0
-                #~ bugs.append('pt-gd=0Z')
-            #~ if r == 'X' :
-                #~ bugs.append('pt-gd=?Z')
-            #~ if r == d1 :
-                #~ bugs.append('pt-gd=ptZ')
-            #~ if r == d2 :
-                #~ bugs.append('pt-gd=gdZ')
+            if parameters.check_exotic :
+                if r == d1 :
+                    bugs.append('pt-gd=pt')
+                if r == d2 :
+                    bugs.append('pt-gd=gd')
+        elif d1 < d2 and d1 == 0 and parameters.check_exotic:
+            if d2 - d1 == r :  #inversion grand - petit
+                bugs.append('gd-ptZ')
+            if r == 0 :        #pt - gd = 0
+                bugs.append('pt-gd=0Z')
+            if r == 'X' :
+                bugs.append('pt-gd=?Z')
+            if r == d1 :
+                bugs.append('pt-gd=ptZ')
+            if r == d2 :
+                bugs.append('pt-gd=gdZ')
         if r == 0 :
             if d1 == 0 :
                 bugs.append('0-N=0')
@@ -65,8 +66,8 @@ def bugId_perDigit(d1, d2, r) :
         if r == d2 :
             if d1 == 0 :
                 bugs.append('0-N=N')
-            #~ if d2 == d1 :
-                #~ bugs.append('N-N=N')
+            if d2 == d1 and parameters.check_exotic :
+                bugs.append('N-N=N')
     if r == d1 and d2 == 'X' :           #recopiage de ligne sup vers résultat
         return ['copy']
     if len(bugs) == 0 :       #si l'erreur n'est pas prévue
@@ -124,10 +125,11 @@ def bugId(n1, n2, result):
         while i < max_col :
             pos = -i-1              #explore numbers from right to left (align to right)
             if i < max_oper:            #if result is not longer than operands
-                #check for double columns bugs (incomplete)
-                b_d, e_p = bugId_perDouble(n1, n2, cresult, pos)
-                bugs_desc.extend(b_d)
-                explained_pos.extend(e_p)
+                if parameters.check_incomplete :
+                    #check for double columns bugs (incomplete)
+                    b_d, e_p = bugId_perDouble(n1, n2, cresult, pos)
+                    bugs_desc.extend(b_d)
+                    explained_pos.extend(e_p)
                 #check for unicolumn bug
                 d1 = n1[pos]
                 d2 = n2[pos]

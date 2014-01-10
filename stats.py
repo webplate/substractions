@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #  
 #
-import operator
+import operator, copy
 import numpy as np
 
 import bugs
@@ -167,6 +167,18 @@ def analysis(data, poss_sheets) :
     'perf_ope' : float(all_cong[0])/all_cong[1],
     'perf_col' : float(all_cong[2])/all_cong[3]}
     return global_stats
+
+def mean_global_perf(data, possible_sheets, nb_sim) :
+    '''Run analysis several times to estimate mean and varience of
+    global performance of simulation
+    '''
+    perfs = []
+    for i in range(nb_sim) :
+        d = copy.deepcopy(data)
+        gstats = analysis(d, possible_sheets)
+        perfs.append(gstats['perf_col'])
+    perfs = np.array(perfs)
+    return perfs
 
 def give_percent(scores) :
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = scores

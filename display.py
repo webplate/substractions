@@ -209,6 +209,10 @@ class subtraction_explorer():
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
         #get global statistics and populate data with stats
         self.gstats = stats.analysis(self.data, self.poss_sheets)
+        
+        #get mean perf for several choices of simprotocol profprotocol
+        if bugs.parameters.compute_mean :
+            self.multi_perf = stats.mean_global_perf(self.data, self.poss_sheets, bugs.parameters.nb_run)
 
         #Set graphic driver according to platform
         system = platform.system()
