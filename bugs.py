@@ -40,7 +40,7 @@ def bugId_perDigit(d1, d2, r) :
                 bugs.append('gd-pt')
             if r == 0 :        #pt - gd = 0
                 bugs.append('pt-gd=0')
-            if r == 'X' :
+            if r == parameters.blank :
                 bugs.append('pt-gd=?')
             if parameters.check_exotic :
                 if r == d1 :
@@ -52,7 +52,7 @@ def bugId_perDigit(d1, d2, r) :
                 bugs.append('gd-ptZ')
             if r == 0 :        #pt - gd = 0
                 bugs.append('pt-gd=0Z')
-            if r == 'X' :
+            if r == parameters.blank :
                 bugs.append('pt-gd=?Z')
             if r == d1 :
                 bugs.append('pt-gd=ptZ')
@@ -68,7 +68,10 @@ def bugId_perDigit(d1, d2, r) :
                 bugs.append('0-N=N')
             if d2 == d1 and parameters.check_exotic :
                 bugs.append('N-N=N')
-    if r == d1 and d2 == 'X' :           #recopiage de ligne sup vers résultat
+    if t_d.canBeInteger(d1) and t_d.canBeInteger(d2) :
+        if d1 < d2 and d1 != 0 and r == parameters.blank :
+            bugs.append('pt-gd=?')
+    if r == d1 and d2 == parameters.blank :           #recopiage de ligne sup vers résultat
         return ['copy']
     if len(bugs) == 0 :       #si l'erreur n'est pas prévue
         return ['unexplained']
@@ -290,7 +293,7 @@ def simulate(dom_bugs, poss_sheet, operations, subject_id) :
 #check selected bugs to have a complete result...todo
         #build the corresponding result
         positions = [ bug['pos'] for bug in simul[index] ]
-        result_lst = [ '?' for i in range(-min(positions)) ]
+        result_lst = [ parameters.blank for i in range(-min(positions)) ]
         for bug in simul[index] :
             if len(bug['result']) == 1 :
                 result_lst[bug['pos']] = bug['result']
@@ -299,7 +302,7 @@ def simulate(dom_bugs, poss_sheet, operations, subject_id) :
                 result_lst[bug['pos']-1] = bug['result'][0]
         result = ''
         for c in result_lst :
-            if c == '?' : #WARNING if empty simulation
+            if c == parameters.blank and parameters.show_empty : #WARNING if empty simulation
                 print 'Empty simulation for : ', subject_id, operations[index]
             result = result + c
         results.append(result)

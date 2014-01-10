@@ -53,15 +53,17 @@ def plot_perf_duration(data):
     for subject in data :
         if 'judge' in subject :
             if subject['judge'] == 'A' :
-                all_judge.append('green')
+                plt.plot(subject['time'], subject['perf_col'],'w*',
+                ms=10)
             elif subject['judge'] == 'B' :
-                all_judge.append('orange')
+                plt.plot(subject['time'], subject['perf_col'],'kx',
+                ms=10)
             elif subject['judge'] == 'C' :
-                all_judge.append('red')
+                plt.plot(subject['time'], subject['perf_col'],'k.',
+                ms=10)
         else:
-            all_judge.append('white')
-    
-    plt.scatter(all_times, all_perf, c=all_judge, alpha=0.5, s=40)
+            plt.plot(subject['time'], subject['perf_col'], 'k+', ms=10)
+    #~ plt.legend((u'Réussite haute',u'Réussite moyenne',u'Réussite basse','Pas de jugement'))
     plt.xlabel('Duration of passation')
     plt.ylabel('Performance of simulation')
     #no autoscale

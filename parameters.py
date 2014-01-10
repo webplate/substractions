@@ -28,5 +28,8 @@ check_incomplete = False
 check_exotic = False
 
 
-compute_mean = True
-nb_run = 50
+compute_mean = False
+nb_run = 100
+
+blank = 'X'
+show_empty = False

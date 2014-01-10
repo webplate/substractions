@@ -178,6 +178,7 @@ def mean_global_perf(data, possible_sheets, nb_sim) :
         gstats = analysis(d, possible_sheets)
         perfs.append(gstats['perf_col'])
     perfs = np.array(perfs)
+    print perfs.mean(), perfs.var()
     return perfs
 
 def give_percent(scores) :
