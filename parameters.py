@@ -12,7 +12,7 @@ precomputation_path = 'precomputations/'
 #subject[prop_test] == val_test AND subset == True
 subset = True
 prop_test = 'nb_ope'
-val_test = 40
+val_test = 20
 
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
 #possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'
