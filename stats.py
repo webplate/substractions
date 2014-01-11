@@ -31,12 +31,13 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations, sh
     '''gives nb of congruencies between subject production and simulation
     at column and operation level
     '''
+    print len(simul_sheet), len(operations)
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
     #+-1 tolerance TODO at operation level
     #check congruency between simul result and subject data
     for j, sim_result in enumerate(simul_sheet) :
         #offset for half ope simulations
-        if sheet_id == 0 :
+        if bugs.parameters.randomize and sheet_id == 0 :
             j += 20
         #exclude empty answers from valid answers
         #and exclude correctly answered operations
@@ -132,16 +133,22 @@ def analysis(data, poss_sheets) :
     #profile, simulate, evaluate
     for subject_id in range(len(data)) :
         subject = data[subject_id]
-        #role a dice to avoid effect order between sheets 
-        #create intervals : one for profile and one for sim
-        if float(np.random.random(1)) > 0.5 :
-            subject.update({'sim_sheet' : 0})
-            prof_i = range(20)
-            sim_i = range(20, 40)
+        if bugs.parameters.randomize :
+            #role a dice to avoid effect order between sheets 
+            #create intervals : one for profile and one for sim
+            if float(np.random.random(1)) > 0.5 :
+                subject.update({'sim_sheet' : 0})
+                prof_i = range(20)
+                sim_i = range(20, 40)
+            else :
+                subject.update({'sim_sheet' : 1})
+                prof_i = range(20, 40)
+                sim_i = range(20)
         else :
-            subject.update({'sim_sheet' : 1})
-            prof_i = range(20, 40)
-            sim_i = range(20)
+            #no different subsets
+            prof_i = range(20)
+            sim_i = prof_i
+            subject.update({'sim_sheet' : 0})
         operations, poss_sheet = bugs.serialize(subject, poss_sheets)
         #subset of ope and results for profiling
         prof_ope = [operations[i] for i in prof_i]

@@ -14,6 +14,11 @@ subset = True
 prop_test = 'nb_ope'
 val_test = 20
 
+if val_test == 40 :
+    randomize = True
+else :
+    randomize = False
+
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
 #possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'
 # Analysis settings
