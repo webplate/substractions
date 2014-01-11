@@ -68,6 +68,17 @@ def plot_perf_duration(data):
     plt.ylim( (0, 1) )
     plt.title('Performance over duration')
 
+def  plot_len_plot(gstats_l) :
+    '''plot perf for different profiles lenghts
+    '''
+    perfs = [stat['perf_col'] for stat in gstats_l]
+    ind = range(len(perfs))
+    plt.bar(ind, perfs, facecolor='#333333')
+    plt.xlabel('Length of kept profiles')
+    plt.ylabel('Performance of simulation')
+    #no autoscale
+    plt.ylim( (0, 1) )
+    plt.title('Effect of length of subject profile')
     
 #~ sc = {'pt-gd=pt': (1, 26), "['blank', 'pt-gd=?']": (0, 11), 'N-0=0': (0, 4), "['blank', 'N-N=N']": (0, 1), "['blank', '0-N=N']": (0, 4), '0-N=N': (8, 9), "['blank', 'gd-pt']": (2, 11), "['blank', 'correct_col']": (0, 6), "['blank', '0-N=0']": (3, 4), 'gd-pt': (25, 26), "['blank', 'pt-gd=gd']": (0, 11), "['blank', 'pt-gd=0']": (3, 4), 'pt-gd=gd': (9, 26), 'pt-gd=?': (0, 26), 'pt-gd=0': (0, 26), '0-N=0': (0, 9), 'N-N=N': (0, 6), "['blank', 'pt-gd=pt']": (9, 11), 'incomplete': (5, 22)}
 #~ plot_scores(sc, sc)

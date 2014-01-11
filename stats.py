@@ -31,7 +31,7 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations, sh
     '''gives nb of congruencies between subject production and simulation
     at column and operation level
     '''
-    print len(simul_sheet), len(operations)
+    #~ print len(simul_sheet), len(operations)
     nb_correct_ope, nb_ope, nb_correct_col, nb_col = (0, 0, 0, 0)
     #+-1 tolerance TODO at operation level
     #check congruency between simul result and subject data
@@ -74,7 +74,7 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations, sh
                 pos -= 1
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
-def profile(subject, operations, results, poss_sheet) :
+def profile(subject, operations, results, poss_sheet, profile_size) :
     #create profile of subject (ordered by dominancy list of (dom, bug) )
     found_bugs = bugs.subject_sheet_bugs(results, operations)
     scores = bugs.dominancy(found_bugs, poss_sheet)
@@ -83,7 +83,7 @@ def profile(subject, operations, results, poss_sheet) :
     subject.update({'profile' : dom_bugs_l})
     #a truncated version for cognitive plausability
     #(used for ordered profiles and simulation)
-    dom_bugs = dom_bugs_l[:bugs.parameters.profile_size]
+    dom_bugs = dom_bugs_l[:profile_size]
     subject.update({'short_profile' : dom_bugs})
     ordered_prof = [dom_bug[1] for dom_bug in dom_bugs]
     subject.update({'ord_profile' : ordered_prof})
@@ -123,7 +123,7 @@ def evaluate(subject, data, operations, poss_sheet, all_cong, all_sc, ls_ord_pro
         dico = dico[0]
         dico.update({'occ' : dico['occ']+1})
 
-def analysis(data, poss_sheets) :
+def analysis(data, poss_sheets, profile_size) :
     '''Precompute stats on whole dataset, add result per subject in data
     returns stats on whole set
     '''
@@ -155,7 +155,7 @@ def analysis(data, poss_sheets) :
         prof_res = [subject['results'][i] for i in prof_i]
         prof_poss = [poss_sheet[i] for i in prof_i]
         #create profile of subject (ordered by dominancy list of (dom, bug) )
-        profile(subject, prof_ope, prof_res, prof_poss)
+        profile(subject, prof_ope, prof_res, prof_poss, profile_size)
         #subset of ope and results for simulation
         sim_ope = [operations[i] for i in sim_i]
         sim_poss = [poss_sheet[i] for i in sim_i]

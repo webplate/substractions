@@ -19,12 +19,15 @@ if val_test == 40 :
 else :
     randomize = False
 
-update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
-#possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'
+update_precomputation = False   #set to True once if change in protocol or in bug definitions
+#possible values : 'protocoleVanLehn', 'protocoleAnalogue'
+precomputations = 'protocoleVanLehn', 'protocoleAnalogue'
 # Analysis settings
 mental_limit = 10   #how much a student can substract in his mind (realistic attempt)
 #~ dominancy_thre = 0.6    #threshold for picking dominant bugs
 #~ profile_size = None
 dominancy_thre = 0
-profile_size = 4        #length of profile (nb of strategies)
+profile_size = [1,2,3,4,5,6]        #list of length of profile (nb of strategies)
 tolerant = False     #be tolerant to +-1 errors from subjects
+
+blank = 'X'

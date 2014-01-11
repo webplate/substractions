@@ -25,6 +25,16 @@ class subjects_plot(threading.Thread):
         graph.plot_perf_duration(self.data)
         graph.plt.show()
 
+class len_prof_plot(threading.Thread):
+    '''an thread object to launch a pyplot window in parallel
+    '''
+    def __init__(self, data):
+        threading.Thread.__init__(self)
+        self.data = data
+    def run(self):
+        graph.plot_len_plot(self.data)
+        graph.plt.show()
+
 def pix_coord(pos, gap, max_width, surface) :
     '''returns (top,right,bottom,left) boundaries(à la CSS) of a surface
     placed on the subtraction sheet.
@@ -196,20 +206,24 @@ class subtraction_explorer():
         #ordinate and take subset
         self.data = bugs.format_data(self.data)
         #recompute the possible bugs of the sheet (no gui)
-        if bugs.parameters.update_precomputation != False :
-            path = os.path.join(bugs.parameters.precomputation_path,
-            bugs.parameters.update_precomputation+'.pickle')
-            ope_path = os.path.join(bugs.parameters.dataPath,
-            bugs.parameters.update_precomputation)
-            ope = bugs.r_d.read_operations(ope_path)
-            print "Precomputing " + path
-            bugs.write_precomputations(ope, path)
+        if bugs.parameters.update_precomputation == True :
+            for precomp in bugs.parameters.precomputations :
+                path = os.path.join(bugs.parameters.precomputation_path,
+                precomp+'.pickle')
+                ope_path = os.path.join(bugs.parameters.dataPath,
+                precomp)
+                ope = bugs.r_d.read_operations(ope_path)
+                print "Precomputing " + path
+                bugs.write_precomputations(ope, path)
             return False
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
-        #get global statistics and populate data with stats
-        self.gstats = stats.analysis(self.data, self.poss_sheets)
-
+        #list of global data for different parameters
+        self.gstats_l = []
+        for size in bugs.parameters.profile_size :
+            #get global statistics and populate data with stats
+            self.gstats_l.append(stats.analysis(self.data, self.poss_sheets, size))
+        self.gstats = self.gstats_l[0]
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
@@ -262,6 +276,9 @@ class subtraction_explorer():
         elif event.type == KEYDOWN and event.key == sub_graph_key :
             sub_plot_win = subjects_plot(self.data)
             sub_plot_win.start()
+        elif event.type == KEYDOWN and event.key == proflen_graph_key :
+            sub_plot_win = len_prof_plot(self.gstats_l)
+            sub_plot_win.start()
 
     def on_loop(self):
         if self.subject_id != self.curr_subject :
@@ -281,7 +298,7 @@ class subtraction_explorer():
             #create profile of subject (most dominant bugs)
             self.dom_bugs = self.subject['profile']
             #a truncated version for cognitive plausability
-            self.dom_bugs = self.dom_bugs[:bugs.parameters.profile_size]
+            self.dom_bugs = self.subject['short_profile']
             #compute simulation according to profile
             simul_sheet = self.subject['sim_dtl'], self.subject['sim_rslt']
             #recompute background sheet only if needed

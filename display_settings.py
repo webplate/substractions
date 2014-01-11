@@ -38,6 +38,8 @@ sheet_offset = (250,10)
 switch_key = K_s
 strat_graph_key = K_g
 sub_graph_key = K_h
+proflen_graph_key = K_j
+
 next_key = K_d
 prev_key = K_q
 next_button = 5

@@ -49,7 +49,7 @@ def bugId_perDigit(d1, d2, r) :
                 #~ bugs.append('gd-ptZ')
             #~ if r == 0 :        #pt - gd = 0
                 #~ bugs.append('pt-gd=0Z')
-            #~ if r == 'X' :
+            #~ if r == parameters.blank :
                 #~ bugs.append('pt-gd=?Z')
             #~ if r == d1 :
                 #~ bugs.append('pt-gd=ptZ')
@@ -66,9 +66,9 @@ def bugId_perDigit(d1, d2, r) :
             #~ if d2 == d1 :
                 #~ bugs.append('N-N=N')
     if t_d.canBeInteger(d1) and t_d.canBeInteger(d2) :
-        if d1 < d2 and d1 != 0 and r == 'X' :
+        if d1 < d2 and d1 != 0 and r == parameters.blank :
                 bugs.append('pt-gd=?')
-    if r == d1 and d2 == 'X' :           #recopiage de ligne sup vers résultat
+    if r == d1 and d2 == parameters.blank :           #recopiage de ligne sup vers résultat
         return ['copy']
     if len(bugs) == 0 :       #si l'erreur n'est pas prévue
         return ['unexplained']
@@ -87,7 +87,7 @@ def bugId_perDouble(n1, n2, result, pos):
     n2_2 = n2[pos-1:len(n2)+pos+1]
     result2 = result[pos-1:len(result)+pos+1]
     #n2_2 can be of length one for incomplete sub
-    if len(n2_2) > 1 and n2_2[0] == 'X' :
+    if len(n2_2) > 1 and n2_2[0] == parameters.blank :
         n2_2 = n2_2[1]
     #first operand must be on two columns
     if (len(n1_2) > 1 and t_d.canBeInteger(result2)
@@ -135,7 +135,7 @@ def bugId(n1, n2, result):
                 #look for bug in single column "pos"
                 bug_types = bugId_perDigit(d1, d2, result[pos])
                 #there could be a blank bug
-                if d2 == 'X' and bug_types != ['copy'] :
+                if d2 == parameters.blank and bug_types != ['copy'] :
                     d2_shifted = n2[-min_col]
                     bug_types_s = bugId_perDigit(d1, d2_shifted, result[pos])
                     if bug_types_s != ['unexplained'] :         #spot 'blank' bug only if interesting
@@ -289,7 +289,7 @@ def simulate(dom_bugs, poss_sheet, operations, subject_id) :
 #check selected bugs to have a complete result...todo
         #build the corresponding result
         positions = [ bug['pos'] for bug in simul[index] ]
-        result_lst = [ '?' for i in range(-min(positions)) ]
+        result_lst = [ parameters.blank for i in range(-min(positions)) ]
         for bug in simul[index] :
             if len(bug['result']) == 1 :
                 result_lst[bug['pos']] = bug['result']
