@@ -279,6 +279,17 @@ class subtraction_explorer():
         elif event.type == KEYDOWN and event.key == proflen_graph_key :
             sub_plot_win = len_prof_plot(self.gstats_l)
             sub_plot_win.start()
+        elif event.type == KEYDOWN and event.key == update_key :
+            #recompute the possible bugs of the sheet
+            for precomp in bugs.parameters.precomputations :
+                path = os.path.join(bugs.parameters.precomputation_path,
+                precomp+'.pickle')
+                ope_path = os.path.join(bugs.parameters.dataPath,
+                precomp)
+                ope = bugs.r_d.read_operations(ope_path)
+                print "Precomputing " + path
+                bugs.write_precomputations(ope, path)
+                self.running = False
 
     def on_loop(self):
         if self.subject_id != self.curr_subject :
