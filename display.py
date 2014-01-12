@@ -203,8 +203,6 @@ class subtraction_explorer():
         #Load experimental data of subjects and protocol
         self.data = bugs.r_d.load_data(bugs.parameters.dataPath,
         bugs.parameters.subject_pattern)
-        #ordinate and take subset
-        self.data = bugs.format_data(self.data)
         #recompute the possible bugs of the sheet (no gui)
         if bugs.parameters.update_precomputation == True :
             for precomp in bugs.parameters.precomputations :
@@ -216,6 +214,8 @@ class subtraction_explorer():
                 print "Precomputing " + path
                 bugs.write_precomputations(ope, path)
             return False
+        #ordinate and take subset
+        self.data = bugs.format_data(self.data)
         #Precompute stats on whole dataset
         self.poss_sheets = bugs.r_d.read_precomputations(bugs.parameters.precomputation_path)
         #list of global data for different parameters

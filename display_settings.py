@@ -39,7 +39,7 @@ switch_key = K_s
 strat_graph_key = K_g
 sub_graph_key = K_h
 proflen_graph_key = K_j
-update_key = K_U
+update_key = K_u
 
 next_key = K_d
 prev_key = K_q
