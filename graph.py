@@ -79,7 +79,34 @@ def  plot_len_plot(gstats_l) :
     #no autoscale
     plt.ylim( (0, 1) )
     plt.title('Effect of length of subject profile')
+
+def plot_prop_sub(gstats) :
+    '''Proportion of subjects presenting bug
+    for each bug'''
     
+    bug_types = []
+    bug_counts = []
+    nb_subjects = 0
+    for dico in gstats['ord_profile'] :
+        nb_subjects += dico['occ']
+    for key in types_order :
+        count = 0
+        for dico in gstats['ord_profile'] :
+            if key in dico['profile'] :
+                count += dico['occ']
+        if count > 0 :
+            bug_types.append(key)
+            bug_counts.append(count)
+    bug_proportions = [float(count)/nb_subjects for count in bug_counts]
+    print bug_types, bug_counts, nb_subjects
+    ind = range(len(bug_types))
+    plt.bar(ind, bug_proportions, facecolor='#333333')
+    plt.xticks(ind, bug_types, rotation=90)
+    plt.xlabel(u'Stratégies')
+    plt.ylabel(u'Proportion de sujets')
+    #no autoscale
+    plt.ylim( (0, 1) )
+    plt.title(u'Répartition des bugs parmis les sujets')
 #~ sc = {'pt-gd=pt': (1, 26), "['blank', 'pt-gd=?']": (0, 11), 'N-0=0': (0, 4), "['blank', 'N-N=N']": (0, 1), "['blank', '0-N=N']": (0, 4), '0-N=N': (8, 9), "['blank', 'gd-pt']": (2, 11), "['blank', 'correct_col']": (0, 6), "['blank', '0-N=0']": (3, 4), 'gd-pt': (25, 26), "['blank', 'pt-gd=gd']": (0, 11), "['blank', 'pt-gd=0']": (3, 4), 'pt-gd=gd': (9, 26), 'pt-gd=?': (0, 26), 'pt-gd=0': (0, 26), '0-N=0': (0, 9), 'N-N=N': (0, 6), "['blank', 'pt-gd=pt']": (9, 11), 'incomplete': (5, 22)}
 #~ plot_scores(sc, sc)
 #~ plt.show()

@@ -36,10 +36,13 @@ sheet_offset = (250,10)
 
 #control settings
 switch_key = K_s
+update_key = K_u
+#plots
 strat_graph_key = K_g
 sub_graph_key = K_h
 proflen_graph_key = K_j
-update_key = K_u
+propsub_graph_key = K_k
+
 
 next_key = K_d
 prev_key = K_q

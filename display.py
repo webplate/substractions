@@ -34,6 +34,16 @@ class len_prof_plot(threading.Thread):
     def run(self):
         graph.plot_len_plot(self.data)
         graph.plt.show()
+        
+class prop_sub_plot(threading.Thread):
+    '''an thread object to launch a pyplot window in parallel
+    '''
+    def __init__(self, data):
+        threading.Thread.__init__(self)
+        self.data = data
+    def run(self):
+        graph.plot_prop_sub(self.data)
+        graph.plt.show()
 
 def pix_coord(pos, gap, max_width, surface) :
     '''returns (top,right,bottom,left) boundaries(à la CSS) of a surface
@@ -278,6 +288,9 @@ class subtraction_explorer():
             sub_plot_win.start()
         elif event.type == KEYDOWN and event.key == proflen_graph_key :
             sub_plot_win = len_prof_plot(self.gstats_l)
+            sub_plot_win.start()
+        elif event.type == KEYDOWN and event.key == propsub_graph_key :
+            sub_plot_win = prop_sub_plot(self.gstats)
             sub_plot_win.start()
         elif event.type == KEYDOWN and event.key == update_key :
             #recompute the possible bugs of the sheet
