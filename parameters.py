@@ -32,4 +32,6 @@ profile_size = [3]
 tolerant = False     #be tolerant to +-1 errors from subjects
 
 blank = 'X'
+#control bugId
 check_exotic = False
+zero_included = False
