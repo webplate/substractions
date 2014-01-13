@@ -64,11 +64,11 @@ def plot_perf_duration(data):
         else:
             plt.plot(subject['time'], subject['perf_col'], 'k+', ms=10)
     #~ plt.legend((u'Réussite haute',u'Réussite moyenne',u'Réussite basse','Pas de jugement'))
-    plt.xlabel('Duration of passation')
-    plt.ylabel('Performance of simulation')
+    plt.xlabel(u'Durée de la passation (minutes)')
+    plt.ylabel('Performance de la simulation')
     #no autoscale
     plt.ylim( (0, 1) )
-    plt.title('Performance over duration')
+    plt.title('Preformance en fonction du temps et du niveau')
 
     
 #~ sc = {'pt-gd=pt': (1, 26), "['blank', 'pt-gd=?']": (0, 11), 'N-0=0': (0, 4), "['blank', 'N-N=N']": (0, 1), "['blank', '0-N=N']": (0, 4), '0-N=N': (8, 9), "['blank', 'gd-pt']": (2, 11), "['blank', 'correct_col']": (0, 6), "['blank', '0-N=0']": (3, 4), 'gd-pt': (25, 26), "['blank', 'pt-gd=gd']": (0, 11), "['blank', 'pt-gd=0']": (3, 4), 'pt-gd=gd': (9, 26), 'pt-gd=?': (0, 26), 'pt-gd=0': (0, 26), '0-N=0': (0, 9), 'N-N=N': (0, 6), "['blank', 'pt-gd=pt']": (9, 11), 'incomplete': (5, 22)}
