@@ -26,7 +26,7 @@ tolerant = False     #be tolerant to +-1 errors from subjects
 
 check_incomplete = False 
 check_exotic = False
-
+zero_included = True
 
 compute_mean = False
 nb_run = 100
