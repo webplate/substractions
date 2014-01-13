@@ -234,6 +234,7 @@ class subtraction_explorer():
             #get global statistics and populate data with stats
             self.gstats_l.append(stats.analysis(self.data, self.poss_sheets, size))
         self.gstats = self.gstats_l[-1]
+        print 'Global perf ', self.gstats['perf_col']
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
