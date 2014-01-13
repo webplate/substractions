@@ -4,6 +4,7 @@
 #~ import numpy as np
 import matplotlib.pyplot as plt
 from graph_settings import *
+import bugs
 
 def freq_by_type(scores) :
     N = len(scores)
@@ -72,41 +73,46 @@ def  plot_len_plot(gstats_l) :
     '''plot perf for different profiles lenghts
     '''
     perfs = [stat['perf_col'] for stat in gstats_l]
-    ind = range(len(perfs))
-    plt.bar(ind, perfs, facecolor='#333333')
-    plt.xlabel('Length of kept profiles')
-    plt.ylabel('Performance of simulation')
+    ind = range(1,len(perfs)+1)
+    plt.bar(ind, perfs, facecolor='#333333', align='center')
+    plt.xlabel('Longueur du profil de simulation')
+    plt.ylabel('Performance de la simulation')
     #no autoscale
     plt.ylim( (0, 1) )
-    plt.title('Effect of length of subject profile')
+    plt.title('Effet de la longueur du profil cognitif')
 
 def plot_prop_sub(gstats) :
     '''Proportion of subjects presenting bug
     for each bug'''
     
     bug_types = []
-    bug_counts = []
-    nb_subjects = 0
-    for dico in gstats['ord_profile'] :
-        nb_subjects += dico['occ']
-    for key in types_order :
-        count = 0
-        for dico in gstats['ord_profile'] :
-            if key in dico['profile'] :
-                count += dico['occ']
-        if count > 0 :
-            bug_types.append(key)
-            bug_counts.append(count)
-    bug_proportions = [float(count)/nb_subjects for count in bug_counts]
-    print bug_types, bug_counts, nb_subjects
+    bug_proportions = []
+    for thresh in bugs.parameters.dom_thre :
+        bug_counts = []
+        repart = gstats['repartition'][thresh]
+        for key in types_order :
+            if key in repart :
+                bug_counts.append(repart[key])
+                if key not in bug_types :
+                    bug_types.append(key)
+        bug_proportions.append([float(count)/gstats['nb_subjects']
+    for count in bug_counts])
     ind = range(len(bug_types))
-    plt.bar(ind, bug_proportions, facecolor='#333333')
-    plt.xticks(ind, bug_types, rotation=90)
+
+    for i, thresh in enumerate(bugs.parameters.dom_thre) :
+        plt.bar(ind, bug_proportions[i], align='center',
+        facecolor=proportions_colors[i])
+    
     plt.xlabel(u'Stratégies')
-    plt.ylabel(u'Proportion de sujets')
+    plt.ylabel(u'Proportion de sujets') 
+    plt.title(u'Répartition des bugs parmis les sujets')
     #no autoscale
     plt.ylim( (0, 1) )
-    plt.title(u'Répartition des bugs parmis les sujets')
+    #rotated x axis labels
+    plt.xticks(ind, bug_types, rotation=90)
+    #tuning to avoid cropped labels
+    plt.subplots_adjust(bottom=0.35, top=0.95)
+
 #~ sc = {'pt-gd=pt': (1, 26), "['blank', 'pt-gd=?']": (0, 11), 'N-0=0': (0, 4), "['blank', 'N-N=N']": (0, 1), "['blank', '0-N=N']": (0, 4), '0-N=N': (8, 9), "['blank', 'gd-pt']": (2, 11), "['blank', 'correct_col']": (0, 6), "['blank', '0-N=0']": (3, 4), 'gd-pt': (25, 26), "['blank', 'pt-gd=gd']": (0, 11), "['blank', 'pt-gd=0']": (3, 4), 'pt-gd=gd': (9, 26), 'pt-gd=?': (0, 26), 'pt-gd=0': (0, 26), '0-N=0': (0, 9), 'N-N=N': (0, 6), "['blank', 'pt-gd=pt']": (9, 11), 'incomplete': (5, 22)}
 #~ plot_scores(sc, sc)
 #~ plt.show()

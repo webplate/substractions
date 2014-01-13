@@ -74,13 +74,25 @@ def subject_congruency(subject_id, data, poss_sheet, simul_sheet, operations, sh
                 pos -= 1
     return nb_correct_ope, nb_ope, nb_correct_col, nb_col
 
-def profile(subject, operations, results, poss_sheet, profile_size) :
+def profile(subject, operations, results, poss_sheet, profile_size, repartition) :
     #create profile of subject (ordered by dominancy list of (dom, bug) )
     found_bugs = bugs.subject_sheet_bugs(results, operations)
     scores = bugs.dominancy(found_bugs, poss_sheet)
     subject.update({'scores' : scores})
     dom_bugs_l = bugs.profile(scores)
     subject.update({'profile' : dom_bugs_l})
+    #populate repartition of bugs between subjects
+    for dom, bug_type in dom_bugs_l :
+        for threshold in bugs.parameters.dom_thre :
+            if bug_type in repartition[threshold] :
+                if dom > threshold :
+                    repartition[threshold][bug_type] += 1
+            else :
+                if dom > threshold :
+                    repartition[threshold].update({bug_type : 1})
+                else :
+                    repartition[threshold].update({bug_type : 0})
+                
     #a truncated version for cognitive plausability
     #(used for ordered profiles and simulation)
     dom_bugs = dom_bugs_l[:profile_size]
@@ -96,7 +108,8 @@ def simulate(subject, possible_sheet, operations) :
     subject.update({'sim_rslt' : simul_sheet[1]})
     subject.update({'sim_dtl' : simul_sheet[0]})
 
-def evaluate(subject, data, operations, poss_sheet, all_cong, all_sc, ls_ord_prof) :
+def evaluate(subject, data, operations, poss_sheet, 
+all_cong, all_sc, ls_ord_prof) :
     #evaluate simulation over some results
     scores = subject_congruency(subject['id'], data, poss_sheet,
     subject['sim_rslt'], operations, subject['sim_sheet'])
@@ -130,6 +143,9 @@ def analysis(data, poss_sheets, profile_size) :
     all_cong = [0, 0, 0, 0] #congruency at global level
     all_sc = {} #dominancy scores at global level
     ls_ord_prof = [] #list of ordered profiles globally
+    repartition = {} 
+    for threshold in bugs.parameters.dom_thre :
+        repartition.update({threshold : {}})
     #profile, simulate, evaluate
     for subject_id in range(len(data)) :
         subject = data[subject_id]
@@ -155,7 +171,8 @@ def analysis(data, poss_sheets, profile_size) :
         prof_res = [subject['results'][i] for i in prof_i]
         prof_poss = [poss_sheet[i] for i in prof_i]
         #create profile of subject (ordered by dominancy list of (dom, bug) )
-        profile(subject, prof_ope, prof_res, prof_poss, profile_size)
+        profile(subject, prof_ope, prof_res, prof_poss, profile_size,
+        repartition)
         #subset of ope and results for simulation
         sim_ope = [operations[i] for i in sim_i]
         sim_poss = [poss_sheet[i] for i in sim_i]
@@ -172,7 +189,9 @@ def analysis(data, poss_sheets, profile_size) :
     'score_ope' : (all_cong[0], all_cong[1]),
     'score_col' : (all_cong[2], all_cong[3]),
     'perf_ope' : float(all_cong[0])/all_cong[1],
-    'perf_col' : float(all_cong[2])/all_cong[3]}
+    'perf_col' : float(all_cong[2])/all_cong[3],
+    'repartition' : repartition,
+    'nb_subjects' : len(data)}
     return global_stats
 
 def give_percent(scores) :

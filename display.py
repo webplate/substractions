@@ -233,7 +233,7 @@ class subtraction_explorer():
         for size in bugs.parameters.profile_size :
             #get global statistics and populate data with stats
             self.gstats_l.append(stats.analysis(self.data, self.poss_sheets, size))
-        self.gstats = self.gstats_l[0]
+        self.gstats = self.gstats_l[-1]
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7

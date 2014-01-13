@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+proportions_colors = ['#cccccc','#999999', '#666666', '#333333']
+
 #bug abbreviations
 short_types = {'gd-pt':'gp',
 'pt-gd=gd':'pg',

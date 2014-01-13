@@ -24,9 +24,12 @@ update_precomputation = False   #set to True once if change in protocol or in bu
 precomputations = 'protocoleVanLehn', 'protocoleAnalogue'
 # Analysis settings
 mental_limit = 20   #how much a student can substract in his mind (realistic attempt)
-#~ dominancy_thre = 0.6    #threshold for picking dominant bugs
+dom_thre = [0.2, 0.4, 0.6, 0.8]  #list of dominancy threshold for considering a bug used by subject
+                                 #beware order is drawing order : start with lowest !
+
+#~ dominancy_thre = 0.6    #threshold for picking dominant bugs in profile
 #~ profile_size = None
-dominancy_thre = 0
+
 #~ profile_size = [1,2,3,4,5,6]        #list of length of profile (nb of strategies)
 profile_size = [3]
 tolerant = False     #be tolerant to +-1 errors from subjects
@@ -34,4 +37,4 @@ tolerant = False     #be tolerant to +-1 errors from subjects
 blank = 'X'
 #control bugId
 check_exotic = True
-zero_included = False
+zero_included = True
