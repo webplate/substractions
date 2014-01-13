@@ -37,4 +37,4 @@ tolerant = False     #be tolerant to +-1 errors from subjects
 blank = 'X'
 #control bugId
 check_exotic = False
-zero_included = True
+zero_included = False

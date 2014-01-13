@@ -204,6 +204,10 @@ def nice_percent(nb) :
     text = "{0:.0%}".format(nb)
     return text
 
+def print_profiles(profiles) :
+    for dico in profiles :
+        print dico['profile'],'--', dico['occ'],'__'
+
 class subtraction_explorer():
     '''a pygame (and pyplot) app for exploring subtractions data of subjects
     '''
@@ -235,6 +239,7 @@ class subtraction_explorer():
             self.gstats_l.append(stats.analysis(self.data, self.poss_sheets, size))
         self.gstats = self.gstats_l[-1]
         print 'Global perf ', self.gstats['perf_col']
+        print_profiles(self.gstats['ord_profile'])
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
