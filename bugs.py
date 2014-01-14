@@ -325,6 +325,13 @@ def format_data(data) :
         #Restrict to a subset of subjects
         data = [subject for subject in data
         if subject[parameters.prop_test] == parameters.val_test]
+    if parameters.subset_judge == True :
+        data = [subject for subject in data if 'judge' in subject
+        and subject['judge'] == parameters.val_test2]
+    if parameters.subset_time == True :
+        data = [subject for subject in data if 'time' in subject
+        and subject['time'] >= parameters.min_time
+        and subject['time'] < parameters.max_time]
     #Ordinate subjects along a criteria
     chronology = operator.itemgetter('time')
     data.sort(key=chronology)

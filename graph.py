@@ -67,7 +67,7 @@ def plot_perf_duration(data):
     plt.xlabel(u'Durée de la passation (minutes)')
     plt.ylabel('Performance de la simulation')
     #no autoscale
-    plt.ylim( (0, 1) )
+    plt.ylim( (0, 1.2) )
     plt.title('Preformance en fonction du temps et du niveau')
 
     

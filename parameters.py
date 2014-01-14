@@ -14,6 +14,13 @@ subset = True
 prop_test = 'nb_ope'
 val_test = 40
 
+subset_judge = False
+val_test2 = 'A'
+
+subset_time = True
+max_time = 70
+min_time = 30
+
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
 #possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'
 # Analysis settings
@@ -28,7 +35,7 @@ check_incomplete = False
 check_exotic = False
 zero_included = True
 
-compute_mean = False
+compute_mean = True
 nb_run = 100
 
 blank = 'X'

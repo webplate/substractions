@@ -302,7 +302,7 @@ class subtraction_explorer():
         self.notes_lst.extend(['nb_col '+str(self.subject['nb_col']),
         'nb_ope '+str(self.subject['nb_ope'])])
         if 'judge' in self.subject :
-            self.notes_lst.extend([self.subject['judge']])
+            self.notes_lst.extend([u'Niveau jugé '+self.subject['judge']])
         self.notes_lst.extend(self.subject['sheet'])
         self.notes_lst.extend(['Subject congruence '+nice_percent(self.subject['perf_col'])])
         str_dom_bugs = [str(tupl[0])[:5]+' : '+tupl[1] for tupl in self.dom_bugs]
