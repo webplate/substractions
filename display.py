@@ -238,8 +238,30 @@ class subtraction_explorer():
             #get global statistics and populate data with stats
             self.gstats_l.append(stats.analysis(self.data, self.poss_sheets, size))
         self.gstats = self.gstats_l[-1]
-        print 'Global perf ', self.gstats['perf_col']
-        print_profiles(self.gstats['ord_profile'])
+        #print profiles list for LaTeX enumeration
+        #~ print 'Global perf ', self.gstats['perf_col']
+        #~ print_profiles(self.gstats['ord_profile'])
+        
+        #~ #count occuring bugs
+        #~ for strat in ['pt-gd=0', 'N-0=0', '0-N=N', '0-N=0'] :
+            #~ c=0
+            #~ for subject in self.data:
+                #~ # lst = [bug[1] for bug in subject['short_profile']]
+                #~ lst = [bug[1] for bug in subject['profile'] if bug[0] > 0.]
+                #~ if strat in lst :
+                    #~ c+=1
+            #~ print strat, c, len(self.data), float(c)/len(self.data)
+        
+        #check if some subjects don't show predicted bugs
+        #~ c=0
+        #~ for subject in self.data:
+            #~ lst = [bug[1] for bug in subject['profile'] if bug[0] > 0.]
+            #~ for strat in ['pt-gd=0', 'N-0=0', '0-N=N', '0-N=0']:
+                #~ if strat in lst :
+                    #~ c+=1
+                    #~ break
+        #~ print c, len(self.data), float(c)/len(self.data)
+        
         #Set graphic driver according to platform
         system = platform.system()
         if system == 'Windows':    # tested with Windows 7
