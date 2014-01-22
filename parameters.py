@@ -17,7 +17,7 @@ val_test = 40
 subset_judge = False
 val_test2 = 'A'
 
-subset_time = True
+subset_time = False
 max_time = 70
 min_time = 30
 
@@ -29,14 +29,14 @@ mental_limit = 10   #how much a student can substract in his mind (realistic att
 #~ profile_size = None
 dominancy_thre = 0
 profile_size = 3        #length of profile (nb of strategies)
-tolerant = False     #be tolerant to +-1 errors from subjects
+tolerant = True     #be tolerant to +-1 errors from subjects
 
-check_incomplete = False 
-check_exotic = False
+check_incomplete = True 
+check_exotic = True
 zero_included = True
 
-compute_mean = True
+compute_mean = False
 nb_run = 100
 
 blank = 'X'
-show_empty = False
+show_empty = False #print warnings if empty sim
