@@ -187,3 +187,10 @@ def give_percent(scores) :
     correct_col = nb_correct_col / float(nb_col)
     percents = ["Perf at operation level : {0:.0%}".format(correct_ope), "Perf at column level : {0:.0%}".format(correct_col)]
     return percents
+
+def lst_perf(data) :
+    perfs = []
+    for subject in data :
+        if 'perf_col' in subject :
+            perfs.append(subject['perf_col'])
+    return perfs

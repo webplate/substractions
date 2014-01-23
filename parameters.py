@@ -15,11 +15,11 @@ prop_test = 'nb_ope'
 val_test = 40
 
 subset_judge = False
-val_test2 = 'A'
+val_test2 = 'C'
 
-subset_time = False
-max_time = 70
-min_time = 30
+subset_time = True
+max_time = 30
+min_time = 0
 
 update_precomputation = False   #set to name of protocol once if change in protocol or in bug definitions
 #possible values : False, 'protocoleVanLehn', 'protocoleAnalogue'

@@ -213,6 +213,9 @@ class subtraction_explorer():
         #get mean perf for several choices of simprotocol profprotocol
         if bugs.parameters.compute_mean :
             self.multi_perf = stats.mean_global_perf(self.data, self.poss_sheets, bugs.parameters.nb_run)
+            
+        #individual perfs for anova
+        print stats.lst_perf(self.data)
 
         #Set graphic driver according to platform
         system = platform.system()
